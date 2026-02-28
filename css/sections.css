@@ -466,26 +466,8 @@
 .github-graph-wrap {
   width: 100%;
   overflow: hidden;
-  border-radius: 2px;
-  min-height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.github-graph-canvas {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.github-graph-loading {
-  font-family: var(--font-m);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  text-align: center;
-}
 
 /* ════════════════════════════════════
    RESPONSIVE
