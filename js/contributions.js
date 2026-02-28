@@ -14,19 +14,25 @@ function loadGhChart() {
       svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
       svg.removeAttribute('width');
       svg.removeAttribute('height');
-
       svg.style.background = 'transparent';
 
+      // Clear background rect
       const svgWidth = parseFloat(w);
       svg.querySelectorAll('rect').forEach(rect => {
         const rectWidth = parseFloat(rect.getAttribute('width') || 0);
         if (rectWidth > svgWidth * 0.5) {
           rect.style.fill = 'transparent';
+          return;
+        }
+        // Mark empty squares for re-tinting later
+        const style = rect.getAttribute('style') || '';
+        if (style.includes('#eeeeee')) {
+          rect.dataset.empty = 'true';
         }
       });
 
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      tintEmptySquares(svg, isDark);
+      tintEmptySquares(isDark);
 
       svg.style.width   = '100%';
       svg.style.height  = 'auto';
@@ -37,18 +43,18 @@ function loadGhChart() {
     });
 }
 
-function tintEmptySquares(svg, isDark) {
+function tintEmptySquares(isDark) {
   const tintColor = isDark ? '#0e0e20' : '#e8e4f5';
-  svg.querySelectorAll('rect').forEach(rect => {
-    const style = rect.getAttribute('style') || '';
-    if (style.includes('#eeeeee')) {
-      rect.style.fill = tintColor;
-    }
+  document.querySelectorAll('#ghChart rect[data-empty]').forEach(rect => {
+    rect.style.fill = tintColor;
   });
 }
 
-// On theme change, just reload the chart cleanly with correct tint
-new MutationObserver(loadGhChart).observe(document.documentElement, {
+// ← Only re-tint, NEVER re-fetch
+new MutationObserver(() => {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  tintEmptySquares(isDark);
+}).observe(document.documentElement, {
   attributes: true,
   attributeFilter: ['data-theme'],
 });
