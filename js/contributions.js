@@ -56,10 +56,12 @@ function transitionTint(svg, isDark) {
 
 // Re-fetch on theme change so tint color updates correctly
 new MutationObserver(() => {
-  const svg = document.querySelector('#ghChart svg');
-  if (!svg) return;
-  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  transitionTint(svg, isDark);
+  requestAnimationFrame(() => {
+    const svg = document.querySelector('#ghChart svg');
+    if (!svg) return;
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    transitionTint(svg, isDark);
+  });
 }).observe(document.documentElement, {
   attributes: true,
   attributeFilter: ['data-theme'],
