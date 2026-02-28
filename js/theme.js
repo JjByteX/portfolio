@@ -24,7 +24,6 @@ const label  = btn?.querySelector('.toggle-label');
 function applyTheme(theme) {
   html.setAttribute('data-theme', theme);
   localStorage.setItem(STORAGE_KEY, theme);
-  updateChartTheme(theme);   // ← add this line
   if (theme === LIGHT) {
     if (icon)  icon.textContent  = '●';
     if (label) label.textContent = 'DARK';
@@ -57,10 +56,3 @@ btn?.addEventListener('click', toggleTheme);
 
 // ── Init on page load ──
 initTheme();
-
-function updateChartTheme(theme) {
-  const chart = document.getElementById('ghChart');
-  if (!chart) return;
-  const color = theme === 'light' ? '6d28d9' : '8b5cf6';
-  chart.src = `https://ghchart.rshah.org/${color}/JjByteX?year=2026`;
-}
