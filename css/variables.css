@@ -1,0 +1,75 @@
+/* ─── DESIGN TOKENS ──────────────────────────────────────
+   All colors, fonts, spacing, shadows defined here.
+   Change a value once — it updates everywhere.
+──────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+/* ── DARK THEME (default) ── */
+:root,
+[data-theme="dark"] {
+  --bg:       #080810;
+  --surface:  #0e0e1c;
+  --border:   #1e1e38;
+  --red:      #ff0a37;
+  --yellow:   #ffe619;
+  --cyan:     #00f0ff;
+  --purple:   #8c1eff;
+  --text:     #e2e2f0;
+  --muted:    #5a5a7a;
+
+  --glow-r:   0 0 8px #ff0a37, 0 0 20px #ff0a3744;
+  --glow-y:   0 0 8px #ffe619, 0 0 20px #ffe61944;
+  --glow-c:   0 0 8px #00f0ff, 0 0 20px #00f0ff44;
+
+  --text-soft:   rgba(226, 226, 240, 0.8);
+  --text-softer: rgba(226, 226, 240, 0.7);
+
+  --grid-color: rgba(0, 240, 255, 0.04);
+  --nav-bg:     rgba(8, 8, 16, 0.85);
+  --scanline:   rgba(0, 0, 0, 0.12);
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg:       #f0eef8;
+  --surface:  #e4e0f5;
+  --border:   #c8c2e8;
+  --red:      #d4002b;
+  --yellow:   #b07a00;
+  --cyan:     #006fa8;
+  --purple:   #6200cc;
+  --text:     #0e0c1e;
+  --muted:    #7a769a;
+
+  --glow-r:   0 0 6px #d4002b44, 0 0 16px #d4002b22;
+  --glow-y:   0 0 6px #b07a0044, 0 0 16px #b07a0022;
+  --glow-c:   0 0 6px #006fa844, 0 0 16px #006fa822;
+
+  --text-soft:   rgba(14, 12, 30, 0.75);
+  --text-softer: rgba(14, 12, 30, 0.65);
+
+  --grid-color: rgba(0, 111, 168, 0.06);
+  --nav-bg:     rgba(240, 238, 248, 0.88);
+  --scanline:   rgba(0, 0, 0, 0.04);
+}
+
+/* ── SHARED TOKENS (never change with theme) ── */
+:root {
+  --font-h:   'Fira Code', monospace;
+  --font-b:   'Rajdhani', sans-serif;
+  --font-m:   'Share Tech Mono', monospace;
+
+  --space-xs:  0.4rem;
+  --space-sm:  0.75rem;
+  --space-md:  1.2rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 5rem;
+
+  --transition: 0.2s ease;
+  --theme-transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+
+  --max-width: 1100px;
+  --section-padding: 7rem 2rem;
+}

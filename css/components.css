@@ -1,0 +1,279 @@
+/* ─── COMPONENTS ─────────────────────────────────────────
+   Reusable UI pieces: buttons, chips, cards, stat boxes,
+   HUD corners, placeholders, social links.
+──────────────────────────────────────────────────────── */
+
+/* ── Theme Toggle — icon only, lives inside nav pill ── */
+.theme-toggle {
+  font-family: var(--font-m);
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: none;
+  border: none;
+  padding: 0.4rem 0.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition), background var(--transition);
+  margin-left: 0.35rem;
+  /* Divider on left side */
+  border-left: 1px solid var(--border);
+  padding-left: 0.75rem;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
+
+.theme-toggle .toggle-icon {
+  font-size: 0.9rem;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.theme-toggle:hover .toggle-icon {
+  transform: rotate(30deg);
+}
+
+/* Hide label — icon only */
+.theme-toggle .toggle-label {
+  display: none;
+}
+
+/* ── Buttons ── */
+.btn {
+  font-family: var(--font-h);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  padding: 0.85rem 2rem;
+  text-transform: uppercase;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: var(--red);
+  color: #fff;
+  box-shadow: var(--glow-r);
+}
+
+.btn-primary:hover {
+  background: #ff2248;
+  box-shadow: 0 0 16px #ff0a37, 0 0 40px #ff0a3766;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  box-shadow: var(--glow-c);
+}
+
+.btn-outline:hover {
+  background: rgba(0, 240, 255, 0.08);
+}
+
+/* ── Skill chips ── */
+.chip {
+  font-family: var(--font-m);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: all var(--transition);
+  cursor: default;
+}
+
+.chip:hover {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  text-shadow: var(--glow-y);
+  box-shadow: inset 0 0 12px rgba(255, 230, 25, 0.06);
+}
+
+.chip.learning {
+  border-color: rgba(0, 240, 255, 0.3);
+  color: var(--cyan);
+}
+
+.chip.learning:hover {
+  box-shadow: inset 0 0 12px rgba(0, 240, 255, 0.08);
+  text-shadow: var(--glow-c);
+}
+
+/* ── Stat cards ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.2rem;
+  position: relative;
+  overflow: hidden;
+  transition: var(--theme-transition);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red), var(--yellow));
+}
+
+.stat-val {
+  font-family: var(--font-h);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--yellow);
+  text-shadow: var(--glow-y);
+  display: block;
+}
+
+.stat-lbl {
+  font-family: var(--font-m);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+/* ── HUD corner borders ── */
+.hud-box {
+  position: relative;
+}
+
+.hud-box::before,
+.hud-box::after,
+.hud-box > .hud-inner::before,
+.hud-box > .hud-inner::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 2;
+}
+
+.hud-box::before       { top: 0;    left: 0;  border-top: 2px solid var(--red); border-left: 2px solid var(--red); }
+.hud-box::after        { top: 0;    right: 0; border-top: 2px solid var(--red); border-right: 2px solid var(--red); }
+.hud-box > .hud-inner::before { bottom: 0; left: 0;  border-bottom: 2px solid var(--red); border-left: 2px solid var(--red); }
+.hud-box > .hud-inner::after  { bottom: 0; right: 0; border-bottom: 2px solid var(--red); border-right: 2px solid var(--red); }
+
+/* ── Photo / image placeholders ── */
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-family: var(--font-m);
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+.photo-icon {
+  width: 48px;
+  height: 48px;
+  border: 2px dashed var(--muted);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  opacity: 0.5;
+}
+
+.proj-img-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0b0b18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-family: var(--font-m);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+  filter: grayscale(30%) brightness(0.9);
+  transition: filter 0.3s;
+}
+
+.proj-img-icon { font-size: 2rem; opacity: 0.3; }
+
+/* ── Social items ── */
+.social-item {
+  font-family: var(--font-m);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.social-item:hover {
+  color: var(--cyan);
+  border-color: rgba(0, 240, 255, 0.3);
+  text-shadow: var(--glow-c);
+}
+
+.social-platform {
+  color: var(--red);
+  margin-right: 0.25rem;
+}
+
+/* ── Back to Top ── */
+.back-to-top {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 50;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transform: translateY(8px);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  border-color: var(--red);
+  color: var(--red);
+  box-shadow: var(--glow-r);
+  transform: translateY(-3px);
+}
+
+.btt-icon {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.5;
+}

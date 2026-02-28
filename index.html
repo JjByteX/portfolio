@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Jj Bassig — Aspiring Full Stack Software Engineer. BSIT 2nd Year, Pamantasan ng Lungsod ng Pasig." />
+  <meta name="author" content="Jj Sanchez Bassig" />
+
+  <title>JJ BASSIG · Full Stack Developer</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css" />
+
+  <!-- Three.js + Vanta NET only -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+</head>
+<body>
+
+  <!-- Single full-page Vanta background — one WebGL context for the whole site -->
+  <div id="vanta-bg" aria-hidden="true"></div>
+
+  <!-- ─── NAVIGATION ───────────────────────────────── -->
+  <nav>
+    <div class="nav-logo">JJ_BASSIG</div>
+    <div class="nav-links">
+      <a href="#about">ABOUT</a>
+      <a href="#skills">SKILLS</a>
+      <a href="#projects">PROJECTS</a>
+      <a href="#contact">CONTACT</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="toggle-icon">◑</span>
+      <span class="toggle-label">LIGHT</span>
+    </button>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────── -->
+  <section id="hero">
+    <p class="hero-tag">FULL STACK DEVELOPER · BSIT 2ND YEAR</p>
+
+    <div class="hero-name">
+      <div class="first">JJ</div>
+      <div class="last glitch" data-text="BASSIG">BASSIG</div>
+    </div>
+
+    <p class="hero-role">
+      <span class="accent">@JjByteX</span> · Pamantasan ng Lungsod ng Pasig · Pasig, PH
+    </p>
+
+    <p class="hero-tagline">
+      From Redstone circuits to real-world systems — building software that matters, with security as the foundation.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">VIEW PROJECTS</a>
+      <a href="#contact" class="btn btn-outline">CONTACT ME</a>
+    </div>
+
+    <div class="hero-scroll" aria-hidden="true">SCROLL</div>
+  </section>
+
+  <div class="div-line" aria-hidden="true"></div>
+
+  <!-- ─── ABOUT ─────────────────────────────────────── -->
+  <section id="about">
+    <p class="section-label">01 · ABOUT</p>
+    <h2 class="section-title fade-up">ABOUT <span>ME</span></h2>
+
+    <div class="about-grid">
+      <div class="fade-up">
+        <div class="about-photo-wrap hud-box">
+          <div class="hud-inner">
+            <img src="assets/images/profile.jpg" alt="Jj Bassig" />
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up" style="transition-delay: .15s">
+        <div class="about-text">
+          <p>I'm <strong>Jj Sanchez Bassig</strong>, a 20-year-old aspiring full stack software engineer currently in my 2nd year of BSIT at Pamantasan ng Lungsod ng Pasig. What started with obsessing over Redstone logic in Minecraft evolved into a genuine passion for systems that solve real-world problems.</p>
+          <p>I don't just build for assignments. My personal project — an Animal Bite Treatment Center Management System for Pasig City Hall — is replacing a fragile Excel-based workflow with a modern, offline-capable, statistically-driven solution. That's the kind of software that <strong>actually matters</strong>.</p>
+          <p>Currently diving deep into <strong>cloud infrastructure</strong> and secure database connectivity. Security isn't an afterthought — it's the foundation everything else is built on.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid fade-up" style="transition-delay: .25s">
+      <div class="stat-card">
+        <span class="stat-val">2×</span>
+        <span class="stat-lbl">DEAN'S LISTER</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val">#1</span>
+        <span class="stat-lbl">CONSISTENT TOP · SENIOR HIGH</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val">HIGH</span>
+        <span class="stat-lbl">HONORS · SENIOR HIGH SCHOOL</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val">5</span>
+        <span class="stat-lbl">PROJECTS BUILT / IN PROGRESS</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="div-line" aria-hidden="true"></div>
+
+  <!-- ─── SKILLS ────────────────────────────────────── -->
+  <section id="skills">
+    <p class="section-label">02 · SKILLS</p>
+    <h2 class="section-title fade-up">TECH <span>STACK</span></h2>
+
+    <div class="skill-group fade-up">
+      <p class="skill-group-label">LANGUAGES</p>
+      <div class="skill-chips">
+        <span class="chip">C#</span>
+        <span class="chip">C++</span>
+        <span class="chip">Java</span>
+        <span class="chip">Python</span>
+        <span class="chip">PHP</span>
+        <span class="chip">HTML</span>
+        <span class="chip">CSS</span>
+      </div>
+    </div>
+
+    <div class="skill-group fade-up" style="transition-delay: .1s">
+      <p class="skill-group-label">DATABASES</p>
+      <div class="skill-chips">
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">SQLite</span>
+        <span class="chip">MySQL</span>
+      </div>
+    </div>
+
+    <div class="skill-group fade-up" style="transition-delay: .2s">
+      <p class="skill-group-label">TOOLS & FRAMEWORKS</p>
+      <div class="skill-chips">
+        <span class="chip">.NET / WPF</span>
+        <span class="chip">Git</span>
+        <span class="chip">VS Code</span>
+        <span class="chip">Visual Studio</span>
+      </div>
+    </div>
+
+    <div class="skill-group fade-up" style="transition-delay: .3s">
+      <p class="skill-group-label">ENVIRONMENT</p>
+      <div class="skill-chips">
+        <span class="chip">Windows</span>
+        <span class="chip">Fedora</span>
+        <span class="chip">Debian</span>
+        <span class="chip">Bash / Zsh</span>
+      </div>
+    </div>
+
+    <div class="skill-group fade-up" style="transition-delay: .4s">
+      <p class="skill-group-label">CURRENTLY LEARNING</p>
+      <div class="skill-chips">
+        <span class="chip learning">Cloud Infrastructure</span>
+        <span class="chip learning">Secure DB Connectivity</span>
+        <span class="chip learning">Machine Learning</span>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="div-line" aria-hidden="true"></div>
+
+  <!-- ─── PROJECTS ──────────────────────────────────── -->
+  <section id="projects">
+    <p class="section-label">03 · PROJECTS</p>
+    <h2 class="section-title fade-up">WHAT I'VE <span>BUILT</span></h2>
+
+    <div class="proj-filters fade-up">
+      <button class="proj-filter-btn active" data-filter="all">ALL</button>
+      <button class="proj-filter-btn" data-filter="academic">ACADEMIC</button>
+      <button class="proj-filter-btn" data-filter="personal">PERSONAL</button>
+    </div>
+
+    <div class="projects-grid">
+
+      <div class="proj-card personal wip fade-up" data-category="personal" style="grid-column: span 2;">
+        <img src="assets/images/projects/abtcms.png" alt="Animal Bite Treatment Center Management System" />
+        <div class="proj-body">
+          <h3 class="proj-name">Animal Bite Treatment Center Management System</h3>
+          <p class="proj-desc">A full-scale desktop management system replacing an error-prone Excel workflow at the Pasig City Hall Animal Bite Treatment Center. Features patient record management, automated dose scheduling, statistics dashboards, and a dual-mode architecture — offline-first with SQLite, and a live sync to a remote PostgreSQL instance hosted on Fedora. Python handles machine learning on the backend. Built for reliability, data integrity, and a workflow that's 100× faster than spreadsheets.</p>
+          <div class="proj-tags">
+            <span class="proj-tag highlight">C# WPF</span>
+            <span class="proj-tag highlight">Python</span>
+            <span class="proj-tag highlight">SQLite</span>
+            <span class="proj-tag highlight">PostgreSQL</span>
+            <span class="proj-tag highlight">.NET</span>
+            <span class="proj-tag">Machine Learning</span>
+            <span class="proj-tag">Offline Mode</span>
+            <span class="proj-tag">Fedora Server</span>
+            <span class="proj-tag">Solo Project</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-card fade-up" data-category="academic" style="transition-delay: .25s">
+  <img src="assets/images/projects/training-center.png" alt="Training & Certification Center Management System" />
+  <div class="proj-body">
+    <h3 class="proj-name">Training & Certification Center MS</h3>
+    <p class="proj-desc">A desktop management system for a multi-branch training center. Handles course enrollment, branch-specific pricing and discounts, installment payment tracking, trainer assignment, and certification records. Designed with full normalization analysis (UNR → 3NF) and intentional denormalization for performance on overdue payment reports.</p>
+    <div class="proj-tags">
+      <span class="proj-tag highlight">VB.NET</span>
+      <span class="proj-tag highlight">MySQL</span>
+      <span class="proj-tag">XAMPP</span>
+      <span class="proj-tag">Database Design</span>
+      <span class="proj-tag">Academic</span>
+    </div>
+  </div>
+</div>
+
+      <div class="proj-card fade-up" data-category="academic" style="transition-delay: .1s">
+        <img src="assets/images/projects/shark-feast.png" alt="Shark Feast Survival Game" />
+        <div class="proj-body">
+          <h3 class="proj-name">Shark Feast Survival</h3>
+          <p class="proj-desc">An arcade survival game where you control a shark — dodge incoming bombs, catch fish to rack up points. Built in 4 days with a team of 2 developers and 1 graphic designer for a course requirement.</p>
+          <div class="proj-tags">
+            <span class="proj-tag highlight">C++</span>
+            <span class="proj-tag">4-Day Sprint</span>
+            <span class="proj-tag">Team of 3</span>
+            <span class="proj-tag">Academic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-card fade-up" data-category="academic" style="transition-delay: .15s">
+        <img src="assets/images/projects/dice-game.png" alt="Retro Dice Game" />
+        <div class="proj-body">
+          <h3 class="proj-name">Retro Dice Game</h3>
+          <p class="proj-desc">A retro-styled dice game with a Mario-inspired pixel aesthetic — designed and built in under an hour. A testament to quick execution under time pressure.</p>
+          <div class="proj-tags">
+            <span class="proj-tag highlight">VB.NET</span>
+            <span class="proj-tag">Built in 1 Hour</span>
+            <span class="proj-tag">Retro Aesthetic</span>
+            <span class="proj-tag">Academic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-card fade-up" data-category="academic" style="transition-delay: .2s">
+        <img src="assets/images/projects/sales-system.png" alt="Sales System" />
+        <div class="proj-body">
+          <h3 class="proj-name">Sales System</h3>
+          <p class="proj-desc">An academic sales management system featuring core business logic — transaction handling, inventory tracking, and reporting. Built to demonstrate proficiency in database-driven application development.</p>
+          <div class="proj-tags">
+            <span class="proj-tag highlight">VB.NET</span>
+            <span class="proj-tag highlight">MySQL</span>
+            <span class="proj-tag">XAMPP</span>
+            <span class="proj-tag">Academic</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="div-line" aria-hidden="true"></div>
+
+  <!-- ─── CONTACT ───────────────────────────────────── -->
+  <section id="contact">
+    <p class="section-label">04 · CONTACT</p>
+    <h2 class="section-title fade-up">GET IN <span>TOUCH</span></h2>
+
+    <div class="contact-wrap">
+
+      <div class="fade-up">
+        <p class="contact-text">
+          Whether you're looking to collaborate on a project, have an opportunity in mind, or just want to talk tech — I'm open to it. Security-first, always.
+        </p>
+
+        <div class="contact-links">
+          <a href="mailto:jjbassig30@gmail.com" class="contact-link">
+            <div>
+              <span class="contact-link-label">EMAIL</span>
+              <span class="contact-link-val">jjbassig30@gmail.com</span>
+            </div>
+          </a>
+          <a href="tel:+639947668735" class="contact-link">
+            <div>
+              <span class="contact-link-label">PHONE</span>
+              <span class="contact-link-val">+63 994 766 8735</span>
+            </div>
+          </a>
+          <div class="contact-link">
+            <div>
+              <span class="contact-link-label">LOCATION</span>
+              <span class="contact-link-val">Pasig, Philippines</span>
+            </div>
+          </div>
+          <div class="contact-link">
+            <div>
+              <span class="contact-link-label">SCHOOL</span>
+              <span class="contact-link-val">Pamantasan ng Lungsod ng Pasig</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up" style="transition-delay: .15s">
+        <p class="section-label" style="margin-bottom: 1rem;">FIND ME ONLINE</p>
+        <div class="social-grid">
+          <a href="https://github.com/JjByteX" target="_blank" rel="noopener noreferrer" class="social-item">
+            <span class="social-platform">GH</span> github.com/JjByteX
+          </a>
+          <a href="https://linkedin.com/in/jjbassig" target="_blank" rel="noopener noreferrer" class="social-item">
+            <span class="social-platform">LI</span> in/jjbassig
+          </a>
+          <a href="https://web.facebook.com/jjbassig/" target="_blank" rel="noopener noreferrer" class="social-item">
+            <span class="social-platform">FB</span> fb/jjbassig
+          </a>
+          <a href="https://twitter.com/littlealcho" target="_blank" rel="noopener noreferrer" class="social-item">
+            <span class="social-platform">X</span> @littlealcho
+          </a>
+        </div>
+
+        <!-- GitHub Activity Widget -->
+        <div class="github-widget fade-up" style="transition-delay: .3s; margin-top: 1.5rem;">
+          <div class="github-widget-header">
+            <div>
+              <p class="section-label" style="margin-bottom: 0.25rem;">GITHUB ACTIVITY</p>
+              <p class="github-widget-sub">@JjByteX · last 4 months</p>
+            </div>
+            <div class="github-clock">
+              <span class="clock-label">LOCAL TIME</span>
+              <span class="clock-time" id="liveClock">--:--:-- --</span>
+              <span class="clock-tz">UTC+8</span>
+            </div>
+          </div>
+          <div class="github-graph-wrap">
+            <canvas id="contribCanvas" class="github-graph-canvas"></canvas>
+            <p class="github-graph-loading" id="contribLoading">Loading contributions...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────── -->
+  <footer>
+    <p>© 2026 <span>JJ BASSIG</span> · Designed &amp; built from scratch · <span>"Not inactive. Most of the time, I commit locally."</span></p>
+  </footer>
+
+  <!-- ─── BACK TO TOP ──────────────────────────────────── -->
+  <a href="#hero" class="back-to-top" id="backToTop" aria-label="Back to top">
+    <i data-lucide="arrow-up" class="btt-icon"></i>
+  </a>
+
+  <!-- ─── SCRIPTS ───────────────────────────────────── -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="js/vanta.js" defer></script>
+  <script src="js/theme.js" defer></script>
+  <script src="js/scroll.js" defer></script>
+  <script src="js/glitch.js" defer></script>
+  <script src="js/filter.js" defer></script>
+  <script src="js/contributions.js" defer></script>
+  <script src="js/main.js" defer></script>
+
+</body>
+</html>

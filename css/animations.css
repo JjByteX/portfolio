@@ -1,0 +1,93 @@
+/* ─── ANIMATIONS ─────────────────────────────────────────
+   All @keyframes and animation utility classes.
+──────────────────────────────────────────────────────── */
+
+/* ── Full-page Vanta background ── */
+#vanta-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ── Sections are fully transparent so #vanta-bg shows through ── */
+section {
+  position: relative;
+  background: transparent;
+}
+
+/* Push all section children above z-index baseline */
+section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Glitch effect ── */
+.glitch {
+  position: relative;
+  display: inline-block;
+  animation: glitch 6s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0.8;
+}
+
+.glitch::before {
+  color: var(--cyan);
+  clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+  animation: glitch-top 6s infinite;
+}
+
+.glitch::after {
+  color: var(--yellow);
+  clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  animation: glitch-bot 6s infinite;
+}
+
+@keyframes glitch {
+  0%, 94%, 100% { transform: none; }
+  95%           { transform: skewX(-1deg); }
+  97%           { transform: skewX(1deg); }
+}
+
+@keyframes glitch-top {
+  0%, 94%, 100% { transform: none;              opacity: 0; }
+  95%           { transform: translate(-3px, 0); opacity: 0.8; }
+  97%           { transform: translate(3px, 0);  opacity: 0.8; }
+}
+
+@keyframes glitch-bot {
+  0%, 93%, 100% { transform: none;              opacity: 0; }
+  94%           { transform: translate(3px, 0);  opacity: 0.8; }
+  96%           { transform: translate(-3px, 0); opacity: 0.8; }
+}
+
+/* ── Scroll indicator pulse ── */
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* ── WIP badge pulse ── */
+@keyframes wipPulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+
+/* ── Scroll fade-up reveal ── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
