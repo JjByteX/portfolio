@@ -18,10 +18,12 @@ function loadGhChart() {
 
       // ← ADD HERE
       svg.style.background = 'transparent';
+const svgWidth = parseFloat(w);
 svg.querySelectorAll('rect').forEach(rect => {
-  const style = rect.getAttribute('style') || '';
-  if (style.match(/fill:#(0|1)[0-9a-f]{5}/i)) {
-    rect.setAttribute('style', style.replace(/fill:#[0-9a-f]{6}/i, 'fill:transparent'));
+  const rectWidth = parseFloat(rect.getAttribute('width') || 0);
+  if (rectWidth > svgWidth * 0.5) {
+    rect.style.fill = 'transparent';
+    rect.dataset.bg = 'true';
   }
 });
       // ← END ADD
@@ -41,16 +43,17 @@ svg.querySelectorAll('rect').forEach(rect => {
 function tintEmptySquares(svg, isDark) {
   const tintColor = isDark ? '#0e0e20' : '#e8e4f5';
   svg.querySelectorAll('rect').forEach(rect => {
+    if (rect.dataset.bg) return; // skip background rect
     const style = rect.getAttribute('style') || '';
-    if (style.includes('#eeeeee') || style.includes('transparent')) {
+    if (style.includes('#eeeeee')) {
       rect.style.fill = tintColor;
     }
   });
 }
-
 function transitionTint(svg, isDark) {
   const tintColor = isDark ? '#0e0e20' : '#e8e4f5';
   svg.querySelectorAll('rect').forEach(rect => {
+    if (rect.dataset.bg) return; // keep background always transparent
     if (rect.style.fill) {
       rect.style.fill = tintColor;
     }
