@@ -6,22 +6,33 @@ function loadGhChart() {
     .then(r => r.text())
     .then(svgText => {
       wrap.innerHTML = svgText;
-const svg = wrap.querySelector('svg');
-if (!svg) return;
+      const svg = wrap.querySelector('svg');
+      if (!svg) return;
 
-// Make it responsive
-const w = svg.getAttribute('width') || 663;
-const h = svg.getAttribute('height') || 104;
-svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-svg.removeAttribute('width');
-svg.removeAttribute('height');
+      // Make responsive
+      const w = svg.getAttribute('width') || 663;
+      const h = svg.getAttribute('height') || 104;
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
 
-const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-tintEmptySquares(svg, isDark);
+      // ← ADD HERE
+      svg.style.background = 'transparent';
+      const bgRect = svg.querySelector('rect');
+      if (bgRect) {
+        const style = bgRect.getAttribute('style') || '';
+        if (!style.includes('#eeeeee')) {
+          bgRect.setAttribute('style', 'fill:transparent;');
+        }
+      }
+      // ← END ADD
 
-svg.style.width   = '100%';
-svg.style.height  = 'auto';
-svg.style.display = 'block';
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      tintEmptySquares(svg, isDark);
+
+      svg.style.width   = '100%';
+      svg.style.height  = 'auto';
+      svg.style.display = 'block';
     })
     .catch(() => {
       wrap.innerHTML = '<img src="https://ghchart.rshah.org/JjByteX" style="width:100%;height:auto;display:block;" alt="GitHub contributions" />';
