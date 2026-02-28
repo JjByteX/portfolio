@@ -18,13 +18,12 @@ function loadGhChart() {
 
       // ← ADD HERE
       svg.style.background = 'transparent';
-      const bgRect = svg.querySelector('rect');
-      if (bgRect) {
-        const style = bgRect.getAttribute('style') || '';
-        if (!style.includes('#eeeeee')) {
-          bgRect.setAttribute('style', 'fill:transparent;');
-        }
-      }
+svg.querySelectorAll('rect').forEach(rect => {
+  const style = rect.getAttribute('style') || '';
+  if (style.match(/fill:#(0|1)[0-9a-f]{5}/i)) {
+    rect.setAttribute('style', style.replace(/fill:#[0-9a-f]{6}/i, 'fill:transparent'));
+  }
+});
       // ← END ADD
 
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
@@ -41,11 +40,10 @@ function loadGhChart() {
 
 function tintEmptySquares(svg, isDark) {
   const tintColor = isDark ? '#0e0e20' : '#e8e4f5';
-
   svg.querySelectorAll('rect').forEach(rect => {
     const style = rect.getAttribute('style') || '';
-    if (style.includes('#eeeeee')) {
-      rect.setAttribute('style', style.replace('#eeeeee', tintColor));
+    if (style.includes('#eeeeee') || style.includes('transparent')) {
+      rect.style.fill = tintColor;
     }
   });
 }
@@ -53,14 +51,8 @@ function tintEmptySquares(svg, isDark) {
 function transitionTint(svg, isDark) {
   const tintColor = isDark ? '#0e0e20' : '#e8e4f5';
   svg.querySelectorAll('rect').forEach(rect => {
-    const style = rect.getAttribute('style') || '';
-    // Match either the dark or light tint so it swaps correctly
-    if (style.includes('#0e0e20') || style.includes('#e8e4f5') || style.includes('#eeeeee')) {
-      rect.setAttribute('style', style
-        .replace('#0e0e20', tintColor)
-        .replace('#e8e4f5', tintColor)
-        .replace('#eeeeee', tintColor)
-      );
+    if (rect.style.fill) {
+      rect.style.fill = tintColor;
     }
   });
 }

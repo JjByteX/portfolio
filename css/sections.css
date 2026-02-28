@@ -403,6 +403,13 @@
   margin-top: 2rem;
 }
 
+.github-widget-sub,
+.clock-time,
+.clock-label,
+.clock-tz {
+  transition: var(--theme-transition);
+}
+
 /* ════════════════════════════════════
    GITHUB WIDGET
 ════════════════════════════════════ */
@@ -461,6 +468,10 @@
   font-size: 0.62rem;
   letter-spacing: 0.2em;
   color: var(--muted);
+}
+
+#ghChart rect {
+  transition: fill 0.4s ease;
 }
 
 .github-graph-wrap {
