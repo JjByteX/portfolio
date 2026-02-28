@@ -503,3 +503,557 @@
 @media (max-width: 480px) {
   .stat-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ════════════════════════════════════
+   CARD HOVER OVERLAY
+════════════════════════════════════ */
+.proj-card[data-modal] { cursor: pointer; }
+
+.proj-card[data-modal] .proj-img-overlay {
+  position: absolute;
+  inset: 0;
+  /* Always dark — intentionally ignores theme, overlaying an image */
+  background: rgba(6, 6, 14, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+.proj-card[data-modal]:hover .proj-img-overlay { opacity: 1; }
+
+.proj-img-overlay-text {
+  font-family: var(--font-m);
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  /* Hardcoded light cyan — always readable on the dark overlay */
+  color: #00f0ff;
+  text-shadow: 0 0 8px #00f0ff, 0 0 20px #00f0ff44;
+  border: 1px solid #00f0ff;
+  padding: 0.5rem 1.25rem;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+}
+
+/* ════════════════════════════════════
+   PROJECT MODAL
+════════════════════════════════════ */
+
+/* ── Overlay — full screen backdrop ── */
+.proj-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(4, 4, 12, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.proj-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Wrapper — non-scrolling, holds the HUD corners ── */
+.proj-modal-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;   /* ← prevents touching viewport edges */
+}
+
+/* ── Panel — the scrolling content area ── */
+.proj-modal-panel {
+  position: relative;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  scrollbar-width: thin;
+  scrollbar-color: var(--red) var(--surface);
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background var(--theme-transition),
+              border-color var(--theme-transition);
+}
+
+.proj-modal-overlay.open .proj-modal-panel {
+  transform: translateY(0) scale(1);
+}
+
+.proj-modal-panel::-webkit-scrollbar { width: 3px; }
+.proj-modal-panel::-webkit-scrollbar-track { background: var(--surface); }
+.proj-modal-panel::-webkit-scrollbar-thumb { background: var(--red); }
+
+/* ── HUD corners — on the wrapper, always visible, outside panel ── */
+.modal-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.modal-corner-tl { top: -4px;    left: -4px;   border-top: 2px solid var(--red); border-left: 2px solid var(--red); }
+.modal-corner-tr { top: -4px;    right: -4px;  border-top: 2px solid var(--red); border-right: 2px solid var(--red); }
+.modal-corner-bl { bottom: -4px; left: -4px;   border-bottom: 2px solid var(--red); border-left: 2px solid var(--red); }
+.modal-corner-br { bottom: -4px; right: -4px;  border-bottom: 2px solid var(--red); border-right: 2px solid var(--red); }
+
+/* ── Scanline — fires ONCE on open, then disappears ── */
+.proj-modal-scan {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 10, 55, 0.5), transparent);
+  z-index: 9;
+  pointer-events: none;
+  animation: scanSweep 1.4s ease-in-out 1 forwards;
+}
+
+@keyframes scanSweep {
+  0%   { top: 0%;   opacity: 0.9; }
+  85%  { top: 100%; opacity: 0.4; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ── Title band ── */
+.proj-modal-title-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  transition: background var(--theme-transition), border-color var(--theme-transition);
+}
+
+.proj-modal-title-left  { flex: 1; min-width: 0; }
+
+.proj-modal-title {
+  font-family: 'Fira Code', monospace;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 0.35rem;
+}
+
+/* Badges row — kept empty to avoid duplicate tags */
+.proj-modal-badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  min-height: 0;
+}
+
+/* ── Title right — counter + dots + close ── */
+.proj-modal-title-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Close button */
+.proj-modal-close {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.proj-modal-close:hover {
+  color: var(--red);
+  text-shadow: var(--glow-r);
+}
+
+/* Slide counter */
+.modal-slide-counter {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  line-height: 1;
+}
+
+/* Dots — square HUD style */
+.modal-dots {
+  position: absolute;
+  bottom: 0.65rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.modal-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 1px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-dot.active {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: var(--glow-r);
+}
+
+/* ── Carousel ── */
+.proj-modal-carousel {
+  position: relative;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  transition: background var(--theme-transition);
+}
+
+/* Bottom red accent line */
+.proj-modal-carousel::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 10, 55, 0.35), transparent);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.modal-slides {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+/* Slide — max-height instead of forced 16/9 to reduce dead space */
+.modal-slide {
+  min-width: 100%;
+  height: 380px;        /* fixed height, no more ballooning */
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;   /* anchor to top, not center */
+  justify-content: center;
+  background: var(--surface);
+}
+
+.modal-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;   /* show top of screenshot, not middle */
+  display: block;
+}
+
+.modal-dots:has(.modal-dot:only-child) {
+  display: none;
+}
+
+.proj-modal-close svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.5;
+}
+
+/* ── Nav arrows — circle, appear on carousel hover ── */
+.proj-modal-carousel .modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 16, 0.45);
+  border: 1px solid rgba(255, 10, 55, 0.3);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, background 0.2s ease,
+              border-color 0.2s ease, color 0.2s ease,
+              box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.proj-modal-carousel:hover .modal-nav {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.proj-modal-carousel .modal-nav:hover {
+  background: rgba(255, 10, 55, 0.15);
+  border-color: var(--red);
+  color: #fff;
+  box-shadow: var(--glow-r);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.modal-nav-prev { left: 0.85rem; }
+.modal-nav-next { right: 0.85rem; }
+.modal-nav svg  { width: 17px; height: 17px; stroke-width: 2; }
+
+/* ── Zoom button — bottom-right corner of carousel, hover-only ── */
+.modal-zoom-btn {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 16, 0.55);
+  border: 1px solid rgba(255, 10, 55, 0.3);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, background 0.2s ease,
+              border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.proj-modal-carousel:hover .modal-zoom-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-zoom-btn:hover {
+  background: rgba(255, 10, 55, 0.15);
+  border-color: var(--red);
+  color: #fff;
+  box-shadow: var(--glow-r);
+}
+
+.modal-zoom-btn svg { width: 15px; height: 15px; stroke-width: 2; }
+
+/* ── Info section — two-column layout ── */
+.proj-modal-info {
+  padding: 1.25rem 1.5rem 1rem;
+  background: var(--bg);
+  transition: background var(--theme-transition);
+}
+
+.proj-modal-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.proj-modal-info-left,
+.proj-modal-info-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.proj-modal-section-label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--red);
+  text-shadow: var(--glow-r);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.proj-modal-section-label::after {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: rgba(255, 10, 55, 0.4);
+  margin-top: 0.4rem;
+}
+
+.proj-modal-desc {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-soft);
+  margin-bottom: 0;
+}
+
+.proj-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Footer accent bar */
+.proj-modal-footer {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  box-shadow: 0 0 8px var(--red);
+  opacity: 0.5;
+}
+
+/* ════════════════════════════════════
+   LIGHTBOX
+════════════════════════════════════ */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(2, 2, 8, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.lightbox-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lightbox-frame {
+  position: relative;
+  max-width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-frame::before,
+.lightbox-frame::after,
+.lightbox-frame-inner::before,
+.lightbox-frame-inner::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  z-index: 5;
+  pointer-events: none;
+}
+.lightbox-frame::before       { top: -2px;    left: -2px;  border-top: 2px solid var(--red);    border-left: 2px solid var(--red); }
+.lightbox-frame::after        { top: -2px;    right: -2px; border-top: 2px solid var(--red);    border-right: 2px solid var(--red); }
+.lightbox-frame-inner::before { bottom: -2px; left: -2px;  border-bottom: 2px solid var(--red); border-left: 2px solid var(--red); }
+.lightbox-frame-inner::after  { bottom: -2px; right: -2px; border-bottom: 2px solid var(--red); border-right: 2px solid var(--red); }
+
+.lightbox-frame-inner { position: relative; }
+
+.lightbox-img {
+  display: block;
+  max-width: 88vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+  transition: opacity 0.2s ease;
+}
+
+.lightbox-counter {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.lightbox-close,
+.lightbox-nav {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 16, 0.6);
+  border: 1px solid rgba(255, 10, 55, 0.25);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover {
+  background: rgba(255, 10, 55, 0.15);
+  border-color: var(--red);
+  color: #fff;
+  box-shadow: var(--glow-r);
+}
+
+.lightbox-close {
+  top: -2.75rem; left: 0;
+  width: 28px; height: 28px;
+  border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+}
+
+.lightbox-nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px; height: 42px;
+  border-radius: 50%;
+}
+
+.lightbox-nav:hover      { transform: translateY(-50%) scale(1.1); }
+.lightbox-nav-prev       { left: -3.5rem; }
+.lightbox-nav-next       { right: -3.5rem; }
+.lightbox-nav svg,
+.lightbox-close svg      { width: 16px; height: 16px; stroke-width: 2; }
+.lightbox-overlay.single .lightbox-nav { display: none; }
+
+/* ════════════════════════════════════
+   RESPONSIVE — Modal & Lightbox
+════════════════════════════════════ */
+@media (max-width: 640px) {
+  .proj-modal-info-grid  { grid-template-columns: 1fr; gap: 1rem; }
+  .proj-modal-panel      { max-height: 95vh; }
+  .proj-modal-title-band { padding: 0.85rem 1rem; }
+  .proj-modal-info       { padding: 1rem; }
+  .proj-modal-title      { font-size: 0.8rem; }
+  .lightbox-nav-prev     { left: -2.5rem; }
+  .lightbox-nav-next     { right: -2.5rem; }
+  .lightbox-nav          { width: 36px; height: 36px; }
+}

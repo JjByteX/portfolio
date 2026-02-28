@@ -1,10 +1,7 @@
 /* ─── VANTA.JS ───────────────────────────────────────────
    One NET instance on #vanta-bg.
-   On theme change: destroy the old one, create a new one
-   with the correct backgroundColor. One context at a time
-   — this won't crash.
+   On theme change: destroy + recreate with correct bg color.
 ──────────────────────────────────────────────────────── */
-
 const VANTA_COLORS = {
   dark:  { bg: 0x080810, net: 0x7744dd },
   light: { bg: 0xf0eef8, net: 0x7744dd },
@@ -20,7 +17,6 @@ function startVanta() {
   const el = document.getElementById('vanta-bg');
   if (!el) return;
 
-  // Destroy existing first
   if (vantaEffect) {
     vantaEffect.destroy();
     vantaEffect = null;
@@ -34,8 +30,8 @@ function startVanta() {
     mouseControls: false,
     touchControls: false,
     gyroControls:  false,
-    minHeight: 200,
-    minWidth:  200,
+    minHeight:       200,
+    minWidth:        200,
     backgroundColor: colors.bg,
     color:           colors.net,
     points:          6,
@@ -50,15 +46,11 @@ function initVanta() {
     console.warn('Vanta or Three.js not loaded');
     return;
   }
-
   startVanta();
-
-  // Watch for theme changes — destroy + recreate with correct bg
-  new MutationObserver(startVanta)
-    .observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
+  new MutationObserver(startVanta).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
 }
 
 window.addEventListener('load', initVanta);
