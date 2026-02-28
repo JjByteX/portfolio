@@ -470,9 +470,6 @@
   color: var(--muted);
 }
 
-#ghChart rect {
-  transition: fill 0.4s ease;
-}
 
 .github-graph-wrap {
   width: 100%;
