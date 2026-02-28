@@ -13,16 +13,18 @@ function isDark() {
   return document.documentElement.getAttribute('data-theme') !== 'light';
 }
 
+// AFTER
 function startVanta() {
   const el = document.getElementById('vanta-bg');
   if (!el) return;
 
-  if (vantaEffect) {
-    vantaEffect.destroy();
-    vantaEffect = null;
-  }
-
   const colors = isDark() ? VANTA_COLORS.dark : VANTA_COLORS.light;
+
+  if (vantaEffect) {
+    // Just update color — no destroy/recreate
+    vantaEffect.setOptions({ backgroundColor: colors.bg });
+    return;
+  }
 
   vantaEffect = VANTA.NET({
     el,
