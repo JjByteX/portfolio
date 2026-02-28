@@ -52,8 +52,10 @@ function tintEmptySquares(isDark) {
 
 // ← Only re-tint, NEVER re-fetch
 new MutationObserver(() => {
-  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  tintEmptySquares(isDark);
+  requestAnimationFrame(() => {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    tintEmptySquares(isDark);
+  });
 }).observe(document.documentElement, {
   attributes: true,
   attributeFilter: ['data-theme'],
