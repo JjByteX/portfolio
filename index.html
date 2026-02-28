@@ -373,13 +373,46 @@
                 <span class="clock-tz">UTC+8</span>
               </div>
             </div>
-          <div class="github-graph-wrap">
-<div id="ghChart" style="width:100%; line-height:0;"></div>
-          </div>
+<div class="github-graph-wrap" id="ghChartWrap" style="cursor:pointer; position:relative;" title="Click to expand">
+  <div class="proj-img-overlay" aria-hidden="true">
+    <span class="proj-img-overlay-text">[ VIEW ]</span>
+  </div>
+  <div id="ghChart" style="width:100%; line-height:0;"></div>
+</div>
+
           </div>
         </div>
       </div>
     </section>
+
+<!-- ─── GITHUB CHART MODAL ───────────────────────── -->
+    <div id="ghModal" class="proj-modal-overlay" role="dialog" aria-modal="true" aria-label="GitHub activity fullscreen">
+      <div class="proj-modal-wrapper" style="max-width: 980px;">
+        <span class="modal-corner modal-corner-tl" aria-hidden="true"></span>
+        <span class="modal-corner modal-corner-tr" aria-hidden="true"></span>
+        <span class="modal-corner modal-corner-bl" aria-hidden="true"></span>
+        <span class="modal-corner modal-corner-br" aria-hidden="true"></span>
+        <div class="proj-modal-panel">
+          <div class="proj-modal-scan" aria-hidden="true"></div>
+          <div class="proj-modal-title-band">
+            <div class="proj-modal-title-left">
+              <h3 class="proj-modal-title">GITHUB ACTIVITY</h3>
+              <div class="proj-modal-badges">
+                <span class="proj-tag highlight">@JjByteX</span>
+                <span class="proj-tag">last 12 months</span>
+              </div>
+            </div>
+            <button class="proj-modal-close" id="ghModalClose" aria-label="Close modal">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <div style="padding: 1.5rem; background: var(--bg);">
+            <div id="ghChartLarge"></div>
+          </div>
+          <div class="proj-modal-footer"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- ─── FOOTER ────────────────────────────────────── -->
     <footer>

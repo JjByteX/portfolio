@@ -474,6 +474,12 @@
 .github-graph-wrap {
   width: 100%;
   overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+
+#ghChartWrap:hover {
+  border-color: var(--red);
 }
 
 
@@ -1046,4 +1052,34 @@
   .lightbox-nav-prev     { left: -2.5rem; }
   .lightbox-nav-next     { right: -2.5rem; }
   .lightbox-nav          { width: 36px; height: 36px; }
+}
+
+/* ════════════════════════════════════
+   GITHUB CHART MODAL
+════════════════════════════════════ */
+#ghChartLarge svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.github-graph-wrap {
+  position: relative;
+}
+
+.github-graph-wrap .proj-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 6, 14, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+#ghChartWrap:hover .proj-img-overlay {
+  opacity: 1;
 }

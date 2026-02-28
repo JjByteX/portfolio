@@ -62,3 +62,38 @@ new MutationObserver(() => {
 });
 
 loadGhChart();
+
+// ── Chart expand modal ──
+document.getElementById('ghChartWrap')?.addEventListener('click', () => {
+  const src = document.querySelector('#ghChart svg');
+  const dest = document.getElementById('ghChartLarge');
+  const modal = document.getElementById('ghModal');
+  if (!src || !dest || !modal) return;
+
+  // Clone the SVG into the modal
+  dest.innerHTML = '';
+  const clone = src.cloneNode(true);
+  clone.style.width = '100%';
+  clone.style.height = 'auto';
+  dest.appendChild(clone);
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (typeof lucide !== 'undefined') lucide.createIcons({ nodes: [modal] });
+  document.addEventListener('keydown', onGhModalKey);
+});
+
+document.getElementById('ghModalClose')?.addEventListener('click', closeGhModal);
+document.getElementById('ghModal')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('ghModal')) closeGhModal();
+});
+
+function closeGhModal() {
+  document.getElementById('ghModal')?.classList.remove('open');
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', onGhModalKey);
+}
+
+function onGhModalKey(e) {
+  if (e.key === 'Escape') closeGhModal();
+}
