@@ -43,6 +43,46 @@
   display: none;
 }
 
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(-101%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+}
+
+.btn:hover::after {
+  transform: translateX(0);
+}
+
+.btn span, .btn-label {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary:hover {
+  background: #ff2248;
+  box-shadow: 0 0 20px #ff0a37, 0 0 50px #ff0a3744;
+  letter-spacing: 0.18em;
+  transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  box-shadow: var(--glow-c);
+}
+
+.btn-outline:hover {
+  background: rgba(0, 240, 255, 0.06);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25), 0 0 50px rgba(0, 240, 255, 0.1);
+  letter-spacing: 0.18em;
+  transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
 /* ── Buttons ── */
 .btn {
   font-family: var(--font-h);

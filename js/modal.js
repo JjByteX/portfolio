@@ -109,12 +109,14 @@
     document.addEventListener('keydown', onModalKey);
   }
 
-  function closeModal() {
-    overlay.classList.remove('open');
+function closeModal() {
+  const overlay = document.getElementById('projModal');
+  overlay.classList.add('closing');
+  setTimeout(() => {
+    overlay.classList.remove('open', 'closing');
     document.body.style.overflow = '';
-    document.removeEventListener('keydown', onModalKey);
-    closeLightbox();
-  }
+  }, 320);
+}
 
   function onModalKey(e) {
     if (e.key === 'Escape') { closeModal(); return; }

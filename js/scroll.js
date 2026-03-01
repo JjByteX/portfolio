@@ -20,7 +20,7 @@ function initScrollReveal() {
     { threshold: 0.12 }
   );
 
-  document.querySelectorAll('.fade-up').forEach((el) => {
+  document.querySelectorAll('.fade-up, .blur-in, .skew-in, .wipe-in').forEach((el) => {
     observer.observe(el);
   });
 }

@@ -89,9 +89,14 @@ document.getElementById('ghModal')?.addEventListener('click', (e) => {
 });
 
 function closeGhModal() {
-  document.getElementById('ghModal')?.classList.remove('open');
-  document.body.style.overflow = '';
-  document.removeEventListener('keydown', onGhModalKey);
+  const overlay = document.getElementById('ghModal');
+  if (!overlay) return;
+  overlay.classList.add('closing');
+  setTimeout(() => {
+    overlay.classList.remove('open', 'closing');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onGhModalKey);
+  }, 320);
 }
 
 function onGhModalKey(e) {
