@@ -171,10 +171,17 @@ function initCursor() {
   document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
   document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
 
-  document.addEventListener('mouseleave', () => {
-    dot.style.opacity  = '0';
+document.addEventListener('mouseout', (e) => {
+  if (!e.relatedTarget) {
+    dot.style.opacity = '0';
     ring.style.opacity = '0';
-  });
+  }
+});
+
+document.addEventListener('mouseover', () => {
+  dot.style.opacity = '1';
+  ring.style.opacity = '1';
+});
   document.addEventListener('mouseenter', () => {
     dot.style.opacity  = '1';
     ring.style.opacity = '1';
