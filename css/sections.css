@@ -616,7 +616,8 @@
 
 .proj-modal-overlay.closing .proj-modal-panel {
   opacity: 0;
-  transition: opacity 0.32s ease;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.32s ease, transform 0s;
 }
 
 .proj-modal-panel::-webkit-scrollbar { width: 3px; }
