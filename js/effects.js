@@ -162,30 +162,26 @@ function initCursor() {
   })();
 
   // Hover state on interactive elements
-  const hoverEls = 'a, button, [data-modal], .chip, .proj-filter-btn, .social-item, .contact-link, #ghChartWrap';
-  document.querySelectorAll(hoverEls).forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-  });
+// Hover state on interactive elements
+const hoverEls = 'a, button, [data-modal], .chip, .proj-filter-btn, .social-item, .contact-link, #ghChartWrap';
 
-  document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-  document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
+document.querySelectorAll(hoverEls).forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
 
 document.addEventListener('mouseout', (e) => {
   if (!e.relatedTarget) {
-    dot.style.opacity = '0';
-    ring.style.opacity = '0';
+    document.body.classList.add('cursor-hidden');
   }
 });
 
 document.addEventListener('mouseover', () => {
-  dot.style.opacity = '1';
-  ring.style.opacity = '1';
+  document.body.classList.remove('cursor-hidden');
 });
-  document.addEventListener('mouseenter', () => {
-    dot.style.opacity  = '1';
-    ring.style.opacity = '1';
-  });
 }
 
 // ── INIT ──────────────────────────────────────────────
