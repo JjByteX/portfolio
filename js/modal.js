@@ -105,7 +105,12 @@
 
     buildCarousel(imgs.length ? imgs : []);
     overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    const panel = document.getElementById('projModalPanel');
+    requestAnimationFrame(() => {
+      if (panel && panel.scrollHeight > panel.clientHeight) {
+        document.body.style.overflow = 'hidden';
+      }
+    });
     document.addEventListener('keydown', onModalKey);
   }
 
@@ -113,8 +118,9 @@ function closeModal() {
   const overlay = document.getElementById('projModal');
   overlay.classList.add('closing');
   setTimeout(() => {
-    overlay.classList.remove('open', 'closing');
-    document.body.style.overflow = '';
+overlay.classList.remove('open', 'closing');
+document.body.style.overflow = '';
+document.documentElement.style.overflow = '';
   }, 380);
 }
 
