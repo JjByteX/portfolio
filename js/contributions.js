@@ -96,7 +96,7 @@ function closeGhModal() {
     overlay.classList.remove('open', 'closing');
     document.body.style.overflow = '';
     document.removeEventListener('keydown', onGhModalKey);
-  }, 320);
+  }, 380);
 }
 
 function onGhModalKey(e) {

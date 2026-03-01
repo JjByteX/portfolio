@@ -115,7 +115,7 @@ function closeModal() {
   setTimeout(() => {
     overlay.classList.remove('open', 'closing');
     document.body.style.overflow = '';
-  }, 320);
+  }, 380);
 }
 
   function onModalKey(e) {
