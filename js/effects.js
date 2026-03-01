@@ -154,8 +154,8 @@ function initCursor() {
 
   // Ring follows with lerp
   (function lerp() {
-    rx += (mx - rx) * 0.14;
-    ry += (my - ry) * 0.14;
+    rx += (mx - rx) * 0.28;
+    ry += (my - ry) * 0.28;
     ring.style.left = rx + 'px';
     ring.style.top  = ry + 'px';
     requestAnimationFrame(lerp);
