@@ -106,15 +106,6 @@
     buildCarousel(imgs.length ? imgs : []);
 overlay.classList.add('open');
 const panel = document.getElementById('projModalPanel');
-setTimeout(() => {
-  if (!panel) return;
-  if (panel.scrollHeight > panel.clientHeight) {
-    panel.classList.add('scrollable');
-  } else {
-    panel.classList.remove('scrollable');
-    panel.style.overflowY = 'hidden';
-  }
-}, 50);
     document.addEventListener('keydown', onModalKey);
   }
 

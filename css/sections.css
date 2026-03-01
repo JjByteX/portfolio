@@ -598,8 +598,6 @@
   overflow-x: hidden;
   background: var(--bg);
   border: 1px solid var(--border);
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
   transform: translateY(20px) scale(0.98);
   opacity: 0;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -608,9 +606,6 @@
               border-color var(--theme-transition);
 }
 
-.proj-modal-panel.scrollable {
-  overflow-y: auto;
-}
 
 .proj-modal-overlay.open .proj-modal-panel {
   transform: translateY(0) scale(1);
@@ -621,12 +616,6 @@
   transition: none;
 }
 
-.proj-modal-panel::-webkit-scrollbar { width: 3px; }
-.proj-modal-panel::-webkit-scrollbar-track { background: transparent; }
-.proj-modal-panel::-webkit-scrollbar-thumb { background: transparent; }
-.proj-modal-panel.scrollable::-webkit-scrollbar-track { background: var(--surface); }
-.proj-modal-panel.scrollable::-webkit-scrollbar-thumb { background: var(--red); }
-.proj-modal-panel.scrollable { scrollbar-color: var(--red) var(--surface); }
 
 /* ── HUD corners — on the wrapper, always visible, outside panel ── */
 .modal-corner {
