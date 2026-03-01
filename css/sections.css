@@ -78,27 +78,6 @@
   flex-wrap: wrap;
 }
 
-.hero-scroll {
-  position: absolute;
-  bottom: 3rem;
-  left: 2rem;
-  font-family: var(--font-m);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.hero-scroll::after {
-  content: '';
-  display: inline-block;
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(to bottom, var(--muted), transparent);
-  animation: scrollPulse 1.8s ease-in-out infinite;
-}
 
 /* ════════════════════════════════════
    ABOUT
