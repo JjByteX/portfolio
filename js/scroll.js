@@ -33,14 +33,19 @@ function initNavActiveState() {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
 
-  function updateActiveLink() {
-    let currentId = '';
+function updateActiveLink() {
+  let currentId = '';
+  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
 
+  if (nearBottom) {
+    currentId = sections[sections.length - 1].id;
+  } else {
     sections.forEach((section) => {
       if (window.scrollY >= section.offsetTop - 120) {
         currentId = section.id;
       }
     });
+  }
 
     navLinks.forEach((link) => {
       const isActive = link.getAttribute('href') === `#${currentId}`;
