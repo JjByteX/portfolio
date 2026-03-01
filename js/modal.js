@@ -104,13 +104,17 @@
     });
 
     buildCarousel(imgs.length ? imgs : []);
-    overlay.classList.add('open');
-    const panel = document.getElementById('projModalPanel');
-    requestAnimationFrame(() => {
-      if (panel && panel.scrollHeight > panel.clientHeight) {
-        document.body.style.overflow = 'hidden';
-      }
-    });
+overlay.classList.add('open');
+const panel = document.getElementById('projModalPanel');
+setTimeout(() => {
+  if (!panel) return;
+  if (panel.scrollHeight > panel.clientHeight) {
+    panel.classList.add('scrollable');
+  } else {
+    panel.classList.remove('scrollable');
+    panel.style.overflowY = 'hidden';
+  }
+}, 50);
     document.addEventListener('keydown', onModalKey);
   }
 
@@ -121,6 +125,8 @@ function closeModal() {
 overlay.classList.remove('open', 'closing');
 document.body.style.overflow = '';
 document.documentElement.style.overflow = '';
+const panel = document.getElementById('projModalPanel');
+if (panel) { panel.style.overflowY = ''; panel.classList.remove('scrollable'); }
   }, 380);
 }
 

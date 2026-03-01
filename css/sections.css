@@ -594,7 +594,7 @@
 .proj-modal-panel {
   position: relative;
   width: 100%;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -608,8 +608,8 @@
               border-color var(--theme-transition);
 }
 
-.proj-modal-panel:hover {
-  scrollbar-color: var(--red) var(--surface);
+.proj-modal-panel.scrollable {
+  overflow-y: auto;
 }
 
 .proj-modal-overlay.open .proj-modal-panel {
@@ -622,8 +622,11 @@
 }
 
 .proj-modal-panel::-webkit-scrollbar { width: 3px; }
-.proj-modal-panel::-webkit-scrollbar-track { background: var(--surface); }
-.proj-modal-panel::-webkit-scrollbar-thumb { background: var(--red); }
+.proj-modal-panel::-webkit-scrollbar-track { background: transparent; }
+.proj-modal-panel::-webkit-scrollbar-thumb { background: transparent; }
+.proj-modal-panel.scrollable::-webkit-scrollbar-track { background: var(--surface); }
+.proj-modal-panel.scrollable::-webkit-scrollbar-thumb { background: var(--red); }
+.proj-modal-panel.scrollable { scrollbar-color: var(--red) var(--surface); }
 
 /* ── HUD corners — on the wrapper, always visible, outside panel ── */
 .modal-corner {
@@ -1076,7 +1079,6 @@
 ════════════════════════════════════ */
 @media (max-width: 640px) {
   .proj-modal-info-grid  { grid-template-columns: 1fr; gap: 1rem; }
-  .proj-modal-panel      { max-height: 95vh; }
   .proj-modal-title-band { padding: 0.85rem 1rem; }
   .proj-modal-info       { padding: 1rem; }
   .proj-modal-title      { font-size: 0.8rem; }
