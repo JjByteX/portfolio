@@ -594,19 +594,22 @@
 .proj-modal-panel {
   position: relative;
   width: 100%;
-  max-height: 88vh;
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--bg);
   border: 1px solid var(--border);
   scrollbar-width: thin;
-  scrollbar-color: var(--red) var(--surface);
+  scrollbar-color: transparent transparent;
   transform: translateY(20px) scale(0.98);
   opacity: 0;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.35s ease,
               background var(--theme-transition),
               border-color var(--theme-transition);
+}
+
+.proj-modal-panel:hover {
+  scrollbar-color: var(--red) var(--surface);
 }
 
 .proj-modal-overlay.open .proj-modal-panel {
