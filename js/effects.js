@@ -230,10 +230,11 @@ const NO_BLINK = new Set([
     const WTF_WORDS = ['WTF', '???', 'HUH', '!!!', 'OOF', 'NOPE', 'BAKA'];
 
     // ── State vars ────────────────────────────────────────────────────
-    let current    = 's-happy';
+let current    = 's-happy';
     let isReacting = false;
     let isIdle     = false;
     let isPonging  = false;
+    let isBlinded  = false; // true the entire time light mode is active
     let idleTimer  = null;
     let pongTimer  = null;
     let autoTimer  = null;
@@ -254,8 +255,8 @@ const NO_BLINK = new Set([
       face.classList.add(current);
     }
 
-    function reactFor(state, duration, returnTo = 's-eager') {
-      if (isReacting) return;
+function reactFor(state, duration, returnTo = 's-eager') {
+      if (isReacting || isBlinded) return;
       isReacting = true;
       clearTimeout(autoTimer);
       setState(state);
@@ -413,10 +414,10 @@ if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin' 
     }
 
     // ── Auto-cycle ────────────────────────────────────────────────────
-    function scheduleAuto() {
+function scheduleAuto() {
       clearTimeout(autoTimer);
       autoTimer = setTimeout(() => {
-        if (isReacting || isIdle) { scheduleAuto(); return; }
+        if (isReacting || isIdle || isBlinded) { scheduleAuto(); return; }
 
         const roll = Math.random();
 
@@ -586,9 +587,8 @@ eyeTargetX  = 0;
 let peekTimer   = null;
     let fromNav     = false; // true while cursor is over nav or just left it
 
-    function peekAt(state, duration = 1200) {
-      // Don't interrupt real reactions or pong
-      if (isReacting || isPonging) return;
+function peekAt(state, duration = 1200) {
+      if (isReacting || isPonging || isBlinded) return;
       clearTimeout(peekTimer);
       clearState();
       current = state;
@@ -637,10 +637,61 @@ document.querySelector('a[href="#contact"].btn')
     // ── Theme toggle ──────────────────────────────────────────────────
 document.getElementById('themeToggle')?.addEventListener('click', () => {
       const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
+
       if (nowLight) {
-        reactFor('s-blinded', 1800, 's-sad');
+        isBlinded  = true;
+        isReacting = true;
+        clearTimeout(autoTimer);
+
+        // Step 1 — WTF flash first, like the brightness broke his brain
+        const word = WTF_WORDS[Math.floor(Math.random() * WTF_WORDS.length)];
+        clearState();
+        face.classList.add('s-wtf');
+        current = 's-wtf';
+        text.textContent = word;
+
+        // Step 2 — snap to blinded
+        setTimeout(() => {
+          glitch(() => setState('s-blinded'));
+
+// Step 3 — blink burst after holding the grimace
+          setTimeout(() => {
+            // Switch to squint — eyes recovering but not fully open yet
+            setState('s-squint');
+            let blinks = 0;
+            const blinkBurst = setInterval(() => {
+              face.classList.add('blinking');
+              setTimeout(() => face.classList.remove('blinking'), 60);
+              blinks++;
+              if (blinks >= 4) {
+                clearInterval(blinkBurst);
+
+                // Step 4 — return to annoyed on his own, unlock
+                setTimeout(() => {
+                  isReacting = false;
+                  isBlinded  = false;
+                  glitch(() => setState('s-annoyed'));
+                  setTimeout(() => {
+                    setState('s-sad');
+                    scheduleAuto();
+                  }, 1400);
+                }, 400);
+              }
+            }, 180);
+          }, 1200);
+
+        }, 600);
+
       } else {
-        reactFor('s-pleased', 900, 's-sad');
+        // Dark mode restored — relief
+        isBlinded  = false;
+        isReacting = false;
+        clearTimeout(autoTimer);
+        setState('s-pleased');
+        setTimeout(() => {
+          setState('s-sad');
+          scheduleAuto();
+        }, 900);
       }
     });
 

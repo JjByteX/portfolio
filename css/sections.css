@@ -1191,20 +1191,121 @@
   position: relative;
   background: var(--text);
   box-shadow: 0 0 10px rgba(226, 226, 240, 0.6);
-  /* Explicit properties — 'all' catches border-radius, width, height, border */
+  isolation: isolate;
   transition:
-    width        0.12s cubic-bezier(0.16, 1, 0.3, 1),
-    height       0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    width         0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    height        0.12s cubic-bezier(0.16, 1, 0.3, 1),
     border-radius 0.12s cubic-bezier(0.16, 1, 0.3, 1),
-    background   0.1s ease,
-    border       0.1s ease,
-    box-shadow   0.1s ease;
-  width: 100%;
-  height: 100%;
+    background    0.1s ease,
+    border        0.1s ease,
+    box-shadow    0.1s ease;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
 }
 
 .hf-eye-l { left: 52px;  top: 78px; }
 .hf-eye-r { right: 52px; top: 78px; }
+
+/* ── CRT subpixel grid + chromatic aberration on eyes ── */
+
+/* Eye CRT — only solid filled pupils, never border-only arcs
+   Excluded: s-grin, s-pleased, s-squint, s-annoyed, s-thinking,
+             s-wink, s-sad, s-surprised (border circle), s-sleepy  */
+#heroFace.s-happy .hf-pupil::before,
+#heroFace.s-eager .hf-pupil::before,
+#heroFace.s-smile .hf-pupil::before,
+#heroFace.s-nervous .hf-pupil::before,
+#heroFace.s-starstruck .hf-pupil::before,
+#heroFace.s-dead .hf-pupil::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0, 0, 0, 0.18) 2px, rgba(0, 0, 0, 0.18) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent, transparent 2px,
+      rgba(0, 0, 0, 0.18) 2px, rgba(0, 0, 0, 0.18) 3px
+    );
+  border-radius: inherit;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+#heroFace.s-happy .hf-pupil::after,
+#heroFace.s-eager .hf-pupil::after,
+#heroFace.s-smile .hf-pupil::after,
+#heroFace.s-nervous .hf-pupil::after,
+#heroFace.s-starstruck .hf-pupil::after,
+#heroFace.s-dead .hf-pupil::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  border-radius: inherit;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  box-shadow:
+    -2px 0 0 1px rgba(255, 30, 30, 0.5),
+     2px 0 0 1px rgba(30, 80, 255, 0.5);
+  filter: blur(0.6px);
+}
+
+/* Mouth CRT — only on solid filled mouths, never on border-only arcs */
+#heroFace.s-grin .hf-mouth::before,
+#heroFace.s-blinded .hf-mouth::before,
+#heroFace.s-dead .hf-mouth::before,
+#heroFace.s-annoyed .hf-mouth::before,
+#heroFace.s-pleased .hf-mouth::before,
+#heroFace.s-sleepy .hf-mouth::before,
+#heroFace.s-thinking .hf-mouth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent, transparent 2px,
+      rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 3px
+    );
+  border-radius: inherit;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+#heroFace.s-grin .hf-mouth::after,
+#heroFace.s-blinded .hf-mouth::after,
+#heroFace.s-dead .hf-mouth::after,
+#heroFace.s-annoyed .hf-mouth::after,
+#heroFace.s-pleased .hf-mouth::after,
+#heroFace.s-sleepy .hf-mouth::after,
+#heroFace.s-thinking .hf-mouth::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow:
+    -2px 0 0 1px rgba(255, 30, 30, 0.4),
+     2px 0 0 1px rgba(30, 80, 255, 0.4);
+  filter: blur(0.5px);
+  mix-blend-mode: screen;
+}
 
 /* ── Mouth & Text ── */
 .hf-mouth {
@@ -1296,57 +1397,88 @@
 #heroFace.s-wink .hf-eye-r .hf-pupil { width: 26px; height: 3px; border-radius: 2px; }
 #heroFace.s-wink .hf-mouth { width: 54px; height: 12px; border-radius: 0 0 54px 54px; background: none; border: 2px solid var(--text); border-top: none; box-shadow: none; bottom: 72px; }
 
-/* s-blinded — > < chevron eyes (V mouth rotated), wide rectangle grimace */
 
-/* Pupil becomes the V container, rotated sideways */
-#heroFace.s-blinded .hf-eye-l .hf-pupil {
-  width: 30px;
-  height: 10px;
+/* s-blinded — > < chevron eyes anchored from tip, wide grimace */
+
+/* Override the eye wrapper to be bigger and repositioned */
+#heroFace.s-blinded .hf-eye-l {
+  width: 64px;
+  height: 52px;
+  left: 20px;
+  top: 68px;
+}
+#heroFace.s-blinded .hf-eye-r {
+  width: 64px;
+  height: 52px;
+  right: 20px;
+  top: 68px;
+}
+
+#heroFace.s-blinded .hf-pupil {
+  width: 100%;
+  height: 100%;
   background: none;
   border: none;
   box-shadow: none;
   border-radius: 0;
-  transform: rotate(-90deg); /* V → > */
-}
-#heroFace.s-blinded .hf-eye-r .hf-pupil {
-  width: 30px;
-  height: 10px;
-  background: none;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-  transform: rotate(90deg); /* V → < */
 }
 
-/* Exact same arms as the V mouth */
-#heroFace.s-blinded .hf-pupil::before,
-#heroFace.s-blinded .hf-pupil::after {
+/* > left eye — both arms pivot from RIGHT (the point) */
+#heroFace.s-blinded .hf-eye-l .hf-pupil::before,
+#heroFace.s-blinded .hf-eye-l .hf-pupil::after {
   content: '';
   position: absolute;
-  width: 21px;
-  height: 4.5px;
+  width: 38px;
+  height: 6px;
   background: var(--text);
-  border-radius: 2px;
-  top: 0;
-}
-#heroFace.s-blinded .hf-pupil::before {
-  left: 0;
-  transform-origin: 0% 50%;
-  transform: rotate(45deg);
-}
-#heroFace.s-blinded .hf-pupil::after {
+  border-radius: 3px;
   right: 0;
+}
+#heroFace.s-blinded .hf-eye-l .hf-pupil::before {
+  top: 50%;
+  margin-top: -3px;
   transform-origin: 100% 50%;
-  transform: rotate(-45deg);
+  transform: rotate(32deg);
+}
+#heroFace.s-blinded .hf-eye-l .hf-pupil::after {
+  bottom: auto;
+  top: 50%;
+  margin-top: -3px;
+  transform-origin: 100% 50%;
+  transform: rotate(-32deg);
 }
 
+/* < right eye — both arms pivot from LEFT (the point) */
+#heroFace.s-blinded .hf-eye-r .hf-pupil::before,
+#heroFace.s-blinded .hf-eye-r .hf-pupil::after {
+  content: '';
+  position: absolute;
+  width: 38px;
+  height: 6px;
+  background: var(--text);
+  border-radius: 3px;
+  left: 0;
+}
+#heroFace.s-blinded .hf-eye-r .hf-pupil::before {
+  top: 50%;
+  margin-top: -3px;
+  transform-origin: 0% 50%;
+  transform: rotate(-32deg);
+}
+#heroFace.s-blinded .hf-eye-r .hf-pupil::after {
+  bottom: auto;
+  top: 50%;
+  margin-top: -3px;
+  transform-origin: 0% 50%;
+  transform: rotate(32deg);
+}
 /* Wide rectangle grimace */
 #heroFace.s-blinded .hf-mouth {
-  width: 96px;
-  height: 10px;
+  width: 86px;
+  height: 34px;
   border-radius: 3px;
   background: var(--text);
-  bottom: 62px;
+  bottom: 52px;
   border: none;
   box-shadow: none;
 }
