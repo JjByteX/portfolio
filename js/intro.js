@@ -407,11 +407,11 @@
       dismiss(robot);
     };
 
-    // Start fading the overlay mid-flight
+// Start fading the overlay late in the flight, after robot nears face
     setTimeout(() => {
-      overlay.style.transition = 'opacity 0.4s ease';
+      overlay.style.transition = 'opacity 0.25s ease';
       overlay.style.opacity    = '0';
-    }, 600);
+    }, 920);
   }
 
   /* ═══════════════════════════════════

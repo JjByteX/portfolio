@@ -1307,6 +1307,26 @@
 #heroFace.s-wtf .hf-pupil,
 #heroFace.s-wtf .hf-mouth { opacity: 0; }
 #heroFace.s-wtf .hf-text  { opacity: 1; }
+/* ════════════════════════════════════
+   HERO FACE — PHYSICAL ANIMATIONS
+   Base layer: asymmetric breathing loop (never stops).
+   Reactions: handled by Web Animations API in JS — no CSS classes needed.
+   This avoids the CSS infinite vs forwards conflict entirely.
+════════════════════════════════════ */
+
+/* Base layer — slow inhale (longer), quick exhale (shorter).
+   Asymmetric timing is what makes breathing feel biological. */
+@keyframes hfBreathe {
+  0%   { transform: translateY(0px)  scaleX(1)     scaleY(1);    }
+  38%  { transform: translateY(-3px) scaleX(0.98)  scaleY(1.02); }
+  55%  { transform: translateY(-4px) scaleX(0.985) scaleY(1.018);}
+  72%  { transform: translateY(-2px) scaleX(0.992) scaleY(1.01); }
+  100% { transform: translateY(0px)  scaleX(1)     scaleY(1);    }
+}
+
+#heroFace.hf-idle-breathe {
+  animation: hfBreathe 3.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
 
 
 /* ════════════════════════════════════

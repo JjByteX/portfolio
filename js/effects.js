@@ -307,7 +307,8 @@ function initHeroFace() {
 
       isCrossZone = (Math.abs(dx) < 42 && dy > -70 && dy < 20 && dist < 88);
 
-      if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin') {
+if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin') {
+triggerFaceAnim(ANIM_TREMBLE, 550);
         reactFor('s-grin', 900, 's-eager');
         return;
       }
@@ -389,13 +390,14 @@ function initHeroFace() {
           return;
         }
 
-        if (roll < 0.09) {
-          glitch(() => {
-            isReacting = true;
-            text.textContent = WTF_WORDS[Math.floor(Math.random() * WTF_WORDS.length)];
-            clearState();
-            face.classList.add('s-wtf');
-            current = 's-wtf';
+if (roll < 0.09) {
+  glitch(() => {
+    isReacting = true;
+    const word = WTF_WORDS[Math.floor(Math.random() * WTF_WORDS.length)];
+    clearState();
+    face.classList.add('s-wtf');
+    current = 's-wtf';
+    text.textContent = word;  // ← set AFTER clearState, not before
             setTimeout(() => {
               isReacting = false;
               glitch(() => setState('s-eager'));
@@ -418,9 +420,84 @@ function initHeroFace() {
       }, 3200 + Math.random() * 2800);
     }
 
+// ── Physical face animations ──────────────────────────────────────
+// Uses Web Animations API for one-shots — runs completely separately
+// from the CSS breathing loop, so they never conflict.
+// A cooldown flag prevents rapid cursor swipes from stacking reactions.
+
+let faceAnimCooldown = false;
+let faceAnimPlayer   = null; // current one-shot player
+
+function triggerFaceAnim(keyframes, duration, easing = 'cubic-bezier(0.16,1,0.3,1)') {
+  if (faceAnimCooldown) return;
+  faceAnimCooldown = true;
+
+  // Cancel any in-progress one-shot cleanly
+  if (faceAnimPlayer) {
+    faceAnimPlayer.cancel();
+    faceAnimPlayer = null;
+  }
+
+  faceAnimPlayer = face.animate(keyframes, {
+    duration,
+    easing,
+    fill: 'none', // never hold end state — let the CSS breathe loop take over
+  });
+
+  faceAnimPlayer.onfinish = () => {
+    faceAnimPlayer = null;
+  };
+
+  // Cooldown window — ignore rapid re-triggers during this time
+  setTimeout(() => { faceAnimCooldown = false; }, duration * 0.6);
+}
+
+// Keyframe sets — proper anticipation → action → settle arcs
+const ANIM_LUNGE = [
+  // Anticipation: lean back slightly first
+  { transform: 'translate(0,0)          scaleX(1)    scaleY(1)',    offset: 0    },
+  { transform: 'translate(-4px, 2px)    scaleX(0.95) scaleY(1.05)', offset: 0.1  },
+  // Action: lunge forward with squash
+  { transform: 'translate(12px, -8px)   scaleX(1.1)  scaleY(0.9)',  offset: 0.32 },
+  // First overshoot settle
+  { transform: 'translate(7px, -5px)    scaleX(0.97) scaleY(1.03)', offset: 0.52 },
+  // Second smaller overshoot
+  { transform: 'translate(4px, -3px)    scaleX(1.01) scaleY(0.99)', offset: 0.68 },
+  { transform: 'translate(1px, -1px)    scaleX(1)    scaleY(1)',    offset: 0.84 },
+  { transform: 'translate(0,0)          scaleX(1)    scaleY(1)',    offset: 1    },
+];
+
+const ANIM_TREMBLE = [
+  // Not random noise — a clear held-breath pattern.
+  // Three beats of compression, each smaller, like coiling then releasing.
+  { transform: 'translate(0,0)           scaleX(1)    scaleY(1)',    offset: 0    },
+  { transform: 'translate(0, -2px)       scaleX(1.04) scaleY(0.97)', offset: 0.12 },
+  { transform: 'translate(-4px, -2px)    scaleX(0.97) scaleY(1.03)', offset: 0.24 },
+  { transform: 'translate(4px, -3px)     scaleX(1.03) scaleY(0.97)', offset: 0.36 },
+  { transform: 'translate(-3px, -2px)    scaleX(0.98) scaleY(1.02)', offset: 0.48 },
+  { transform: 'translate(3px, -2px)     scaleX(1.02) scaleY(0.98)', offset: 0.60 },
+  { transform: 'translate(-1px, -1px)    scaleX(0.99) scaleY(1.01)', offset: 0.76 },
+  { transform: 'translate(0,0)           scaleX(1)    scaleY(1)',    offset: 1    },
+];
+
+const ANIM_WILT = [
+  // Gravity pulls it down, one secondary bounce at the bottom, settle.
+  { transform: 'translate(0,0)       scaleX(1)    scaleY(1)',    offset: 0    },
+  { transform: 'translate(0, 10px)   scaleX(1.08) scaleY(0.88)', offset: 0.35 },
+  // Secondary bounce — weight landing
+  { transform: 'translate(0, 5px)    scaleX(0.97) scaleY(1.04)', offset: 0.55 },
+  { transform: 'translate(0, 8px)    scaleX(1.03) scaleY(0.97)', offset: 0.70 },
+  { transform: 'translate(0, 2px)    scaleX(0.99) scaleY(1.01)', offset: 0.85 },
+  { transform: 'translate(0,0)       scaleX(1)    scaleY(1)',    offset: 1    },
+];
+
+// Start the always-on breathing base layer
+face.classList.add('hf-idle-breathe');
+
     // ── Hero enter / leave ────────────────────────────────────────────
-    hero.addEventListener('mouseenter', () => {
-      if (isIdle || isPonging) {
+hero.addEventListener('mouseenter', () => {
+      triggerFaceAnim(ANIM_LUNGE, 700);
+            if (isIdle || isPonging) {
         stopPong();
         isIdle     = false;
         isReacting = true;
@@ -435,10 +512,11 @@ function initHeroFace() {
       }
     });
 
-    hero.addEventListener('mouseleave', () => {
+hero.addEventListener('mouseleave', () => {
       eyeTargetX  = 0;
       eyeTargetY  = 0;
       isCrossZone = false;
+triggerFaceAnim(ANIM_WILT, 650);
       if (!isReacting && !isIdle) setState('s-pleased');
     });
 
@@ -515,11 +593,32 @@ function initHeroFace() {
       face.style.opacity = '1';
     }
 
-    // ── Boot ──────────────────────────────────────────────────────────
-    setState(current);
+// ── Boot ──────────────────────────────────────────────
     resetIdle();
-    scheduleAuto();
     scheduleBlink();
+
+    if (sessionStorage.getItem('introDone')) {
+      // Returning visitor — start normally
+      setState(current);
+      scheduleAuto();
+    } else {
+      // First visit — intro is playing. Hold state until the face arrives.
+      const introWatcher = new MutationObserver(() => {
+        if (face.classList.contains('intro-arrived')) {
+          introWatcher.disconnect();
+          // Let intro's s-grin show for a beat, then hand off to auto-cycle
+          setTimeout(() => {
+            if (!isReacting) {
+              current = 's-eager';
+              face.classList.remove('s-grin');
+              face.classList.add('s-eager');
+              scheduleAuto();
+            }
+          }, 900);
+        }
+      });
+      introWatcher.observe(face, { attributes: true, attributeFilter: ['class'] });
+    }
 
     // ════════════════════════════════════════════════════════════════════
     //  PONG SCREENSAVER
@@ -600,15 +699,15 @@ function initHeroFace() {
       }
 
       // ── Game state ────────────────────────────────────────────────────
-      const PAD_W = 5, PAD_H = 36, PAD_SPEED = 2.6;
+const PAD_W = 5, PAD_H = 36, PAD_SPEED = 1.7;
       const BALL_SIZE = 5;
 
       const state = {
         ball: {
           x:  W / 2,
           y:  H / 2,
-          vx: (Math.random() > 0.5 ? 1 : -1) * 2.8,
-          vy: (Math.random() * 2 - 1) * 2.2,
+vx: (Math.random() > 0.5 ? 1 : -1) * 1.8,
+vy: (Math.random() * 2 - 1) * 1.4,
           trail: [],  // { x, y } history for motion blur
         },
         padL: { x: 14,      y: H / 2 - PAD_H / 2 },
@@ -616,29 +715,54 @@ function initHeroFace() {
         score: { l: 0, r: 0 },
       };
 
-      // ── AI paddle move ─────────────────────────────────────────────────
-      // Tracks the ball with a speed cap and a small intentional lag so
-      // it's not perfect — misses happen occasionally, which looks natural.
-      function moveAI(pad, targetY) {
-        const center = pad.y + PAD_H / 2;
-        const diff   = targetY - center;
-        // Add slight randomness so neither side is a perfect wall
-        const jitter = (Math.random() - 0.5) * 1.2;
-        const step   = Math.sign(diff) * Math.min(Math.abs(diff), PAD_SPEED + jitter);
-        pad.y = Math.max(0, Math.min(H - PAD_H, pad.y + step));
-      }
+// ── AI paddles — each has its own personality ──────────────────────
+const aiL = {
+  speed:      PAD_SPEED * 0.82,
+  lag:        0,
+  slop:       14,
+  aimOffset:  0,
+};
+const aiR = {
+  speed:      PAD_SPEED * 1.08,
+  lag:        0,
+  slop:       8,
+  aimOffset:  0,
+};
+
+// Randomise aim offsets when ball resets so each rally looks different
+function randomiseAI() {
+  aiL.aimOffset = (Math.random() - 0.5) * PAD_H * 0.55;
+  aiR.aimOffset = (Math.random() - 0.5) * PAD_H * 0.45;
+}
+randomiseAI();
+
+function moveAI(pad, ai, targetY) {
+  // Smooth the AI's perceived target (simulates reaction lag)
+  ai.lag += (targetY + ai.aimOffset - ai.lag) * 0.07;
+
+  const center = pad.y + PAD_H / 2;
+  const diff   = ai.lag - center;
+
+  // Dead-zone: ignore tiny deviations (makes movement look intentional)
+  if (Math.abs(diff) < ai.slop) return;
+
+  const jitter = (Math.random() - 0.5) * 1.4;
+  const step   = Math.sign(diff) * Math.min(Math.abs(diff), ai.speed + jitter);
+  pad.y = Math.max(0, Math.min(H - PAD_H, pad.y + step));
+}
 
       // ── Score flash ───────────────────────────────────────────────────
       let scoreFlash = 0; // frames remaining for score flash highlight
 
-      function resetBall(direction) {
-        state.ball.x     = W / 2;
-        state.ball.y     = H / 2;
-        state.ball.vx    = direction * (2.6 + Math.random() * 0.6);
-        state.ball.vy    = (Math.random() * 2 - 1) * 2.4;
-        state.ball.trail = [];
-        scoreFlash       = 28;
-      }
+function resetBall(direction) {
+  state.ball.x     = W / 2;
+  state.ball.y     = H / 2;
+state.ball.vx = direction * (1.6 + Math.random() * 0.4);
+state.ball.vy = (Math.random() * 2 - 1) * 1.6;
+  state.ball.trail = [];
+  scoreFlash       = 28;
+  randomiseAI();   // ← new: fresh aim offsets each rally
+}
 
       // ── Draw frame ────────────────────────────────────────────────────
       function drawFrame() {
@@ -758,8 +882,8 @@ function initHeroFace() {
         if (scoreFlash > 0) scoreFlash--;
 
         // AI paddles track the ball
-        moveAI(state.padL, b.y);
-        moveAI(state.padR, b.y);
+moveAI(state.padL, aiL, b.y);
+moveAI(state.padR, aiR, b.y);
 
         drawFrame();
         pongRAF = requestAnimationFrame(tick);
