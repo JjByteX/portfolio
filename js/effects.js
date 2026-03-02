@@ -88,24 +88,14 @@ btn.addEventListener('mouseleave', () => {
 
 // ── INTERSECTION OBSERVERS ────────────────────────────
 function initObservers() {
-
   // Section label clip-wipe
-  new IntersectionObserver((entries) => {
+  const labelObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('wiped');
-      }
+      if (e.isIntersecting) e.target.classList.add('wiped');
     });
-  }, { threshold: 0.8 }).observe
-  && document.querySelectorAll('.section-label').forEach(el => {
-    new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('wiped');
-        }
-      });
-    }, { threshold: 0.8 }).observe(el);
-  });
+  }, { threshold: 0.8 });
+  
+  document.querySelectorAll('.section-label').forEach(el => labelObserver.observe(el));
 
   // Section title scramble
   document.querySelectorAll('.section-title').forEach(el => {
@@ -184,32 +174,71 @@ document.addEventListener('mouseover', () => {
 });
 }
 
-// ── HERO FACE ──────────────────────────────────────────
+// ── HERO FACE ──────────────────────────────────────────────────────────────
+// Replace the entire initHeroFace() function in effects.js with this.
+//
+// INTERACTION MAP
+// ─────────────────────────────────────────────────────────────────────────
+// Mouse enters hero              → s-eager     circles + wider smile + bounce
+// Mouse leaves hero              → s-pleased   ^^ eyes + flat line
+// Cursor between the two eyes    → cross-eyed  both eyes drift inward (lerp only, no class)
+// Cursor ≤88px from face center  → s-grin      ^^ eyes + bean smile, 900ms
+// Hover "VIEW PROJECTS"          → s-squint    arc eyes + arc smile, 1.1s
+// Hover "CONTACT ME"             → s-surprised dot eyes + O mouth, 950ms
+// Theme toggle → light mode      → s-annoyed   flat eyes + flat mouth, 1.6s
+// Theme toggle → dark mode       → s-pleased   ^^ satisfied, 900ms
+// Click anywhere in hero         → surprised → dead → eager  (3-beat comic)
+// Idle 7s                        → s-sleepy    droopy eyes, slow transition
+// Wake from idle                 → surprised → eager
+// Auto-cycle every 3–6s          → happy / eager / pleased / thinking (drift)
+// Auto rare ~5%                  → s-dead flash (820ms)
+// Auto rare ~4%                  → s-wtf text  (1.1s)
+// ─────────────────────────────────────────────────────────────────────────
 function initHeroFace() {
-  const face = document.getElementById('heroFace');
-  const text = face?.querySelector('.hf-text');
-  const eyeL = face?.querySelector('.hf-eye-l');
-  const eyeR = face?.querySelector('.hf-eye-r');
-  const hero = document.getElementById('hero');
+
+  const face  = document.getElementById('heroFace');
+  const text  = face?.querySelector('.hf-text');
+const eyeL = face?.querySelector('.hf-eye-l .hf-pupil');
+const eyeR = face?.querySelector('.hf-eye-r .hf-pupil');
+  const hero  = document.getElementById('hero');
   if (!face || !text || !eyeL || !eyeR || !hero) return;
 
-  const allStates = ['s-happy','s-pleased','s-annoyed','s-smile','s-sleepy',
-                     's-squint','s-grin','s-surprised','s-dead','s-thinking','s-wink'];
-  const wtfWords  = ['WTF','???','HUH','!!!','OOF','PST','HEY','bruh'];
+  // ── Constants ─────────────────────────────────────────────────────────
+  const ALL_STATES = [
+    's-happy', 's-eager', 's-pleased', 's-smile',
+    's-grin', 's-squint', 's-surprised', 's-sleepy',
+    's-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf'
+  ];
 
-  let current    = 's-happy';
-  let idleTimer  = null;
-  let isIdle     = false;
-  let isReacting = false;
-  let autoTimer  = null;
-  let blinkTimer = null;
+  // States where blinking looks wrong (non-circle eyes)
+  const NO_BLINK = new Set([
+    's-sleepy', 's-wtf', 's-dead', 's-squint',
+    's-annoyed', 's-pleased', 's-grin', 's-thinking'
+  ]);
 
-  face.classList.add(current);
+  // States where eye lerp tracking should be skipped
+  const NO_TRACK = new Set([
+    's-wtf', 's-sleepy', 's-dead', 's-squint',
+    's-annoyed', 's-pleased', 's-grin', 's-thinking'
+  ]);
 
-  // ── State management ──────────────────────────────
-  function clearState() {
-    face.classList.remove(...allStates, 's-wtf');
-  }
+  const WTF_WORDS = ['WTF', '???', 'HUH', '!!!', 'OOF', 'NOPE', 'BAKA'];
+
+  // ── State vars ────────────────────────────────────────────────────────
+  let current     = 's-happy';
+  let isReacting  = false;
+  let isIdle      = false;
+  let idleTimer   = null;
+  let autoTimer   = null;
+  let blinkTimer  = null;
+  let lastMX      = -9999;
+  let lastMY      = -9999;
+
+  // ── State helpers ─────────────────────────────────────────────────────
+function clearState() {
+  face.classList.remove(...ALL_STATES);
+  if (text) text.textContent = ''; // Clear the WTF text when changing emotions
+}
 
   function setState(state) {
     clearState();
@@ -217,7 +246,8 @@ function initHeroFace() {
     face.classList.add(current);
   }
 
-  function reactFor(state, duration, returnTo = 's-happy') {
+  // Hold a state for duration ms, then return to returnTo
+  function reactFor(state, duration, returnTo = 's-eager') {
     if (isReacting) return;
     isReacting = true;
     clearTimeout(autoTimer);
@@ -229,71 +259,107 @@ function initHeroFace() {
     }, duration);
   }
 
+  // Quick pixel glitch before state change — feels robotic
   function glitch(cb) {
     face.classList.add('glitch-shift');
     setTimeout(() => {
       face.classList.remove('glitch-shift');
       if (cb) cb();
-    }, 80);
+    }, 75);
   }
 
-  // ── Blink ──────────────────────────────────────────
+// ── Blink ─────────────────────────────────────────────────────────────
   function scheduleBlink() {
     clearTimeout(blinkTimer);
     blinkTimer = setTimeout(() => {
-      if (current !== 's-sleepy' && current !== 's-wtf' && current !== 's-dead') {
+      if (!NO_BLINK.has(current)) {
         face.classList.add('blinking');
-        setTimeout(() => face.classList.remove('blinking'), 120);
+        // 70ms is the "sweet spot" to let the CSS snap the eyes back open
+        setTimeout(() => face.classList.remove('blinking'), 70); 
       }
       scheduleBlink();
-    }, 3000 + Math.random() * 4000);
+    }, 2600 + Math.random() * 4000);
   }
 
-  // ── Eye tracking with lerp ─────────────────────────
-  let eyeTargetX = 0, eyeTargetY = 0, eyeCurX = 0, eyeCurY = 0;
+  // ── Eye tracking + cross-eyed ─────────────────────────────────────────
+  let eyeTargetX  = 0, eyeTargetY  = 0;
+  let eyeCurX     = 0, eyeCurY     = 0;
+  let isCrossZone = false;
 
-document.addEventListener('mousemove', e => {
-    const hr = hero.getBoundingClientRect();
-    if (e.clientX < hr.left || e.clientX > hr.right + 60 ||
-        e.clientY < hr.top  || e.clientY > hr.bottom) return;
-            const fr  = face.getBoundingClientRect();
-    const fcx = fr.left + fr.width  / 2;
-    const fcy = fr.top  + fr.height / 2;
-    const dx  = e.clientX - fcx;
-    const dy  = e.clientY - fcy;
-    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-    const factor = Math.min(dist / 300, 1);
-    eyeTargetX = (dx / dist) * factor * 12;
-    eyeTargetY = (dy / dist) * factor * 9;
+  document.addEventListener('mousemove', e => {
+    lastMX = e.clientX;
+    lastMY = e.clientY;
+
+    const fr   = face.getBoundingClientRect();
+    const fcx  = fr.left + fr.width  / 2;
+    const fcy  = fr.top  + fr.height / 2;
+    const dx   = e.clientX - fcx;
+    const dy   = e.clientY - fcy;
+    const dist = Math.hypot(dx, dy) || 1;
+
+    // Cross-eyed zone: cursor X within ±42px of center at eye height
+    isCrossZone = (
+      Math.abs(dx) < 42 &&
+      dy > -70 && dy < 20 &&
+      dist < 88
+    );
+
+    // Close-to-face grin trigger (skips if in cross zone)
+    if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin') {
+      reactFor('s-grin', 900, 's-eager');
+      return;
+    }
+
+    // Normal tracking vector
+    const pull = Math.min(dist / 280, 1);
+    eyeTargetX = (dx / dist) * pull * 11;
+    eyeTargetY = (dy / dist) * pull * 8;
   }, { passive: true });
 
+  // Lerp loop — runs every frame
   (function lerpEyes() {
-    if (current !== 's-wtf' && current !== 's-sleepy' && current !== 's-dead') {
-      eyeCurX += (eyeTargetX - eyeCurX) * 0.12;
-      eyeCurY += (eyeTargetY - eyeCurY) * 0.12;
-      eyeL.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
-      eyeR.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
+    if (!NO_TRACK.has(current)) {
+      if (isCrossZone) {
+        // Both eyes drift inward — cross-eyed effect
+        const fr     = face.getBoundingClientRect();
+        const fcx    = fr.left + fr.width / 2;
+const inward = 20 + Math.max(0, (42 - Math.abs(lastMX - fcx)) * 0.5);
+        eyeCurX += (0 - eyeCurX) * 0.15;
+        eyeCurY += (eyeTargetY - eyeCurY) * 0.12;
+        eyeL.style.transform = `translate(${inward}px, ${eyeCurY}px)`;
+        eyeR.style.transform = `translate(${-inward}px, ${eyeCurY}px)`;
+      } else {
+        eyeCurX += (eyeTargetX - eyeCurX) * 0.12;
+        eyeCurY += (eyeTargetY - eyeCurY) * 0.12;
+        eyeL.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
+        eyeR.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
+      }
     }
     requestAnimationFrame(lerpEyes);
   })();
 
-  // ── Idle eye wander ────────────────────────────────
+  // ── Idle eye wander ───────────────────────────────────────────────────
   function startWander() {
-    if (!isIdle) return;
-    const positions = [
-      { x: -10, y: 0 }, { x: 10, y: 0 },
-      { x: 0,  y: -6 }, { x: -8, y: 4 }, { x: 8, y: 4 }
+    const spots = [
+      { x: -9, y: 2 }, { x: 9, y: 0 },
+      { x: 0, y: -5 }, { x: -7, y: 5 }, { x: 7, y: 3 }
     ];
     let i = 0;
-    const wander = setInterval(() => {
-      if (!isIdle) { clearInterval(wander); eyeTargetX = 0; eyeTargetY = 0; return; }
-      const p = positions[i % positions.length];
-      eyeTargetX = p.x; eyeTargetY = p.y;
+    const tick = setInterval(() => {
+      if (!isIdle) {
+        clearInterval(tick);
+        eyeTargetX = 0;
+        eyeTargetY = 0;
+        return;
+      }
+      const p = spots[i % spots.length];
+      eyeTargetX = p.x;
+      eyeTargetY = p.y;
       i++;
-    }, 1200);
+    }, 1900);
   }
 
-  // ── Auto cycle ────────────────────────────────────
+  // ── Auto-cycle ────────────────────────────────────────────────────────
   function scheduleAuto() {
     clearTimeout(autoTimer);
     autoTimer = setTimeout(() => {
@@ -301,163 +367,119 @@ document.addEventListener('mousemove', e => {
 
       const roll = Math.random();
 
-      // 4th wall break — 4% chance
-      if (roll < 0.04) {
+      // ~5% — dead flash
+      if (roll < 0.05) {
+        isReacting = true;
         glitch(() => {
-          isReacting = true;
-          eyeTargetX = 0; eyeTargetY = 0;
-          text.textContent = 'PST';
-          clearState(); face.classList.add('s-wtf'); current = 's-wtf';
+          setState('s-dead');
           setTimeout(() => {
-            text.textContent = 'YOU';
-            setTimeout(() => {
-              isReacting = false;
-              glitch(() => setState('s-happy'));
-              scheduleAuto();
-            }, 900);
-          }, 700);
+            isReacting = false;
+            glitch(() => setState('s-eager'));
+            scheduleAuto();
+          }, 820);
         });
         return;
       }
 
-      // WTF — 5% chance
+      // ~4% — WTF text
       if (roll < 0.09) {
         glitch(() => {
           isReacting = true;
-          text.textContent = wtfWords[Math.floor(Math.random() * wtfWords.length)];
-          clearState(); face.classList.add('s-wtf'); current = 's-wtf';
+          text.textContent = WTF_WORDS[Math.floor(Math.random() * WTF_WORDS.length)];
+          clearState();
+          face.classList.add('s-wtf');
+          current = 's-wtf';
           setTimeout(() => {
             isReacting = false;
-            glitch(() => setState('s-happy'));
+            glitch(() => setState('s-eager'));
             scheduleAuto();
-          }, 1200);
+          }, 1100);
         });
         return;
       }
 
-      // Normal cycle
+      // Normal drift — mostly attentive states
       const pool = [
-        's-happy','s-happy','s-happy',
-        's-pleased','s-pleased',
-        's-annoyed',
-        's-squint',
-        's-thinking',
-        's-wink',
-        's-surprised',
-        's-dead','s-grin'
+        's-eager', 's-eager', 's-eager',
+        's-happy', 's-happy',
+        's-pleased',
+        's-thinking'
       ].filter(s => s !== current);
 
       const next = pool[Math.floor(Math.random() * pool.length)];
-      const snapBack = ['s-surprised','s-dead','s-grin','s-wink'].includes(next);
+      glitch(() => { setState(next); scheduleAuto(); });
 
-      glitch(() => {
-        if (snapBack) {
-          isReacting = true;
-          setState(next);
-          setTimeout(() => {
-            isReacting = false;
-            setState('s-happy');
-            scheduleAuto();
-          }, 1000);
-        } else {
-          setState(next);
-          scheduleAuto();
-        }
-      });
-
-    }, 2200 + Math.random() * 2200);
+    }, 3200 + Math.random() * 2800);
   }
 
-  // ── Hero enter/leave ──────────────────────────────
-hero.addEventListener('mouseleave', e => {
-    // Don't trigger if cursor moved onto the face itself
-    if (face.contains(e.relatedTarget) || e.relatedTarget === face) return;
-    eyeTargetX = 0; eyeTargetY = 0;
-    if (!isReacting) setState('s-annoyed');
-  });
+  // ── Hero enter / leave ────────────────────────────────────────────────
   hero.addEventListener('mouseenter', () => {
-    if (!isReacting && !isIdle) setState('s-happy');
+    if (isIdle) {
+      // Startled awake, then goes eager
+      isIdle = false;
+      isReacting = true;
+      setState('s-surprised');
+      setTimeout(() => {
+        isReacting = false;
+        setState('s-eager');
+        scheduleAuto();
+      }, 580);
+    } else if (!isReacting) {
+      setState('s-eager');
+    }
   });
 
-  // ── CTA buttons ───────────────────────────────────
+  hero.addEventListener('mouseleave', () => {
+    eyeTargetX  = 0;
+    eyeTargetY  = 0;
+    isCrossZone = false;
+    if (!isReacting && !isIdle) setState('s-pleased');
+  });
+
+  // ── CTA button hovers ─────────────────────────────────────────────────
   document.querySelector('a[href="#projects"].btn')
-    ?.addEventListener('mouseenter', () => reactFor('s-grin', 800));
+    ?.addEventListener('mouseenter', () => reactFor('s-squint', 1100, 's-eager'));
+
   document.querySelector('a[href="#contact"].btn')
-    ?.addEventListener('mouseenter', () => reactFor('s-surprised', 800));
+    ?.addEventListener('mouseenter', () => reactFor('s-surprised', 950, 's-eager'));
 
-  // ── Nav link reactions ────────────────────────────
-  const navReactions = {
-    '#about':    's-thinking',
-    '#skills':   's-squint',
-    '#projects': 's-grin',
-    '#contact':  's-surprised'
-  };
-  Object.entries(navReactions).forEach(([href, state]) => {
-    document.querySelector(`.nav-links a[href="${href}"]`)
-      ?.addEventListener('mouseenter', () => reactFor(state, 900));
-  });
-
-  // ── Theme toggle ──────────────────────────────────
-document.getElementById('themeToggle')?.addEventListener('click', () => {
-    // theme.js already toggled by now, so read the NEW value
+  // ── Theme toggle ──────────────────────────────────────────────────────
+  document.getElementById('themeToggle')?.addEventListener('click', () => {
     const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
     if (nowLight) {
-      // switching TO light
-      isReacting = true;
-      clearState(); face.classList.add('s-annoyed'); current = 's-annoyed';
-      text.style.opacity = '0';
-      setTimeout(() => {
-        text.textContent = 'BRIGHT';
-        text.style.opacity = '1';
-        clearState(); face.classList.add('s-wtf'); current = 's-wtf';
-        setTimeout(() => {
-          text.style.opacity = '0';
-          isReacting = false;
-          setState('s-annoyed');
-          scheduleAuto();
-        }, 1000);
-      }, 300);
+      reactFor('s-annoyed', 1600, 's-happy');
     } else {
-      // switching TO dark
-      reactFor('s-smile', 900);
+      reactFor('s-pleased', 900, 's-eager');
     }
   });
 
-  // ── Scroll reaction ───────────────────────────────
-  const heroBottom = () => hero.getBoundingClientRect().bottom;
-  window.addEventListener('scroll', () => {
-    if (isReacting || isIdle) return;
-    const hb = heroBottom();
-    if (hb < window.innerHeight * 0.3) {
-      setState('s-pleased'); // content with you reading
-    } else if (hb < window.innerHeight * 0.7) {
-      setState('s-happy');
-    }
-  }, { passive: true });
-
-  // ── Click anywhere in hero ────────────────────────
+  // ── Click in hero — 3-beat comic ──────────────────────────────────────
   hero.addEventListener('click', () => {
     if (isReacting) return;
     isReacting = true;
     clearTimeout(autoTimer);
-    text.textContent = '!!!';
-    glitch(() => {
-      clearState(); face.classList.add('s-wtf'); current = 's-wtf';
+    setState('s-surprised');
+    setTimeout(() => {
+      glitch(() => setState('s-dead'));
       setTimeout(() => {
         isReacting = false;
-        glitch(() => setState('s-happy'));
+        glitch(() => setState('s-eager'));
         scheduleAuto();
-      }, 900);
-    });
+      }, 600);
+    }, 440);
   });
 
-  // ── Idle detection ────────────────────────────────
+  // ── Idle detection ────────────────────────────────────────────────────
   function resetIdle() {
     clearTimeout(idleTimer);
     if (isIdle) {
       isIdle = false;
-      eyeTargetX = 0; eyeTargetY = 0;
-      if (!isReacting) glitch(() => setState('s-happy'));
+      eyeTargetX = 0;
+      eyeTargetY = 0;
+      if (!isReacting) {
+        setState('s-surprised');
+        setTimeout(() => { if (!isReacting) setState('s-eager'); }, 520);
+      }
     }
     idleTimer = setTimeout(() => {
       if (!isReacting) {
@@ -469,9 +491,17 @@ document.getElementById('themeToggle')?.addEventListener('click', () => {
   }
 
   document.addEventListener('mousemove', resetIdle, { passive: true });
-  document.addEventListener('keydown', resetIdle);
-  document.addEventListener('click', resetIdle);
+  document.addEventListener('keydown',   resetIdle);
+  document.addEventListener('click',     resetIdle);
 
+  // If intro was already seen, make sure face is visible immediately
+  if (sessionStorage.getItem('introDone')) {
+    face.classList.add('intro-arrived');
+    face.style.opacity = '1';
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────
+  setState(current);
   resetIdle();
   scheduleAuto();
   scheduleBlink();
