@@ -7,6 +7,11 @@
    5. Robot launches UP (ease-out, stretch) → falls DOWN (ease-in,
       gravity) → squashes on land at heroFace → settles
    6. Overlay fades mid-flight, heroFace waits underneath
+
+   NOTE: This script is intentionally loaded WITHOUT defer in index.html.
+   It must run before the DOM renders to block the flash of unstyled
+   content on first visit. Do not add defer without re-testing the intro
+   timing against effects.js.
 ──────────────────────────────────────────────────────────────────── */
 (function () {
   const overlay = document.getElementById('introOverlay');
@@ -67,17 +72,20 @@
   }
 
   /* ═══════════════════════════════════
-     INJECT ROBOT CSS
+     ROBOT CSS
+     NOTE: Lives here (injected) because the robot element is
+     created dynamically and only exists during the intro sequence.
+     Moving this to animations.css would load ~150 lines of one-time
+     styles on every page visit. Injecting on demand is intentional.
   ═══════════════════════════════════ */
   function injectRobotCSS() {
     if (document.getElementById('introRobotStyles')) return;
     const style = document.createElement('style');
     style.id = 'introRobotStyles';
     style.textContent = `
-      /* ── Box ── */
       #introRobot {
         position: fixed;
-        width:  260px;
+        width: 260px;
         height: 260px;
         background: #14142a;
         border: 1px solid rgba(255, 10, 55, 0.65);
@@ -90,19 +98,16 @@
         pointer-events: none;
         user-select: none;
         overflow: visible;
-        /* centered by JS */
         left: 50%;
-        top:  50%;
+        top: 50%;
         transform: translate(-50%, -50%);
-      transition: filter 0.2s ease;
-        }
+        transition: filter 0.2s ease;
+      }
 
-        /* Add a motion blur effect during the jump */
-        #introRobot.jumping {
-          filter: blur(1px) brightness(1.2);
-        }
+      #introRobot.jumping {
+        filter: blur(1px) brightness(1.2);
+      }
 
-      /* HUD corners */
       #introRobot::before,
       #introRobot::after {
         content: '';
@@ -111,10 +116,9 @@
         border-color: #ff0a37;
         border-style: solid;
       }
-      #introRobot::before { top:-1px;    left:-1px;  border-width:2px 0 0 2px; }
-      #introRobot::after  { bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+      #introRobot::before { top: -1px;    left: -1px;  border-width: 2px 0 0 2px; }
+      #introRobot::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
-      /* Scanlines */
       #introRobot .ir-scan {
         position: absolute; inset: 0;
         background: repeating-linear-gradient(
@@ -125,7 +129,6 @@
         z-index: 2;
       }
 
-      /* Frame label */
       #introRobot .ir-label {
         position: absolute;
         bottom: -1.4rem; left: 0;
@@ -135,7 +138,6 @@
         white-space: nowrap;
       }
 
-      /* ── Eyes — default = surprised (small circles) ── */
       #introRobot .ir-eye {
         position: absolute;
         background: #e2e2f0;
@@ -148,7 +150,6 @@
       #introRobot .ir-eye-l { left:  52px; }
       #introRobot .ir-eye-r { right: 52px; }
 
-      /* ── Mouth — default = surprised (O shape) ── */
       #introRobot .ir-mouth {
         position: absolute;
         left: 50%;
@@ -161,7 +162,6 @@
         bottom: 80px;
       }
 
-      /* ── Grin state ── */
       #introRobot.s-grin .ir-eye {
         width: 26px !important; height: 15px !important;
         border-radius: 26px 26px 0 0 !important;
@@ -180,7 +180,6 @@
         bottom: 76px !important;
       }
 
-      /* ── Wink state ── */
       #introRobot.s-wink .ir-eye-l {
         width: 26px !important; height: 26px !important;
         border-radius: 50% !important;
@@ -207,11 +206,6 @@
         bottom: 86px !important;
       }
 
-      /* ════════════
-         GLITCH-IN
-         Flickers with chromatic shift — feels like being
-         teleported rather than smoothly appearing.
-      ════════════ */
       @keyframes irGlitchIn {
         0%   {
           opacity: 0;
@@ -266,12 +260,9 @@
         animation: irGlitchIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
 
-      /* ════════════
-         BLINK
-      ════════════ */
       @keyframes irBlink {
-        0%,100% { transform: scaleY(1); }
-        50%      { transform: scaleY(0.05); }
+        0%, 100% { transform: scaleY(1); }
+        50%       { transform: scaleY(0.05); }
       }
       #introRobot.blinking .ir-eye {
         animation: irBlink 0.1s ease-in-out;
@@ -284,9 +275,10 @@
      State helpers
   ═══════════════════════════════════ */
   const FACE_STATES = ['s-grin', 's-wink'];
-  function setState(robot, ...add) {
+
+  function setRobotState(robot, ...add) {
     robot.classList.remove(...FACE_STATES);
-    robot.classList.add(...add.filter(Boolean));
+    if (add.filter(Boolean).length) robot.classList.add(...add.filter(Boolean));
   }
 
   /* ═══════════════════════════════════
@@ -296,15 +288,13 @@
     const terminal = document.getElementById('introTerminal');
     const heroFace = document.getElementById('heroFace');
 
-    /* Fade terminal */
     terminal.style.transition = 'opacity 0.28s ease';
-    terminal.style.opacity = '0';
+    terminal.style.opacity    = '0';
 
     setTimeout(() => {
       terminal.style.display = 'none';
       injectRobotCSS();
 
-      /* Build robot */
       const robot = document.createElement('div');
       robot.id = 'introRobot';
       robot.setAttribute('aria-hidden', 'true');
@@ -317,147 +307,121 @@
       `;
       document.body.appendChild(robot);
 
-      /* ── Beat 1: GLITCH IN ── */
+      /* Beat 1: GLITCH IN */
       robot.classList.add('glitch-appearing');
 
-/* ── Beat 2: After glitch settles → GRIN ── */
+      /* Beat 2: After glitch settles → GRIN */
       setTimeout(() => {
         robot.classList.remove('glitch-appearing');
-        setState(robot, 's-grin');
+        setRobotState(robot, 's-grin');
 
-        /* Snappy Blink */
         setTimeout(() => {
           robot.classList.add('blinking');
-          setTimeout(() => robot.classList.remove('blinking'), 70); // 70ms is key
+          setTimeout(() => robot.classList.remove('blinking'), 70);
         }, 150);
 
-        /* ── Beat 3: WINK (The "Goodbye") ── */
+        /* Beat 3: WINK */
         setTimeout(() => {
-          setState(robot, 's-wink');
+          setRobotState(robot, 's-wink');
 
-          /* ── Beat 4: ANTICIPATION (Look up before jump) ── */
+          /* Beat 4: ANTICIPATION — eyes shift up before jump */
           setTimeout(() => {
-            // Switch to round eyes and shift them up to "aim"
-            setState(robot); // Clears s-wink, goes to default surprised eyes
-            const eyes = robot.querySelectorAll('.ir-eye');
-            eyes.forEach(e => e.style.transform = 'translateY(-10px) scale(1.1)');
-            
-            /* ── Beat 5: LAUNCH ── */
+            setRobotState(robot); // clears s-wink, reverts to surprised
+            robot.querySelectorAll('.ir-eye').forEach(e => {
+              e.style.transform = 'translateY(-10px) scale(1.1)';
+            });
+
+            /* Beat 5: LAUNCH */
             setTimeout(() => {
               const faceReachable =
                 heroFace &&
                 window.innerWidth > 900 &&
                 window.getComputedStyle(heroFace).display !== 'none';
 
-              if (faceReachable) {
-                jumpToHero(robot, heroFace);
-              } else {
-                dismiss(robot);
-              }
-            }, 200); // Short pause for the "look up" to register
+              faceReachable ? jumpToHero(robot, heroFace) : dismiss(robot);
+            }, 200);
 
-          }, 400); // Wink duration
-
-        }, 600); // Grin duration
-      }, 700); // Initial settle
+          }, 400);
+        }, 600);
+      }, 700);
 
     }, 300);
   }
 
   /* ═══════════════════════════════════
      PHASE 4 — Gravity arc jump
-     
-     Real gravity physics:
-     LAUNCH  → ease-out (fast start, slow at peak)
-     FALL    → ease-in  (slow at peak, accelerates down)
-     LAND    → squash   (wide + short briefly)
-     SETTLE  → back to normal scale
-     
-     Per-keyframe easing in Web Animations API
-     controls each *segment* independently.
   ═══════════════════════════════════ */
-function jumpToHero(robot, heroFace) {
-  robot.classList.add('jumping'); // Add blur/glow
-  // Ensure the face is "displaying" so we can measure it, 
-  // even if it is invisible (opacity 0).
-  heroFace.style.display = 'flex'; 
+  function jumpToHero(robot, heroFace) {
+    robot.classList.add('jumping');
 
-  const rr = robot.getBoundingClientRect();
-  const hr = heroFace.getBoundingClientRect();
+    // Use visibility:hidden instead of display changes to preserve
+    // layout — this lets getBoundingClientRect() return real coordinates
+    // without conflicting with the CSS display:block on #heroFace.
+    const prevVisibility = heroFace.style.visibility;
+    heroFace.style.visibility = 'hidden';
 
-  // SAFETY CHECK: If the face is reporting 0 or a weird 
-  // location, we use a fallback center-screen target.
-  const targetX = hr.left === 0 ? window.innerWidth * 0.7 : hr.left;
-  const targetY = hr.top === 0 ? window.innerHeight * 0.5 : hr.top;
+    const rr = robot.getBoundingClientRect();
+    const hr = heroFace.getBoundingClientRect();
 
-  // Calculate exact center-to-center distance
-  const rCX = rr.left + rr.width / 2;
-  const rCY = rr.top + rr.height / 2;
-  const hCX = targetX + hr.width / 2;
-  const hCY = targetY + hr.height / 2;
+    // Safety: fall back to a reasonable screen position if face has no size
+    const targetX = hr.width > 0 ? hr.left : window.innerWidth * 0.7;
+    const targetY = hr.height > 0 ? hr.top  : window.innerHeight * 0.5;
 
-  const dx = hCX - rCX;
-  const dy = hCY - rCY;
+    const rCX = rr.left + rr.width  / 2;
+    const rCY = rr.top  + rr.height / 2;
+    const hCX = targetX + hr.width  / 2;
+    const hCY = targetY + hr.height / 2;
 
-  // The rest of your animation code remains the same...
-  const peakX = dx * 0.35;
-  const peakY = Math.min(-Math.abs(dy) * 0.6, -120) - 60;
+    const dx = hCX - rCX;
+    const dy = hCY - rCY;
 
-robot.animate(
-    [
-      // 0%: Starting position
-      { transform: `translate(-50%,-50%) translate(0px, 0px) scale(1)`, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', offset: 0 },
-      
-      // 6%: SQUASH (Flatten down before the big push)
-      { transform: `translate(-50%,-50%) translate(0px, 10px) scaleX(1.3) scaleY(0.7)`, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', offset: 0.06 },
-      
-      // 15%: STRETCH (Launch! Thin and long as it shoots up)
-      { transform: `translate(-50%,-50%) translate(${peakX * 0.2}px, ${peakY * 0.2}px) scaleX(0.7) scaleY(1.4)`, easing: 'cubic-bezier(0.32, 0, 0.67, 0)', offset: 0.15 },
-      
-      // 50%: PEAK (Natural shape at the top of the arc)
-      { transform: `translate(-50%,-50%) translate(${peakX}px, ${peakY}px) scale(1)`, easing: 'cubic-bezier(0.32, 0, 0.67, 0)', offset: 0.50 },
-      
-      // 90%: IMPACT SQUASH (Hits the face and flattens out)
-      { transform: `translate(-50%,-50%) translate(${dx}px, ${dy}px) scaleX(1.5) scaleY(0.6)`, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', offset: 0.90 },
-      
-      // 100%: SETTLE (Back to normal)
-      { transform: `translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(1)`, offset: 1 }
-    ],
-    { duration: 900, fill: 'forwards' } // Sped up to 900ms for more "oomph"
-  ).onfinish = () => {
-    robot.classList.remove('jumping');
-  robot.style.display = 'none'; 
-  heroFace.style.opacity = '1';
-  
-  // 1. Add the arrival class
-  heroFace.classList.add('intro-arrived');
+    const peakX = dx * 0.35;
+    const peakY = Math.min(-Math.abs(dy) * 0.6, -120) - 60;
 
-  // 2. Clear any accidental state and FORCE 's-grin' 
-  // This makes the robot look happy to have "arrived"
-  heroFace.className = 'intro-arrived s-grin'; 
+    robot.animate(
+      [
+        { transform: `translate(-50%,-50%) translate(0px, 0px) scale(1)`,                                                           easing: 'cubic-bezier(0.33, 1, 0.68, 1)',  offset: 0    },
+        { transform: `translate(-50%,-50%) translate(0px, 10px) scaleX(1.3) scaleY(0.7)`,                                          easing: 'cubic-bezier(0.33, 1, 0.68, 1)',  offset: 0.06 },
+        { transform: `translate(-50%,-50%) translate(${peakX * 0.2}px, ${peakY * 0.2}px) scaleX(0.7) scaleY(1.4)`,                easing: 'cubic-bezier(0.32, 0, 0.67, 0)',  offset: 0.15 },
+        { transform: `translate(-50%,-50%) translate(${peakX}px, ${peakY}px) scale(1)`,                                            easing: 'cubic-bezier(0.32, 0, 0.67, 0)',  offset: 0.50 },
+        { transform: `translate(-50%,-50%) translate(${dx}px, ${dy}px) scaleX(1.5) scaleY(0.6)`,                                   easing: 'cubic-bezier(0.33, 1, 0.68, 1)',  offset: 0.90 },
+        { transform: `translate(-50%,-50%) translate(${dx}px, ${dy}px) scale(1)`,                                                                                              offset: 1    }
+      ],
+      { duration: 900, fill: 'forwards' }
+    ).onfinish = () => {
+      robot.classList.remove('jumping');
+      robot.style.display = 'none';
 
-  // 3. Trigger one final "Happy Blink" on the actual Hero Face
-  heroFace.classList.add('blinking');
-  setTimeout(() => heroFace.classList.remove('blinking'), 70);
+      // Restore visibility before making the face visible
+      heroFace.style.visibility = prevVisibility || '';
+      heroFace.style.opacity    = '1';
 
-  dismiss(robot);
-};
+      // Use classList.add individually — never overwrite className directly,
+      // as initHeroFace() in effects.js may have already set state classes.
+      heroFace.classList.add('intro-arrived');
+      heroFace.classList.add('s-grin');
 
-  setTimeout(() => {
-    overlay.style.transition = 'opacity 0.4s ease';
-    overlay.style.opacity = '0';
-  }, 600);
-}
+      heroFace.classList.add('blinking');
+      setTimeout(() => heroFace.classList.remove('blinking'), 70);
+
+      dismiss(robot);
+    };
+
+    // Start fading the overlay mid-flight
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.4s ease';
+      overlay.style.opacity    = '0';
+    }, 600);
+  }
 
   /* ═══════════════════════════════════
      PHASE 5 — Dismiss
   ═══════════════════════════════════ */
-function dismiss(robot) {
+  function dismiss(robot) {
     sessionStorage.setItem('introDone', '1');
 
-    // Fade overlay quickly
     overlay.style.transition = 'opacity 0.3s ease';
-    overlay.style.opacity = '0';
+    overlay.style.opacity    = '0';
 
     setTimeout(() => {
       overlay.remove();
