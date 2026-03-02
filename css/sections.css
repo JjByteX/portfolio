@@ -1354,6 +1354,59 @@
   bottom: 88px;
 }
 
+/* thinking — asymmetric eyes */
+#heroFace.s-thinking .hf-eye-l {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  top: 82px;
+}
+#heroFace.s-thinking .hf-eye-r {
+  width: 24px; height: 10px;
+  border-radius: 24px 24px 0 0;
+  top: 96px;
+  background: none;
+  border: 2px solid var(--text);
+  border-bottom: none;
+  box-shadow: none;
+}
+#heroFace.s-thinking .hf-mouth {
+  width: 30px; height: 3px;
+  border-radius: 2px;
+  bottom: 88px;
+  transform: translateX(calc(-50% + 8px));
+}
+
+/* wink — one eye closed */
+#heroFace.s-wink .hf-eye-l {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  top: 88px;
+}
+#heroFace.s-wink .hf-eye-r {
+  width: 26px; height: 3px;
+  border-radius: 2px;
+  top: 101px;
+}
+#heroFace.s-wink .hf-mouth {
+  width: 54px; height: 12px;
+  border-radius: 0 0 54px 54px;
+  background: none;
+  border: 2px solid var(--text);
+  border-top: none;
+  box-shadow: none;
+  bottom: 86px;
+}
+
+/* blink keyframe */
+@keyframes hfBlink {
+  0%, 100% { transform: scaleY(1); }
+  50%       { transform: scaleY(0.08); }
+}
+
+#heroFace.blinking .hf-eye {
+  animation: hfBlink 0.12s ease-in-out;
+}
+
 #heroFace.s-wtf .hf-eye,
 #heroFace.s-wtf .hf-mouth { opacity: 0; }
 #heroFace.s-wtf .hf-text  { opacity: 1; }

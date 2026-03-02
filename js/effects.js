@@ -193,34 +193,40 @@ function initHeroFace() {
   const hero = document.getElementById('hero');
   if (!face || !text || !eyeL || !eyeR || !hero) return;
 
-  const states = ['s-happy', 's-pleased', 's-annoyed', 's-smile', 's-sleepy', 's-squint', 's-grin', 's-surprised', 's-dead'];
-  const wtfWords = ['WTF', '???', 'HUH', '!!!', 'OOF'];
+  const allStates = ['s-happy','s-pleased','s-annoyed','s-smile','s-sleepy',
+                     's-squint','s-grin','s-surprised','s-dead','s-thinking','s-wink'];
+  const wtfWords  = ['WTF','???','HUH','!!!','OOF','PST','HEY','bruh'];
 
-  let current = 's-happy';
-  let idleTimer = null;
-  let isIdle = false;
+  let current    = 's-happy';
+  let idleTimer  = null;
+  let isIdle     = false;
   let isReacting = false;
-  let autoTimer = null;
+  let autoTimer  = null;
+  let blinkTimer = null;
 
   face.classList.add(current);
 
-  // ── State management ──
-  function setState(state, duration) {
-    if (isReacting && state !== 's-wtf') return;
+  // ── State management ──────────────────────────────
+  function clearState() {
+    face.classList.remove(...allStates, 's-wtf');
+  }
 
-    face.classList.remove(current, 's-wtf');
+  function setState(state) {
+    clearState();
     current = state;
     face.classList.add(current);
+  }
 
-    if (duration) {
-      isReacting = true;
-      clearTimeout(autoTimer);
-      setTimeout(() => {
-        isReacting = false;
-        setState('s-happy');
-        scheduleAuto();
-      }, duration);
-    }
+  function reactFor(state, duration, returnTo = 's-happy') {
+    if (isReacting) return;
+    isReacting = true;
+    clearTimeout(autoTimer);
+    setState(state);
+    setTimeout(() => {
+      isReacting = false;
+      setState(returnTo);
+      scheduleAuto();
+    }, duration);
   }
 
   function glitch(cb) {
@@ -231,90 +237,38 @@ function initHeroFace() {
     }, 80);
   }
 
-  function setStateWithGlitch(state, duration) {
-    if (isReacting) return;
-    glitch(() => setState(state, duration));
-  }
-
-  // ── Auto cycle (slower now, interactions take priority) ──
-function scheduleAuto() {
-    clearTimeout(autoTimer);
-    const delay = 2500 + Math.random() * 2000;
-    autoTimer = setTimeout(() => {
-      if (!isReacting && !isIdle) {
-        const wtfChance = Math.random() < 0.05;
-        if (wtfChance) {
-          glitch(() => {
-            text.textContent = wtfWords[Math.floor(Math.random() * wtfWords.length)];
-            face.classList.remove(current);
-            face.classList.add('s-wtf');
-            current = 's-wtf';
-            isReacting = true;
-            setTimeout(() => {
-              isReacting = false;
-              glitch(() => setState('s-happy'));
-              scheduleAuto();
-            }, 1200);
-          });
-          return;
-        }
-
-        // Weighted pool — all states included now
-        const pool = [
-          's-happy', 's-happy', 's-happy',
-          's-pleased', 's-pleased',
-          's-annoyed', 's-annoyed',
-          's-squint',
-          's-grin',
-          's-surprised',
-          's-dead'
-        ];
-
-        // Filter out current so it always changes
-        const options = pool.filter(s => s !== current);
-        const next = options[Math.floor(Math.random() * options.length)];
-
-        // Short states snap back after a moment
-        const shortStates = ['s-surprised', 's-dead', 's-grin'];
-        if (shortStates.includes(next)) {
-          glitch(() => {
-            setState(next);
-            isReacting = true;
-            setTimeout(() => {
-              isReacting = false;
-              setState('s-happy');
-              scheduleAuto();
-            }, 1000);
-          });
-        } else {
-          glitch(() => setState(next));
-          scheduleAuto();
-        }
-      } else {
-        scheduleAuto();
+  // ── Blink ──────────────────────────────────────────
+  function scheduleBlink() {
+    clearTimeout(blinkTimer);
+    blinkTimer = setTimeout(() => {
+      if (current !== 's-sleepy' && current !== 's-wtf' && current !== 's-dead') {
+        face.classList.add('blinking');
+        setTimeout(() => face.classList.remove('blinking'), 120);
       }
-    }, delay);
+      scheduleBlink();
+    }, 3000 + Math.random() * 4000);
   }
 
-  // ── Eye tracking ──
-let eyeTargetX = 0, eyeTargetY = 0, eyeCurX = 0, eyeCurY = 0;
+  // ── Eye tracking with lerp ─────────────────────────
+  let eyeTargetX = 0, eyeTargetY = 0, eyeCurX = 0, eyeCurY = 0;
 
-  hero.addEventListener('mousemove', e => {
-    if (!eyeL || !eyeR) return;
-    const fr = face.getBoundingClientRect();
-    const fcx = fr.left + fr.width / 2;
-    const fcy = fr.top + fr.height / 2;
-    const dx = e.clientX - fcx;
-    const dy = e.clientY - fcy;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const maxDist = 300;
-    const factor = Math.min(dist / maxDist, 1);
+document.addEventListener('mousemove', e => {
+    const hr = hero.getBoundingClientRect();
+    if (e.clientX < hr.left || e.clientX > hr.right + 60 ||
+        e.clientY < hr.top  || e.clientY > hr.bottom) return;
+            const fr  = face.getBoundingClientRect();
+    const fcx = fr.left + fr.width  / 2;
+    const fcy = fr.top  + fr.height / 2;
+    const dx  = e.clientX - fcx;
+    const dy  = e.clientY - fcy;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const factor = Math.min(dist / 300, 1);
     eyeTargetX = (dx / dist) * factor * 12;
     eyeTargetY = (dy / dist) * factor * 9;
   }, { passive: true });
 
   (function lerpEyes() {
-    if (current !== 's-wtf' && current !== 's-sleepy') {
+    if (current !== 's-wtf' && current !== 's-sleepy' && current !== 's-dead') {
       eyeCurX += (eyeTargetX - eyeCurX) * 0.12;
       eyeCurY += (eyeTargetY - eyeCurY) * 0.12;
       eyeL.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
@@ -323,44 +277,172 @@ let eyeTargetX = 0, eyeTargetY = 0, eyeCurX = 0, eyeCurY = 0;
     requestAnimationFrame(lerpEyes);
   })();
 
-  // ── Mouse leaves hero ──
-hero.addEventListener('mouseleave', () => {
+  // ── Idle eye wander ────────────────────────────────
+  function startWander() {
+    if (!isIdle) return;
+    const positions = [
+      { x: -10, y: 0 }, { x: 10, y: 0 },
+      { x: 0,  y: -6 }, { x: -8, y: 4 }, { x: 8, y: 4 }
+    ];
+    let i = 0;
+    const wander = setInterval(() => {
+      if (!isIdle) { clearInterval(wander); eyeTargetX = 0; eyeTargetY = 0; return; }
+      const p = positions[i % positions.length];
+      eyeTargetX = p.x; eyeTargetY = p.y;
+      i++;
+    }, 1200);
+  }
+
+  // ── Auto cycle ────────────────────────────────────
+  function scheduleAuto() {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => {
+      if (isReacting || isIdle) { scheduleAuto(); return; }
+
+      const roll = Math.random();
+
+      // 4th wall break — 4% chance
+      if (roll < 0.04) {
+        glitch(() => {
+          isReacting = true;
+          eyeTargetX = 0; eyeTargetY = 0;
+          text.textContent = 'PST';
+          clearState(); face.classList.add('s-wtf'); current = 's-wtf';
+          setTimeout(() => {
+            text.textContent = 'YOU';
+            setTimeout(() => {
+              isReacting = false;
+              glitch(() => setState('s-happy'));
+              scheduleAuto();
+            }, 900);
+          }, 700);
+        });
+        return;
+      }
+
+      // WTF — 5% chance
+      if (roll < 0.09) {
+        glitch(() => {
+          isReacting = true;
+          text.textContent = wtfWords[Math.floor(Math.random() * wtfWords.length)];
+          clearState(); face.classList.add('s-wtf'); current = 's-wtf';
+          setTimeout(() => {
+            isReacting = false;
+            glitch(() => setState('s-happy'));
+            scheduleAuto();
+          }, 1200);
+        });
+        return;
+      }
+
+      // Normal cycle
+      const pool = [
+        's-happy','s-happy','s-happy',
+        's-pleased','s-pleased',
+        's-annoyed',
+        's-squint',
+        's-thinking',
+        's-wink',
+        's-surprised',
+        's-dead','s-grin'
+      ].filter(s => s !== current);
+
+      const next = pool[Math.floor(Math.random() * pool.length)];
+      const snapBack = ['s-surprised','s-dead','s-grin','s-wink'].includes(next);
+
+      glitch(() => {
+        if (snapBack) {
+          isReacting = true;
+          setState(next);
+          setTimeout(() => {
+            isReacting = false;
+            setState('s-happy');
+            scheduleAuto();
+          }, 1000);
+        } else {
+          setState(next);
+          scheduleAuto();
+        }
+      });
+
+    }, 2200 + Math.random() * 2200);
+  }
+
+  // ── Hero enter/leave ──────────────────────────────
+hero.addEventListener('mouseleave', e => {
+    // Don't trigger if cursor moved onto the face itself
+    if (face.contains(e.relatedTarget) || e.relatedTarget === face) return;
     eyeTargetX = 0; eyeTargetY = 0;
     if (!isReacting) setState('s-annoyed');
   });
-
   hero.addEventListener('mouseenter', () => {
     if (!isReacting && !isIdle) setState('s-happy');
   });
 
-  // ── Button hover reactions ──
-  const viewBtn = document.querySelector('a[href="#projects"].btn');
-  const contactBtn = document.querySelector('a[href="#contact"].btn');
+  // ── CTA buttons ───────────────────────────────────
+  document.querySelector('a[href="#projects"].btn')
+    ?.addEventListener('mouseenter', () => reactFor('s-grin', 800));
+  document.querySelector('a[href="#contact"].btn')
+    ?.addEventListener('mouseenter', () => reactFor('s-surprised', 800));
 
-viewBtn?.addEventListener('mouseenter', () => {
-    if (isReacting) return;
-    isReacting = true;
-    setState('s-smile');
-    setTimeout(() => { isReacting = false; setState('s-happy'); }, 800);
+  // ── Nav link reactions ────────────────────────────
+  const navReactions = {
+    '#about':    's-thinking',
+    '#skills':   's-squint',
+    '#projects': 's-grin',
+    '#contact':  's-surprised'
+  };
+  Object.entries(navReactions).forEach(([href, state]) => {
+    document.querySelector(`.nav-links a[href="${href}"]`)
+      ?.addEventListener('mouseenter', () => reactFor(state, 900));
   });
 
-  contactBtn?.addEventListener('mouseenter', () => {
-    if (isReacting) return;
-    isReacting = true;
-    setState('s-pleased');
-    setTimeout(() => { isReacting = false; setState('s-happy'); }, 800);
+  // ── Theme toggle ──────────────────────────────────
+document.getElementById('themeToggle')?.addEventListener('click', () => {
+    // theme.js already toggled by now, so read the NEW value
+    const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (nowLight) {
+      // switching TO light
+      isReacting = true;
+      clearState(); face.classList.add('s-annoyed'); current = 's-annoyed';
+      text.style.opacity = '0';
+      setTimeout(() => {
+        text.textContent = 'BRIGHT';
+        text.style.opacity = '1';
+        clearState(); face.classList.add('s-wtf'); current = 's-wtf';
+        setTimeout(() => {
+          text.style.opacity = '0';
+          isReacting = false;
+          setState('s-annoyed');
+          scheduleAuto();
+        }, 1000);
+      }, 300);
+    } else {
+      // switching TO dark
+      reactFor('s-smile', 900);
+    }
   });
 
-  // ── Click reaction ──
+  // ── Scroll reaction ───────────────────────────────
+  const heroBottom = () => hero.getBoundingClientRect().bottom;
+  window.addEventListener('scroll', () => {
+    if (isReacting || isIdle) return;
+    const hb = heroBottom();
+    if (hb < window.innerHeight * 0.3) {
+      setState('s-pleased'); // content with you reading
+    } else if (hb < window.innerHeight * 0.7) {
+      setState('s-happy');
+    }
+  }, { passive: true });
+
+  // ── Click anywhere in hero ────────────────────────
   hero.addEventListener('click', () => {
     if (isReacting) return;
     isReacting = true;
     clearTimeout(autoTimer);
     text.textContent = '!!!';
     glitch(() => {
-      face.classList.remove(current);
-      face.classList.add('s-wtf');
-      current = 's-wtf';
+      clearState(); face.classList.add('s-wtf'); current = 's-wtf';
       setTimeout(() => {
         isReacting = false;
         glitch(() => setState('s-happy'));
@@ -369,17 +451,19 @@ viewBtn?.addEventListener('mouseenter', () => {
     });
   });
 
-  // ── Idle detection ──
+  // ── Idle detection ────────────────────────────────
   function resetIdle() {
     clearTimeout(idleTimer);
     if (isIdle) {
       isIdle = false;
+      eyeTargetX = 0; eyeTargetY = 0;
       if (!isReacting) glitch(() => setState('s-happy'));
     }
     idleTimer = setTimeout(() => {
       if (!isReacting) {
         isIdle = true;
         glitch(() => setState('s-sleepy'));
+        startWander();
       }
     }, 7000);
   }
@@ -390,6 +474,7 @@ viewBtn?.addEventListener('mouseenter', () => {
 
   resetIdle();
   scheduleAuto();
+  scheduleBlink();
 }
 
 // ── INIT ──────────────────────────────────────────────
