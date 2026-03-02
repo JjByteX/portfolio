@@ -1078,10 +1078,8 @@
   opacity: 1;
 }
 
-/* ══════════════════════════════════/* ════════════════════════════════════
-   HERO FACE
-   Replace the entire HERO FACE block in sections.css
-   (from the HERO FACE comment down through @media max-width 900px)
+/* ══════════════════════════════════
+   HERO FACE — BASE + STATES
 ════════════════════════════════════ */
 
 #hero {
@@ -1097,7 +1095,6 @@
   padding-right: 2rem;
 }
 
-/* --- ADD THIS BLOCK --- */
 #heroFace.intro-arrived {
   opacity: 1 !important;
   pointer-events: auto;
@@ -1111,9 +1108,10 @@
 
 #heroFace {
   grid-column: 2;
-  grid-row: 1 / 6; /* Span all rows to stay centered relative to name/tagline */
+  grid-row: 1 / 6;
   align-self: center;
-  justify-self: end;  position: relative;
+  justify-self: end;
+  position: relative;
   width: 260px;
   height: 260px;
   background: var(--surface);
@@ -1123,20 +1121,14 @@
     0 0 20px rgba(255, 10, 55, 0.12),
     0 0 60px rgba(255, 10, 55, 0.06),
     inset 0 0 30px rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   pointer-events: none;
   user-select: none;
   flex-shrink: 0;
-  opacity: 0; 
-  transition: opacity 0.1s steps(1); 
-  position: relative; /* CRITICAL: This is the anchor for absolute children */
-  display: block;    /* Changed from flex to block to stop the 'center scrunch' */
+  opacity: 0;
+  transition: opacity 0.1s steps(1);
+  display: block;
   overflow: hidden;
 }
-
-
 
 [data-theme="light"] #heroFace {
   box-shadow:
@@ -1145,7 +1137,6 @@
     inset 0 0 20px rgba(0, 0, 0, 0.06);
 }
 
-/* Corner accents on the TV */
 #heroFace::before,
 #heroFace::after {
   content: '';
@@ -1156,7 +1147,7 @@
   border-style: solid;
   opacity: 0.6;
 }
-#heroFace::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+#heroFace::before { top: -1px;    left: -1px;  border-width: 2px 0 0 2px; }
 #heroFace::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
 .hf-frame-label {
@@ -1184,16 +1175,15 @@
   z-index: 2;
 }
 
-/* ── Base Eye Elements ── */
+/* ── Eye wrappers ── */
 .hf-eye {
-  transition: none;
   position: absolute;
-  width: 30px; 
+  width: 30px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: none; /* Crucial: JS moves this, CSS stays out of the way */
+  transition: none;
   z-index: 3;
 }
 
@@ -1201,17 +1191,22 @@
   position: relative;
   background: var(--text);
   box-shadow: 0 0 10px rgba(226, 226, 240, 0.6);
-  transition: all 0.15s ease;
+  /* Explicit properties — 'all' catches border-radius, width, height, border */
+  transition:
+    width        0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    height       0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    background   0.1s ease,
+    border       0.1s ease,
+    box-shadow   0.1s ease;
   width: 100%;
   height: 100%;
-  /* We remove 'top' from here; the .hf-eye parent handles vertical base position */
 }
 
-/* --- Base positions for the Sockets (Moved UP for more space) --- */
-.hf-eye-l { left: 52px; top: 78px; }
+.hf-eye-l { left: 52px;  top: 78px; }
 .hf-eye-r { right: 52px; top: 78px; }
 
-/* ── Mouth & Text Base (CRITICAL) ── */
+/* ── Mouth & Text ── */
 .hf-mouth {
   position: absolute;
   left: 50%;
@@ -1235,7 +1230,9 @@
   pointer-events: none;
 }
 
-/* ── Optimized States (Recalibrated Vertical Spacing) ── */
+/* ══════════════════════════════════
+   FACE STATES
+════════════════════════════════════ */
 
 /* s-happy */
 #heroFace.s-happy .hf-pupil { width: 26px; height: 26px; border-radius: 50%; }
@@ -1262,7 +1259,7 @@
 #heroFace.s-grin .hf-mouth { width: 96px; height: 30px; border-radius: 50px; background: var(--text); border: none; box-shadow: 0 0 12px rgba(226, 226, 240, 0.3); bottom: 58px; }
 
 /* s-squint */
-#heroFace.s-squint .hf-pupil { width: 22px; height: 6px; border-radius: 6px 6px 0 0; background: none; border: 2px solid var(--text); border-bottom: none; }
+#heroFace.s-squint .hf-pupil { width: 22px; height: 6px; border-radius: 6px 6px 0 0; background: none; border: 2px solid var(--text); border-bottom: none; box-shadow: none; }
 #heroFace.s-squint .hf-mouth { width: 70px; height: 14px; border-radius: 0 0 70px 70px; background: none; border: 2px solid var(--text); border-top: none; box-shadow: none; bottom: 68px; }
 
 /* s-sleepy */
@@ -1275,22 +1272,18 @@
 
 /* s-dead */
 #heroFace.s-dead .hf-pupil { width: 20px; height: 20px; background: none; border: none; box-shadow: none; }
-
-/* --- PASTE THE NEW LINES HERE --- */
 #heroFace.s-dead .hf-pupil::before,
-#heroFace.s-dead .hf-pupil::after { 
-  content: ''; 
-  position: absolute; 
-  width: 100%; 
-  height: 2px; 
-  background: var(--text); 
-  top: 50%; 
-  left: 0; 
+#heroFace.s-dead .hf-pupil::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  top: 50%;
+  left: 0;
 }
 #heroFace.s-dead .hf-pupil::before { transform: rotate(45deg); }
 #heroFace.s-dead .hf-pupil::after  { transform: rotate(-45deg); }
-/* -------------------------------- */
-
 #heroFace.s-dead .hf-mouth { width: 28px; height: 3px; border-radius: 2px; bottom: 74px; background: var(--text); }
 
 /* s-thinking */
@@ -1303,30 +1296,220 @@
 #heroFace.s-wink .hf-eye-r .hf-pupil { width: 26px; height: 3px; border-radius: 2px; }
 #heroFace.s-wink .hf-mouth { width: 54px; height: 12px; border-radius: 0 0 54px 54px; background: none; border: 2px solid var(--text); border-top: none; box-shadow: none; bottom: 72px; }
 
+/* s-blinded — > < chevron eyes (V mouth rotated), wide rectangle grimace */
+
+/* Pupil becomes the V container, rotated sideways */
+#heroFace.s-blinded .hf-eye-l .hf-pupil {
+  width: 30px;
+  height: 10px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  transform: rotate(-90deg); /* V → > */
+}
+#heroFace.s-blinded .hf-eye-r .hf-pupil {
+  width: 30px;
+  height: 10px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  transform: rotate(90deg); /* V → < */
+}
+
+/* Exact same arms as the V mouth */
+#heroFace.s-blinded .hf-pupil::before,
+#heroFace.s-blinded .hf-pupil::after {
+  content: '';
+  position: absolute;
+  width: 21px;
+  height: 4.5px;
+  background: var(--text);
+  border-radius: 2px;
+  top: 0;
+}
+#heroFace.s-blinded .hf-pupil::before {
+  left: 0;
+  transform-origin: 0% 50%;
+  transform: rotate(45deg);
+}
+#heroFace.s-blinded .hf-pupil::after {
+  right: 0;
+  transform-origin: 100% 50%;
+  transform: rotate(-45deg);
+}
+
+/* Wide rectangle grimace */
+#heroFace.s-blinded .hf-mouth {
+  width: 96px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--text);
+  bottom: 62px;
+  border: none;
+  box-shadow: none;
+}
+
+/* Antennae — pressed flat from brightness */
+#heroFace.s-blinded .hf-antenna-l { transform: rotate(50deg); }
+#heroFace.s-blinded .hf-antenna-r { transform: rotate(-50deg); }
+
+/* s-nervous — wide rectangular scanning eyes, tight mouth */
+#heroFace.s-nervous .hf-pupil {
+  width: 34px;
+  height: 14px;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(226, 226, 240, 0.7);
+}
+#heroFace.s-nervous .hf-eye-l .hf-pupil {
+  width: 32px;
+  height: 12px;
+}
+#heroFace.s-nervous .hf-eye-r .hf-pupil {
+  width: 36px;
+  height: 13px;
+}
+#heroFace.s-nervous .hf-mouth {
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--text);
+  bottom: 76px;
+  border: none;
+  box-shadow: none;
+}
+/* Antennae — pulled slightly back */
+#heroFace.s-nervous .hf-antenna-l { transform: rotate(8deg); }
+#heroFace.s-nervous .hf-antenna-r { transform: rotate(-8deg); }
+
+/* s-starstruck — each eye ~30% of face width, true V mouth */
+#heroFace.s-starstruck .hf-eye {
+  width: 74px;
+  height: 74px;
+}
+#heroFace.s-starstruck .hf-eye-l { left: 18px;  top: 58px; }
+#heroFace.s-starstruck .hf-eye-r { right: 18px; top: 58px; }
+
+#heroFace.s-starstruck .hf-pupil {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 0 24px rgba(226, 226, 240, 0.95);
+}
+
+/* V mouth — two angled arms meeting at a point */
+#heroFace.s-starstruck .hf-mouth {
+  width: 30px;
+  height: 10px;
+  background: none;
+  border: none;
+  top: 146px;
+  bottom: auto;
+  overflow: visible;
+}
+
+#heroFace.s-starstruck .hf-mouth::before,
+#heroFace.s-starstruck .hf-mouth::after {
+  content: '';
+  position: absolute;
+width: 23px;
+  height: 4.5px;
+  background: var(--text);
+  border-radius: 2px;
+  top: 0;
+}
+
+#heroFace.s-starstruck .hf-mouth::before {
+  left: 0;
+  transform-origin: 0% 50%;
+  transform: rotate(45deg);
+}
+
+#heroFace.s-starstruck .hf-mouth::after {
+  right: 0;
+  transform-origin: 100% 50%;
+  transform: rotate(-45deg);
+}
+/* Antennae — wide open, pure excitement */
+#heroFace.s-starstruck .hf-antenna-l { transform: rotate(-22deg); }
+#heroFace.s-starstruck .hf-antenna-r { transform: rotate(22deg); }
+
 /* s-wtf */
 #heroFace.s-wtf .hf-pupil,
 #heroFace.s-wtf .hf-mouth { opacity: 0; }
 #heroFace.s-wtf .hf-text  { opacity: 1; }
+
 /* ════════════════════════════════════
-   HERO FACE — PHYSICAL ANIMATIONS
-   Base layer: asymmetric breathing loop (never stops).
-   Reactions: handled by Web Animations API in JS — no CSS classes needed.
-   This avoids the CSS infinite vs forwards conflict entirely.
+   HERO FACE — K-VRC PHYSICAL ANIMATIONS
+   K-VRC hovers on thrusters — he doesn't breathe.
+   Idle = mechanical hover bob. Reactions = bouncy robot energy.
 ════════════════════════════════════ */
 
-/* Base layer — slow inhale (longer), quick exhale (shorter).
-   Asymmetric timing is what makes breathing feel biological. */
-@keyframes hfBreathe {
-  0%   { transform: translateY(0px)  scaleX(1)     scaleY(1);    }
-  38%  { transform: translateY(-3px) scaleX(0.98)  scaleY(1.02); }
-  55%  { transform: translateY(-4px) scaleX(0.985) scaleY(1.018);}
-  72%  { transform: translateY(-2px) scaleX(0.992) scaleY(1.01); }
-  100% { transform: translateY(0px)  scaleX(1)     scaleY(1);    }
+/* ── Idle hover bob — thrusters, not lungs ──
+   K-VRC floats. Mechanical, slight tilt, subtle.
+   Faster and more regular than breathing.        */
+/* Spends time at the top, falls faster — thruster physics */
+@keyframes hfHoverBob {
+  0%   { transform: translateY(0px)  rotate(0deg);   }
+  20%  { transform: translateY(-7px) rotate(1.2deg); }
+  45%  { transform: translateY(-8px) rotate(-0.8deg);}
+  65%  { transform: translateY(-7px) rotate(0.6deg); }
+  80%  { transform: translateY(-2px) rotate(-0.3deg);}
+  90%  { transform: translateY(1px)  rotate(0.2deg); }
+  100% { transform: translateY(0px)  rotate(0deg);   }
 }
 
 #heroFace.hf-idle-breathe {
-  animation: hfBreathe 3.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: hfHoverBob 2.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
+
+/* Sleepy — same bob but heavy and slow, like thrusters barely keeping up */
+#heroFace.s-sleepy.hf-idle-breathe {
+  animation: hfHoverBob 5.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Pong CRT transition ── */
+@keyframes hfScanWipe {
+  0%   { top: -2px;   opacity: 1; }
+  100% { top: 100%;   opacity: 0; }
+}
+
+@keyframes hfStaticBurst {
+  0%   { opacity: 0; }
+  15%  { opacity: 0.9; }
+  30%  { opacity: 0.3; }
+  50%  { opacity: 0.8; }
+  70%  { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+
+.hf-crt-wipe {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255,10,55,0.9), transparent);
+  box-shadow: 0 0 12px rgba(255,10,55,0.6);
+  z-index: 10;
+  pointer-events: none;
+  animation: hfScanWipe 0.35s ease-in forwards;
+}
+
+.hf-static-burst {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: cover;
+  opacity: 0;
+  z-index: 10;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: hfStaticBurst 0.4s ease-out forwards;
+}
+
+/* One-shots — handled entirely by Web Animations API in JS */
 
 
 /* ════════════════════════════════════

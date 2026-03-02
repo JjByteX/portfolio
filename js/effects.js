@@ -210,15 +210,15 @@ function initHeroFace() {
   function bootFace() {
 
     // ── Constants ───────────────────────────────────────────────────────
-    const ALL_STATES = [
+const ALL_STATES = [
       's-happy', 's-eager', 's-pleased', 's-smile',
       's-grin', 's-squint', 's-surprised', 's-sleepy',
-      's-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf'
+'s-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf', 's-sad', 's-starstruck', 's-nervous', 's-blinded'
     ];
 
-    const NO_BLINK = new Set([
+const NO_BLINK = new Set([
       's-sleepy', 's-wtf', 's-dead', 's-squint',
-      's-annoyed', 's-pleased', 's-grin', 's-thinking'
+      's-annoyed', 's-pleased', 's-grin', 's-thinking', 's-blinded'
     ]);
 
     const NO_TRACK = new Set([
@@ -290,9 +290,17 @@ function initHeroFace() {
     // NOTE: transform is written to .hf-eye (the wrapper), NOT .hf-pupil.
     // This keeps tracking translate() and blink scaleY() on separate
     // elements so they never overwrite each other.
-    let eyeTargetX  = 0, eyeTargetY  = 0;
+let eyeTargetX  = 0, eyeTargetY  = 0;
     let eyeCurX     = 0, eyeCurY     = 0;
     let isCrossZone = false;
+
+    // Shy drift — face moves away from cursor when it gets close
+    // Uses standalone CSS 'translate' property so it never conflicts
+    // with 'transform' used by hover bob and Web Animations one-shots.
+    let shyTargetX = 0, shyTargetY = 0;
+    let shyCurX    = 0, shyCurY    = 0;
+    const SHY_ZONE = 240; // px — shy starts here
+    const SHY_MAX  = 22;  // px — max drift distance
 
     function onMouseMove(e) {
       lastMX = e.clientX;
@@ -305,12 +313,36 @@ function initHeroFace() {
       const dy   = e.clientY - fcy;
       const dist = Math.hypot(dx, dy) || 1;
 
-      isCrossZone = (Math.abs(dx) < 42 && dy > -70 && dy < 20 && dist < 88);
+isCrossZone = (Math.abs(dx) < 42 && dy > -70 && dy < 20 && dist < 88);
 
-if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin') {
-triggerFaceAnim(ANIM_TREMBLE, 550);
+      // Grin trigger — cursor caught him
+if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin' && !fromNav) {
+        shyTargetX = 0;
+        shyTargetY = 0;
+        triggerFaceAnim(ANIM_TREMBLE, 550);
         reactFor('s-grin', 900, 's-eager');
         return;
+      }
+
+// Shy zone — drift away from cursor, stronger as it gets closer
+      if (dist < SHY_ZONE && !isIdle && !isPonging) {
+        const depth        = 1 - ((dist - 88) / (SHY_ZONE - 88));
+        const clampedDepth = Math.max(0, Math.min(1, depth));
+        shyTargetX = -(dx / dist) * clampedDepth * SHY_MAX;
+        shyTargetY = -(dy / dist) * clampedDepth * SHY_MAX;
+
+        // Switch to nervous face when entering shy zone
+        if (!isReacting && current !== 's-nervous' && current !== 's-grin') {
+          setState('s-nervous');
+        }
+      } else {
+        shyTargetX = 0;
+        shyTargetY = 0;
+
+        // Leave shy zone — return to eager if we were nervous
+        if (!isReacting && current === 's-nervous') {
+          setState('s-eager');
+        }
       }
 
       const pull = Math.min(dist / 280, 1);
@@ -338,6 +370,17 @@ triggerFaceAnim(ANIM_TREMBLE, 550);
           eyeL.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
           eyeR.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
         }
+      }
+
+// Shy drift — smooth lerp on standalone translate property
+      shyCurX += (shyTargetX - shyCurX) * 0.06;
+      shyCurY += (shyTargetY - shyCurY) * 0.06;
+
+      // Only apply if meaningful — avoids constantly dirtying style
+      if (Math.abs(shyCurX) > 0.05 || Math.abs(shyCurY) > 0.05) {
+        face.style.translate = `${shyCurX.toFixed(2)}px ${shyCurY.toFixed(2)}px`;
+      } else {
+        face.style.translate = '';
       }
 
       requestAnimationFrame(lerpEyes);
@@ -414,8 +457,9 @@ if (roll < 0.09) {
           's-thinking'
         ].filter(s => s !== current);
 
-        const next = pool[Math.floor(Math.random() * pool.length)];
-        glitch(() => { setState(next); scheduleAuto(); });
+const next = pool[Math.floor(Math.random() * pool.length)];
+        setState(next);
+        scheduleAuto();
 
       }, 3200 + Math.random() * 2800);
     }
@@ -452,51 +496,51 @@ function triggerFaceAnim(keyframes, duration, easing = 'cubic-bezier(0.16,1,0.3,
   setTimeout(() => { faceAnimCooldown = false; }, duration * 0.6);
 }
 
-// Keyframe sets — proper anticipation → action → settle arcs
+// K-VRC reacts with his whole body — bouncy, snappy, robot energy.
+
 const ANIM_LUNGE = [
-  // Anticipation: lean back slightly first
-  { transform: 'translate(0,0)          scaleX(1)    scaleY(1)',    offset: 0    },
-  { transform: 'translate(-4px, 2px)    scaleX(0.95) scaleY(1.05)', offset: 0.1  },
-  // Action: lunge forward with squash
-  { transform: 'translate(12px, -8px)   scaleX(1.1)  scaleY(0.9)',  offset: 0.32 },
-  // First overshoot settle
-  { transform: 'translate(7px, -5px)    scaleX(0.97) scaleY(1.03)', offset: 0.52 },
-  // Second smaller overshoot
-  { transform: 'translate(4px, -3px)    scaleX(1.01) scaleY(0.99)', offset: 0.68 },
-  { transform: 'translate(1px, -1px)    scaleX(1)    scaleY(1)',    offset: 0.84 },
-  { transform: 'translate(0,0)          scaleX(1)    scaleY(1)',    offset: 1    },
+  // Anticipation: compress down
+  { transform: 'translate(0, 0)         scaleX(1)    scaleY(1)',    offset: 0    },
+  { transform: 'translate(0, 6px)       scaleX(1.1)  scaleY(0.88)', offset: 0.12 },
+  // Launch: pop UP and LEFT toward cursor
+  { transform: 'translate(-10px, -14px) scaleX(0.88) scaleY(1.15)', offset: 0.30 },
+  { transform: 'translate(-6px, -6px)   scaleX(1.06) scaleY(0.94)', offset: 0.50 },
+  { transform: 'translate(-4px, -10px)  scaleX(0.95) scaleY(1.06)', offset: 0.65 },
+  { transform: 'translate(-1px, -4px)   scaleX(1.02) scaleY(0.98)', offset: 0.80 },
+  { transform: 'translate(0, 0)         scaleX(1)    scaleY(1)',    offset: 1    },
 ];
 
 const ANIM_TREMBLE = [
-  // Not random noise — a clear held-breath pattern.
-  // Three beats of compression, each smaller, like coiling then releasing.
-  { transform: 'translate(0,0)           scaleX(1)    scaleY(1)',    offset: 0    },
-  { transform: 'translate(0, -2px)       scaleX(1.04) scaleY(0.97)', offset: 0.12 },
-  { transform: 'translate(-4px, -2px)    scaleX(0.97) scaleY(1.03)', offset: 0.24 },
-  { transform: 'translate(4px, -3px)     scaleX(1.03) scaleY(0.97)', offset: 0.36 },
-  { transform: 'translate(-3px, -2px)    scaleX(0.98) scaleY(1.02)', offset: 0.48 },
-  { transform: 'translate(3px, -2px)     scaleX(1.02) scaleY(0.98)', offset: 0.60 },
-  { transform: 'translate(-1px, -1px)    scaleX(0.99) scaleY(1.01)', offset: 0.76 },
-  { transform: 'translate(0,0)           scaleX(1)    scaleY(1)',    offset: 1    },
+  // Tight, barely-contained — thruster stutter, not a shake
+  { transform: 'translate(0, 0)      scaleX(1)    scaleY(1)',    offset: 0    },
+  { transform: 'translate(-2px, -1px) scaleX(1.03) scaleY(0.98)', offset: 0.10 },
+  { transform: 'translate(2px, -2px)  scaleX(0.98) scaleY(1.03)', offset: 0.22 },
+  { transform: 'translate(-2px, -1px) scaleX(1.02) scaleY(0.98)', offset: 0.34 },
+  { transform: 'translate(2px, -2px)  scaleX(0.98) scaleY(1.02)', offset: 0.46 },
+  { transform: 'translate(-1px, -1px) scaleX(1.01) scaleY(0.99)', offset: 0.60 },
+  { transform: 'translate(1px, -1px)  scaleX(0.99) scaleY(1.01)', offset: 0.74 },
+  { transform: 'translate(0, 0)       scaleX(1)    scaleY(1)',    offset: 1    },
 ];
 
+
 const ANIM_WILT = [
-  // Gravity pulls it down, one secondary bounce at the bottom, settle.
-  { transform: 'translate(0,0)       scaleX(1)    scaleY(1)',    offset: 0    },
-  { transform: 'translate(0, 10px)   scaleX(1.08) scaleY(0.88)', offset: 0.35 },
-  // Secondary bounce — weight landing
-  { transform: 'translate(0, 5px)    scaleX(0.97) scaleY(1.04)', offset: 0.55 },
-  { transform: 'translate(0, 8px)    scaleX(1.03) scaleY(0.97)', offset: 0.70 },
-  { transform: 'translate(0, 2px)    scaleX(0.99) scaleY(1.01)', offset: 0.85 },
-  { transform: 'translate(0,0)       scaleX(1)    scaleY(1)',    offset: 1    },
+  // K-VRC deflates — thrusters sputter, he sinks and bobs sadly.
+  { transform: 'translate(0, 0)     scaleX(1)    scaleY(1)',    offset: 0    },
+  { transform: 'translate(0, 12px)  scaleX(1.1)  scaleY(0.86)', offset: 0.30 },
+  // Sad little secondary bounce — weight with no energy behind it
+  { transform: 'translate(0, 6px)   scaleX(0.96) scaleY(1.05)', offset: 0.52 },
+  { transform: 'translate(0, 10px)  scaleX(1.04) scaleY(0.96)', offset: 0.68 },
+  { transform: 'translate(0, 4px)   scaleX(0.99) scaleY(1.01)', offset: 0.84 },
+  { transform: 'translate(0, 0)     scaleX(1)    scaleY(1)',    offset: 1    },
 ];
 
 // Start the always-on breathing base layer
 face.classList.add('hf-idle-breathe');
 
     // ── Hero enter / leave ────────────────────────────────────────────
-hero.addEventListener('mouseenter', () => {
-      triggerFaceAnim(ANIM_LUNGE, 700);
+hero.addEventListener('mouseenter', (e) => {
+  const wasAway = (current === 's-sad' || isIdle || isPonging) && !fromNav;
+  if (wasAway) triggerFaceAnim(ANIM_LUNGE, 700);
             if (isIdle || isPonging) {
         stopPong();
         isIdle     = false;
@@ -512,25 +556,92 @@ hero.addEventListener('mouseenter', () => {
       }
     });
 
-hero.addEventListener('mouseleave', () => {
-      eyeTargetX  = 0;
-      eyeTargetY  = 0;
-      isCrossZone = false;
-triggerFaceAnim(ANIM_WILT, 650);
-      if (!isReacting && !isIdle) setState('s-pleased');
+hero.addEventListener('mouseleave', (e) => {
+  // Ignore edge-clips — only react if cursor genuinely left downward
+  // or exited the viewport. Side exits (left/right padding gaps) are
+  // almost always accidental and cause the shake.
+  const leftSide   = e.clientX <= 8;
+  const rightSide  = e.clientX >= window.innerWidth - 8;
+  const topExit    = e.clientY <= 8;
+  const bottomExit = e.clientY >= window.innerHeight - 8;
+  const exitedViewport = leftSide || rightSide || topExit || bottomExit;
+
+  // If cursor is still in the upper 60% of the page it clipped a side edge
+  const likelySideClip = !exitedViewport && e.clientY < window.innerHeight * 0.6;
+  if (likelySideClip) return;
+
+eyeTargetX  = 0;
+  eyeTargetY  = 0;
+  isCrossZone = false;
+  shyTargetX  = 0;
+  shyTargetY  = 0;
+  triggerFaceAnim(ANIM_WILT, 650);
+  if (!isReacting && !isIdle) setState('s-sad');
+});
+
+// ── Nav peek — reacts from s-sad, returns to s-sad ────────────────
+    // A lightweight reactFor that doesn't require isReacting to be false
+    // and always returns to s-sad instead of s-eager, because the cursor
+    // is outside the hero when nav is hovered.
+let peekTimer   = null;
+    let fromNav     = false; // true while cursor is over nav or just left it
+
+    function peekAt(state, duration = 1200) {
+      // Don't interrupt real reactions or pong
+      if (isReacting || isPonging) return;
+      clearTimeout(peekTimer);
+      clearState();
+      current = state;
+      face.classList.add(current);
+
+      peekTimer = setTimeout(() => {
+        if (!isReacting && !isPonging && !isIdle) {
+          setState('s-sad');
+        }
+      }, duration);
+    }
+
+    // Cancel peek when cursor leaves the nav entirely
+    function cancelPeek() {
+      clearTimeout(peekTimer);
+      if (!isReacting && !isPonging && !isIdle) {
+        setState('s-sad');
+      }
+    }
+
+    const navLinks = document.querySelectorAll('nav .nav-links a');
+navLinks.forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        fromNav = true;
+        const href = link.getAttribute('href');
+        if      (href === '#about')    peekAt('s-pleased',     1100);
+        else if (href === '#skills')   peekAt('s-squint',      1200);
+        else if (href === '#projects') peekAt('s-eager',       1000);
+        else if (href === '#contact')  peekAt('s-starstruck',  1600);
+      });
+      link.addEventListener('mouseleave', () => {
+        cancelPeek();
+        // Keep fromNav true briefly — long enough to cover the
+        // cursor travel from nav back into hero without triggering lunge
+        setTimeout(() => { fromNav = false; }, 600);
+      });
     });
 
     // ── CTA button hovers ─────────────────────────────────────────────
     document.querySelector('a[href="#projects"].btn')
       ?.addEventListener('mouseenter', () => reactFor('s-squint', 1100, 's-eager'));
 
-    document.querySelector('a[href="#contact"].btn')
-      ?.addEventListener('mouseenter', () => reactFor('s-surprised', 950, 's-eager'));
+document.querySelector('a[href="#contact"].btn')
+      ?.addEventListener('mouseenter', () => reactFor('s-starstruck', 1600, 's-eager'));
 
     // ── Theme toggle ──────────────────────────────────────────────────
-    document.getElementById('themeToggle')?.addEventListener('click', () => {
+document.getElementById('themeToggle')?.addEventListener('click', () => {
       const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
-      reactFor(nowLight ? 's-annoyed' : 's-pleased', nowLight ? 1600 : 900, 's-happy');
+      if (nowLight) {
+        reactFor('s-blinded', 1800, 's-sad');
+      } else {
+        reactFor('s-pleased', 900, 's-sad');
+      }
     });
 
     // ── Click in hero — 3-beat comic ──────────────────────────────────
@@ -632,16 +743,27 @@ triggerFaceAnim(ANIM_WILT, 650);
     let pongRAF       = null;
     let pongWakeLabel = null;
 
-    function startPong() {
+function startPong() {
       if (isPonging) return;
       isPonging = true;
 
-      // Hide the face elements — the canvas replaces them visually
+      // ── Phase 1: glitch flash ────────────────────────────────────────
+      face.classList.add('glitch-shift');
+      setTimeout(() => face.classList.remove('glitch-shift'), 80);
+
+      // ── Phase 2: face elements fade out ─────────────────────────────
       face.querySelectorAll('.hf-eye, .hf-mouth, .hf-text').forEach(el => {
-        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.2s ease';
+        el.style.opacity    = '0';
       });
 
-      // ── Canvas setup ─────────────────────────────────────────────────
+      // ── Phase 3: CRT scanline wipe ───────────────────────────────────
+      const crtWipe = document.createElement('div');
+      crtWipe.className = 'hf-crt-wipe';
+      face.appendChild(crtWipe);
+      setTimeout(() => crtWipe.remove(), 400);
+
+      // ── Canvas setup — delayed until after wipe ──────────────────────
       pongCanvas        = document.createElement('canvas');
       pongCanvas.width  = face.offsetWidth  || 260;
       pongCanvas.height = face.offsetHeight || 260;
@@ -654,7 +776,19 @@ triggerFaceAnim(ANIM_WILT, 650);
         zIndex:   '1',
         display:  'block',
       });
+// Canvas starts invisible — fades in after wipe
+      pongCanvas.style.opacity    = '0';
+      pongCanvas.style.transition = 'opacity 0.25s ease';
       face.appendChild(pongCanvas);
+
+      // Force dark background on face during pong — restored on stopPong
+      face.dataset.prevBg = face.style.background || '';
+      face.style.background = 'rgb(8, 8, 16)';
+
+      // Fade canvas in after the scanline wipe passes
+      setTimeout(() => {
+        pongCanvas.style.opacity = '1';
+      }, 280);
 
       // ── "CLICK TO WAKE" label ─────────────────────────────────────────
       pongWakeLabel = document.createElement('span');
@@ -671,9 +805,14 @@ triggerFaceAnim(ANIM_WILT, 650);
         whiteSpace:   'nowrap',
         zIndex:       '4',
         pointerEvents:'none',
-        animation:    'hfWakeBlink 1.4s ease-in-out infinite',
-      });
+animation:    'hfWakeBlink 1.4s ease-in-out infinite',
+        opacity:      '0',
+        transition:   'opacity 0.3s ease',
+            });
       face.appendChild(pongWakeLabel);
+      setTimeout(() => {
+        if (pongWakeLabel) pongWakeLabel.style.opacity = '1';
+      }, 500);
 
       // Inject the blink keyframe once
       if (!document.getElementById('pongWakeStyle')) {
@@ -692,10 +831,10 @@ triggerFaceAnim(ANIM_WILT, 650);
       const W   = pongCanvas.width;
       const H   = pongCanvas.height;
 
-      // Resolve the current --text color for drawing
+// Pong is always a dark CRT screen — always draw with light color
+      // regardless of theme. The face background is forced dark anyway.
       function textColor() {
-        return getComputedStyle(document.documentElement)
-          .getPropertyValue('--text').trim() || '#e2e2f0';
+        return '#e2e2f0';
       }
 
       // ── Game state ────────────────────────────────────────────────────
@@ -769,8 +908,8 @@ state.ball.vy = (Math.random() * 2 - 1) * 1.6;
         const b   = state.ball;
         const col = textColor();
 
-        // Semi-transparent clear — creates the motion-blur trail naturally
-        ctx.fillStyle = 'rgba(8, 8, 16, 0.72)';
+// Always opaque dark — pong is a CRT screen, never light mode
+        ctx.fillStyle = 'rgba(8, 8, 16, 0.88)';
         ctx.fillRect(0, 0, W, H);
 
         // Centre dashed divider
@@ -893,29 +1032,61 @@ moveAI(state.padR, aiR, b.y);
     }
 
     // ── Stop Pong ─────────────────────────────────────────────────────
-    function stopPong() {
+function stopPong() {
       if (!isPonging) return;
       isPonging = false;
 
       cancelAnimationFrame(pongRAF);
       pongRAF = null;
 
-      pongCanvas?.remove();
-      pongCanvas = null;
+      // ── Phase 1: static burst over the canvas ────────────────────────
+      const burst = document.createElement('div');
+      burst.className = 'hf-static-burst';
+      face.appendChild(burst);
 
-      pongWakeLabel?.remove();
-      pongWakeLabel = null;
+      // ── Phase 2: fade canvas and label out ───────────────────────────
+      if (pongCanvas) {
+        pongCanvas.style.transition = 'opacity 0.2s ease';
+        pongCanvas.style.opacity    = '0';
+      }
+      if (pongWakeLabel) {
+        pongWakeLabel.style.opacity = '0';
+      }
 
-      // Restore face elements
-      face.querySelectorAll('.hf-eye, .hf-mouth, .hf-text').forEach(el => {
-        el.style.opacity = '';
-      });
+      setTimeout(() => {
+        burst.remove();
+        pongCanvas?.remove();
+        pongCanvas = null;
+        pongWakeLabel?.remove();
+        pongWakeLabel = null;
 
-      // Reset eye position so they don't snap from a stale transform
-      eyeCurX = 0; eyeCurY = 0;
-      eyeTargetX = 0; eyeTargetY = 0;
-      eyeL.style.transform = '';
-      eyeR.style.transform = '';
+        // ── Phase 3: glitch then restore face ──────────────────────────
+        face.classList.add('glitch-shift');
+        setTimeout(() => face.classList.remove('glitch-shift'), 80);
+
+        face.querySelectorAll('.hf-eye, .hf-mouth, .hf-text').forEach(el => {
+          el.style.transition = 'opacity 0.25s ease';
+          el.style.opacity    = '';
+        });
+
+        // Clean up transitions after they finish
+        setTimeout(() => {
+          face.querySelectorAll('.hf-eye, .hf-mouth, .hf-text').forEach(el => {
+            el.style.transition = '';
+          });
+        }, 300);
+
+        // Restore face background
+        face.style.background = face.dataset.prevBg || '';
+        delete face.dataset.prevBg;
+
+        // Reset eye position
+        eyeCurX = 0; eyeCurY = 0;
+        eyeTargetX = 0; eyeTargetY = 0;
+        eyeL.style.transform = '';
+        eyeR.style.transform = '';
+
+      }, 350);
     }
 
     // ── Hex color → "r, g, b" string for rgba() ───────────────────────
