@@ -501,7 +501,7 @@ function initHeroFace() {
           // Tier 2: launch Pong after 25s more (32s total idle)
           pongTimer = setTimeout(() => {
             if (isIdle && !isReacting) startPong();
-          }, 25000);
+          }, 5000);
         }
       }, 7000);
     }
