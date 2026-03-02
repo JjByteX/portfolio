@@ -300,8 +300,8 @@ let eyeTargetX  = 0, eyeTargetY  = 0;
     // with 'transform' used by hover bob and Web Animations one-shots.
     let shyTargetX = 0, shyTargetY = 0;
     let shyCurX    = 0, shyCurY    = 0;
-    const SHY_ZONE = 240; // px — shy starts here
-    const SHY_MAX  = 22;  // px — max drift distance
+    const SHY_ZONE = 285; // px — shy starts here
+    const SHY_MAX  = 170;  // px — max drift distance
 
     function onMouseMove(e) {
       lastMX = e.clientX;
@@ -657,7 +657,7 @@ document.getElementById('themeToggle')?.addEventListener('click', () => {
 // Step 3 — blink burst after holding the grimace
           setTimeout(() => {
             // Switch to squint — eyes recovering but not fully open yet
-            setState('s-squint');
+            setState('s-sleepy');
             let blinks = 0;
             const blinkBurst = setInterval(() => {
               face.classList.add('blinking');
