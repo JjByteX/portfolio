@@ -41,7 +41,7 @@
       dotsEl.appendChild(dot);
     });
 
-    /* Zoom button — injected once, persists */
+    /* Zoom button — injected once into the carousel, then persists across opens */
     const carousel = document.getElementById('mCarousel');
     let zoomBtn = carousel.querySelector('.modal-zoom-btn');
     if (!zoomBtn) {
@@ -67,7 +67,9 @@
 
   function updateCarousel() {
     slidesEl.style.transform = `translateX(-${current * 100}%)`;
-    dotsEl.querySelectorAll('.modal-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    dotsEl.querySelectorAll('.modal-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current)
+    );
   }
 
   prevBtn?.addEventListener('click', () => goTo(current - 1));
@@ -89,12 +91,11 @@
 
     titleEl.textContent = title;
 
-    /* Badges: intentionally empty — tags only in TECH STACK, zero duplication */
+    // Badges intentionally left empty — tags are shown once in TECH STACK only
     badgesEl.innerHTML = '';
 
     descEl.textContent = desc;
 
-    /* Tags — rendered exactly once */
     tagsEl.innerHTML = '';
     tagNodes.forEach(t => {
       const span = document.createElement('span');
@@ -104,22 +105,21 @@
     });
 
     buildCarousel(imgs.length ? imgs : []);
-overlay.classList.add('open');
-const panel = document.getElementById('projModalPanel');
+    overlay.classList.add('open');
+
+    // Listener is always removed in closeModal — safe to add each open
     document.addEventListener('keydown', onModalKey);
   }
 
-function closeModal() {
-  const overlay = document.getElementById('projModal');
-  overlay.classList.add('closing');
-  setTimeout(() => {
-overlay.classList.remove('open', 'closing');
-document.body.style.overflow = '';
-document.documentElement.style.overflow = '';
-const panel = document.getElementById('projModalPanel');
-if (panel) { panel.style.overflowY = ''; panel.classList.remove('scrollable'); }
-  }, 380);
-}
+  function closeModal() {
+    // Use the captured overlay reference — never re-query inside a closure
+    overlay.classList.add('closing');
+    setTimeout(() => {
+      overlay.classList.remove('open', 'closing');
+      // Always remove — even if Escape fires before a modal was fully opened
+      document.removeEventListener('keydown', onModalKey);
+    }, 380);
+  }
 
   function onModalKey(e) {
     if (e.key === 'Escape') { closeModal(); return; }
@@ -133,7 +133,7 @@ if (panel) { panel.style.overflowY = ''; panel.classList.remove('scrollable'); }
   });
 
   closeBtn?.addEventListener('click', closeModal);
-  overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
 
   /* ── Lightbox ── */
   function buildLightbox() {
@@ -185,10 +185,18 @@ if (panel) { panel.style.overflowY = ''; panel.classList.remove('scrollable'); }
     if (!lightbox) return;
     const img = lightbox.querySelector('#lbImg');
     const ctr = lightbox.querySelector('#lbCounter');
+
+    // Use onload instead of a blind setTimeout — avoids the blank-frame flash
+    // that occurs when src clears before the next image finishes loading.
     img.style.opacity = '0';
-    setTimeout(() => { img.src = images[lbCurrent]; img.style.opacity = '1'; }, 150);
+    img.onload = () => { img.style.opacity = '1'; img.onload = null; };
+    img.src = images[lbCurrent];
+
     ctr.textContent = images.length > 1
-      ? `${String(lbCurrent + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}` : '';
+      ? `${String(lbCurrent + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}`
+      : '';
+
+    // Keep the carousel dot in sync with the lightbox position
     goTo(lbCurrent);
   }
 

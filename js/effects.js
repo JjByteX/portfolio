@@ -88,7 +88,6 @@ function initMagnetic() {
 
 // ── INTERSECTION OBSERVERS ────────────────────────────
 function initObservers() {
-  // Section label clip-wipe
   const labelObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) e.target.classList.add('wiped');
@@ -97,7 +96,6 @@ function initObservers() {
 
   document.querySelectorAll('.section-label').forEach(el => labelObserver.observe(el));
 
-  // Section title scramble
   document.querySelectorAll('.section-title').forEach(el => {
     new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -106,7 +104,6 @@ function initObservers() {
     }, { threshold: 0.6 }).observe(el);
   });
 
-  // Stat count-up
   document.querySelectorAll('.stat-val').forEach(el => {
     new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -115,7 +112,6 @@ function initObservers() {
     }, { threshold: 0.8 }).observe(el);
   });
 
-  // Chip stagger
   document.querySelectorAll('.skill-group').forEach(el => {
     new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -181,7 +177,8 @@ function initCursor() {
 // Theme toggle → dark mode       → s-pleased   ^^ satisfied, 900ms
 // Click anywhere in hero         → surprised → dead → eager  (3-beat comic)
 // Idle 7s                        → s-sleepy    droopy eyes, slow transition
-// Wake from idle                 → surprised → eager
+// Idle 32s                       → PONG        vintage screensaver inside face
+// Wake from idle / pong          → surprised → eager
 // Auto-cycle every 3–6s          → happy / eager / pleased / thinking (drift)
 // Auto rare ~5%                  → s-dead flash (820ms)
 // Auto rare ~4%                  → s-wtf text  (1.1s)
@@ -189,31 +186,21 @@ function initCursor() {
 function initHeroFace() {
   const face = document.getElementById('heroFace');
   const text = face?.querySelector('.hf-text');
-  const eyeL = face?.querySelector('.hf-eye-l .hf-pupil');
-  const eyeR = face?.querySelector('.hf-eye-r .hf-pupil');
+  const eyeL = face?.querySelector('.hf-eye-l');   // translate lives on the wrapper
+  const eyeR = face?.querySelector('.hf-eye-r');   // scaleY blink lives on .hf-pupil
   const hero = document.getElementById('hero');
   if (!face || !text || !eyeL || !eyeR || !hero) return;
 
   // ── Mobile guard ──────────────────────────────────────────────────────
-  // #heroFace is display:none on screens ≤900px (see sections.css).
-  // No point running timers, RAF loops, or attaching listeners on mobile.
-  // Re-check on resize in case the user rotates their device.
   function isFaceVisible() {
     return window.getComputedStyle(face).display !== 'none';
   }
 
-  // Defer full init until the face is actually visible.
-  // This also acts as a safety net against the intro.js race:
-  // if initHeroFace() is called before intro.js sets intro-arrived,
-  // the face stays hidden and we skip the setup until it's shown.
   if (!isFaceVisible()) {
-    const resizeObserver = new ResizeObserver(() => {
-      if (isFaceVisible()) {
-        resizeObserver.disconnect();
-        bootFace();
-      }
+    const ro = new ResizeObserver(() => {
+      if (isFaceVisible()) { ro.disconnect(); bootFace(); }
     });
-    resizeObserver.observe(document.documentElement);
+    ro.observe(document.documentElement);
     return;
   }
 
@@ -229,16 +216,15 @@ function initHeroFace() {
       's-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf'
     ];
 
-    // States where blinking looks wrong (non-circle eyes)
     const NO_BLINK = new Set([
       's-sleepy', 's-wtf', 's-dead', 's-squint',
       's-annoyed', 's-pleased', 's-grin', 's-thinking'
     ]);
 
-    // States where eye lerp tracking should be skipped
     const NO_TRACK = new Set([
       's-wtf', 's-sleepy', 's-dead', 's-squint',
-      's-annoyed', 's-pleased', 's-grin', 's-thinking'
+      's-annoyed', 's-pleased', 's-grin', 's-thinking',
+      's-pong'  // pong hides the face elements entirely
     ]);
 
     const WTF_WORDS = ['WTF', '???', 'HUH', '!!!', 'OOF', 'NOPE', 'BAKA'];
@@ -247,12 +233,14 @@ function initHeroFace() {
     let current    = 's-happy';
     let isReacting = false;
     let isIdle     = false;
+    let isPonging  = false;
     let idleTimer  = null;
+    let pongTimer  = null;
     let autoTimer  = null;
     let blinkTimer = null;
     let lastMX     = -9999;
     let lastMY     = -9999;
-    let lerpActive = true; // killed when face is hidden
+    let lerpActive = true;
 
     // ── State helpers ─────────────────────────────────────────────────
     function clearState() {
@@ -290,7 +278,7 @@ function initHeroFace() {
     function scheduleBlink() {
       clearTimeout(blinkTimer);
       blinkTimer = setTimeout(() => {
-        if (!NO_BLINK.has(current)) {
+        if (!NO_BLINK.has(current) && !isPonging) {
           face.classList.add('blinking');
           setTimeout(() => face.classList.remove('blinking'), 70);
         }
@@ -299,6 +287,9 @@ function initHeroFace() {
     }
 
     // ── Eye tracking + cross-eyed ──────────────────────────────────────
+    // NOTE: transform is written to .hf-eye (the wrapper), NOT .hf-pupil.
+    // This keeps tracking translate() and blink scaleY() on separate
+    // elements so they never overwrite each other.
     let eyeTargetX  = 0, eyeTargetY  = 0;
     let eyeCurX     = 0, eyeCurY     = 0;
     let isCrossZone = false;
@@ -307,11 +298,11 @@ function initHeroFace() {
       lastMX = e.clientX;
       lastMY = e.clientY;
 
-      const fr  = face.getBoundingClientRect();
-      const fcx = fr.left + fr.width  / 2;
-      const fcy = fr.top  + fr.height / 2;
-      const dx  = e.clientX - fcx;
-      const dy  = e.clientY - fcy;
+      const fr   = face.getBoundingClientRect();
+      const fcx  = fr.left + fr.width  / 2;
+      const fcy  = fr.top  + fr.height / 2;
+      const dx   = e.clientX - fcx;
+      const dy   = e.clientY - fcy;
       const dist = Math.hypot(dx, dy) || 1;
 
       isCrossZone = (Math.abs(dx) < 42 && dy > -70 && dy < 20 && dist < 88);
@@ -321,14 +312,13 @@ function initHeroFace() {
         return;
       }
 
-      const pull   = Math.min(dist / 280, 1);
-      eyeTargetX   = (dx / dist) * pull * 11;
-      eyeTargetY   = (dy / dist) * pull * 8;
+      const pull = Math.min(dist / 280, 1);
+      eyeTargetX = (dx / dist) * pull * 11;
+      eyeTargetY = (dy / dist) * pull * 8;
     }
 
     document.addEventListener('mousemove', onMouseMove, { passive: true });
 
-    // Lerp loop — only runs while the face is visible
     (function lerpEyes() {
       if (!lerpActive) return;
 
@@ -352,10 +342,9 @@ function initHeroFace() {
       requestAnimationFrame(lerpEyes);
     })();
 
-    // Kill the RAF loop + remove listeners when the face hides (mobile rotate)
     new ResizeObserver(() => {
       lerpActive = isFaceVisible();
-      if (lerpActive) lerpEyes(); // restart if it becomes visible again
+      if (lerpActive) lerpEyes();
     }).observe(document.documentElement);
 
     // ── Idle eye wander ───────────────────────────────────────────────
@@ -388,7 +377,6 @@ function initHeroFace() {
         const roll = Math.random();
 
         if (roll < 0.05) {
-          // ~5% — dead flash
           isReacting = true;
           glitch(() => {
             setState('s-dead');
@@ -402,7 +390,6 @@ function initHeroFace() {
         }
 
         if (roll < 0.09) {
-          // ~4% — WTF text
           glitch(() => {
             isReacting = true;
             text.textContent = WTF_WORDS[Math.floor(Math.random() * WTF_WORDS.length)];
@@ -418,7 +405,6 @@ function initHeroFace() {
           return;
         }
 
-        // Normal drift — mostly attentive states
         const pool = [
           's-eager', 's-eager', 's-eager',
           's-happy', 's-happy',
@@ -434,7 +420,8 @@ function initHeroFace() {
 
     // ── Hero enter / leave ────────────────────────────────────────────
     hero.addEventListener('mouseenter', () => {
-      if (isIdle) {
+      if (isIdle || isPonging) {
+        stopPong();
         isIdle     = false;
         isReacting = true;
         setState('s-surprised');
@@ -470,6 +457,7 @@ function initHeroFace() {
 
     // ── Click in hero — 3-beat comic ──────────────────────────────────
     hero.addEventListener('click', () => {
+      if (isPonging) { stopPong(); return; }
       if (isReacting) return;
       isReacting = true;
       clearTimeout(autoTimer);
@@ -485,10 +473,14 @@ function initHeroFace() {
     });
 
     // ── Idle detection ────────────────────────────────────────────────
-    // These three listeners are intentionally global and persistent —
-    // idle should reset on any activity anywhere on the page.
     function resetIdle() {
       clearTimeout(idleTimer);
+      clearTimeout(pongTimer);
+
+      if (isPonging) {
+        stopPong();
+      }
+
       if (isIdle) {
         isIdle     = false;
         eyeTargetX = 0;
@@ -498,11 +490,18 @@ function initHeroFace() {
           setTimeout(() => { if (!isReacting) setState('s-eager'); }, 520);
         }
       }
+
+      // Tier 1: go sleepy after 7s
       idleTimer = setTimeout(() => {
         if (!isReacting) {
           isIdle = true;
           glitch(() => setState('s-sleepy'));
           startWander();
+
+          // Tier 2: launch Pong after 25s more (32s total idle)
+          pongTimer = setTimeout(() => {
+            if (isIdle && !isReacting) startPong();
+          }, 25000);
         }
       }, 7000);
     }
@@ -511,8 +510,6 @@ function initHeroFace() {
     document.addEventListener('keydown',   resetIdle);
     document.addEventListener('click',     resetIdle);
 
-    // If the intro was already skipped (returning visitor),
-    // the face is visible immediately — mark it arrived.
     if (sessionStorage.getItem('introDone')) {
       face.classList.add('intro-arrived');
       face.style.opacity = '1';
@@ -523,6 +520,294 @@ function initHeroFace() {
     resetIdle();
     scheduleAuto();
     scheduleBlink();
+
+    // ════════════════════════════════════════════════════════════════════
+    //  PONG SCREENSAVER
+    //  Renders inside #heroFace on its own <canvas>.
+    //  Both paddles are AI-controlled — this is a screensaver, not a game.
+    //  The existing .hf-scanline overlay stays on top for the CRT look.
+    //  Reads --text CSS var for color so light/dark theme works for free.
+    // ════════════════════════════════════════════════════════════════════
+
+    let pongCanvas    = null;
+    let pongRAF       = null;
+    let pongWakeLabel = null;
+
+    function startPong() {
+      if (isPonging) return;
+      isPonging = true;
+
+      // Hide the face elements — the canvas replaces them visually
+      face.querySelectorAll('.hf-eye, .hf-mouth, .hf-text').forEach(el => {
+        el.style.opacity = '0';
+      });
+
+      // ── Canvas setup ─────────────────────────────────────────────────
+      pongCanvas        = document.createElement('canvas');
+      pongCanvas.width  = face.offsetWidth  || 260;
+      pongCanvas.height = face.offsetHeight || 260;
+      Object.assign(pongCanvas.style, {
+        position: 'absolute',
+        top:      '0',
+        left:     '0',
+        width:    '100%',
+        height:   '100%',
+        zIndex:   '1',
+        display:  'block',
+      });
+      face.appendChild(pongCanvas);
+
+      // ── "CLICK TO WAKE" label ─────────────────────────────────────────
+      pongWakeLabel = document.createElement('span');
+      pongWakeLabel.textContent = '[ ACTIVITY TO WAKE ]';
+      Object.assign(pongWakeLabel.style, {
+        position:     'absolute',
+        bottom:       '10px',
+        left:         '50%',
+        transform:    'translateX(-50%)',
+        fontFamily:   'var(--font-m)',
+        fontSize:     '0.42rem',
+        letterSpacing:'0.18em',
+        color:        'rgba(255,10,55,0.5)',
+        whiteSpace:   'nowrap',
+        zIndex:       '4',
+        pointerEvents:'none',
+        animation:    'hfWakeBlink 1.4s ease-in-out infinite',
+      });
+      face.appendChild(pongWakeLabel);
+
+      // Inject the blink keyframe once
+      if (!document.getElementById('pongWakeStyle')) {
+        const s = document.createElement('style');
+        s.id = 'pongWakeStyle';
+        s.textContent = `
+          @keyframes hfWakeBlink {
+            0%, 100% { opacity: 0.5; }
+            50%       { opacity: 0.1; }
+          }
+        `;
+        document.head.appendChild(s);
+      }
+
+      const ctx = pongCanvas.getContext('2d');
+      const W   = pongCanvas.width;
+      const H   = pongCanvas.height;
+
+      // Resolve the current --text color for drawing
+      function textColor() {
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue('--text').trim() || '#e2e2f0';
+      }
+
+      // ── Game state ────────────────────────────────────────────────────
+      const PAD_W = 5, PAD_H = 36, PAD_SPEED = 2.6;
+      const BALL_SIZE = 5;
+
+      const state = {
+        ball: {
+          x:  W / 2,
+          y:  H / 2,
+          vx: (Math.random() > 0.5 ? 1 : -1) * 2.8,
+          vy: (Math.random() * 2 - 1) * 2.2,
+          trail: [],  // { x, y } history for motion blur
+        },
+        padL: { x: 14,      y: H / 2 - PAD_H / 2 },
+        padR: { x: W - 14 - PAD_W, y: H / 2 - PAD_H / 2 },
+        score: { l: 0, r: 0 },
+      };
+
+      // ── AI paddle move ─────────────────────────────────────────────────
+      // Tracks the ball with a speed cap and a small intentional lag so
+      // it's not perfect — misses happen occasionally, which looks natural.
+      function moveAI(pad, targetY) {
+        const center = pad.y + PAD_H / 2;
+        const diff   = targetY - center;
+        // Add slight randomness so neither side is a perfect wall
+        const jitter = (Math.random() - 0.5) * 1.2;
+        const step   = Math.sign(diff) * Math.min(Math.abs(diff), PAD_SPEED + jitter);
+        pad.y = Math.max(0, Math.min(H - PAD_H, pad.y + step));
+      }
+
+      // ── Score flash ───────────────────────────────────────────────────
+      let scoreFlash = 0; // frames remaining for score flash highlight
+
+      function resetBall(direction) {
+        state.ball.x     = W / 2;
+        state.ball.y     = H / 2;
+        state.ball.vx    = direction * (2.6 + Math.random() * 0.6);
+        state.ball.vy    = (Math.random() * 2 - 1) * 2.4;
+        state.ball.trail = [];
+        scoreFlash       = 28;
+      }
+
+      // ── Draw frame ────────────────────────────────────────────────────
+      function drawFrame() {
+        const b   = state.ball;
+        const col = textColor();
+
+        // Semi-transparent clear — creates the motion-blur trail naturally
+        ctx.fillStyle = 'rgba(8, 8, 16, 0.72)';
+        ctx.fillRect(0, 0, W, H);
+
+        // Centre dashed divider
+        ctx.setLineDash([4, 6]);
+        ctx.strokeStyle = `rgba(${hexToRgb(col)}, 0.18)`;
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.moveTo(W / 2, 0);
+        ctx.lineTo(W / 2, H);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Score
+        const scoreCol = scoreFlash > 0
+          ? `rgba(255,10,55,${0.4 + (scoreFlash / 28) * 0.6})`
+          : `rgba(${hexToRgb(col)}, 0.55)`;
+        ctx.fillStyle  = scoreCol;
+        ctx.font       = `700 13px 'Share Tech Mono', monospace`;
+        ctx.textAlign  = 'center';
+        ctx.fillText(state.score.l, W / 2 - 24, 20);
+        ctx.fillText(state.score.r, W / 2 + 24, 20);
+
+        // Paddles
+        ctx.fillStyle = col;
+        ctx.fillRect(state.padL.x, state.padL.y, PAD_W, PAD_H);
+        ctx.fillRect(state.padR.x, state.padR.y, PAD_W, PAD_H);
+
+        // Ball trail (older = more transparent)
+        b.trail.forEach((pt, i) => {
+          const alpha = (i / b.trail.length) * 0.35;
+          ctx.fillStyle = `rgba(${hexToRgb(col)}, ${alpha})`;
+          const size    = BALL_SIZE * (i / b.trail.length);
+          ctx.fillRect(pt.x - size / 2, pt.y - size / 2, size, size);
+        });
+
+        // Ball
+        ctx.fillStyle = col;
+        ctx.fillRect(b.x - BALL_SIZE / 2, b.y - BALL_SIZE / 2, BALL_SIZE, BALL_SIZE);
+      }
+
+      // ── Physics tick ──────────────────────────────────────────────────
+      function tick() {
+        if (!isPonging) return;
+
+        const b = state.ball;
+
+        // Trail
+        b.trail.push({ x: b.x, y: b.y });
+        if (b.trail.length > 10) b.trail.shift();
+
+        // Move ball
+        b.x += b.vx;
+        b.y += b.vy;
+
+        // Top / bottom wall bounce
+        if (b.y - BALL_SIZE / 2 <= 0) {
+          b.y  = BALL_SIZE / 2;
+          b.vy = Math.abs(b.vy);
+        }
+        if (b.y + BALL_SIZE / 2 >= H) {
+          b.y  = H - BALL_SIZE / 2;
+          b.vy = -Math.abs(b.vy);
+        }
+
+        // Paddle collision — left
+        if (
+          b.x - BALL_SIZE / 2 <= state.padL.x + PAD_W &&
+          b.x + BALL_SIZE / 2 >= state.padL.x &&
+          b.y >= state.padL.y &&
+          b.y <= state.padL.y + PAD_H
+        ) {
+          b.x  = state.padL.x + PAD_W + BALL_SIZE / 2;
+          b.vx = Math.abs(b.vx) * 1.04; // tiny speed up on each hit
+          // Angle based on where it hit the paddle
+          const hitPos = (b.y - (state.padL.y + PAD_H / 2)) / (PAD_H / 2);
+          b.vy = hitPos * 3.2;
+        }
+
+        // Paddle collision — right
+        if (
+          b.x + BALL_SIZE / 2 >= state.padR.x &&
+          b.x - BALL_SIZE / 2 <= state.padR.x + PAD_W &&
+          b.y >= state.padR.y &&
+          b.y <= state.padR.y + PAD_H
+        ) {
+          b.x  = state.padR.x - BALL_SIZE / 2;
+          b.vx = -Math.abs(b.vx) * 1.04;
+          const hitPos = (b.y - (state.padR.y + PAD_H / 2)) / (PAD_H / 2);
+          b.vy = hitPos * 3.2;
+        }
+
+        // Cap max speed so it never becomes untrackable
+        const maxSpeed = 6;
+        const speed    = Math.hypot(b.vx, b.vy);
+        if (speed > maxSpeed) {
+          b.vx = (b.vx / speed) * maxSpeed;
+          b.vy = (b.vy / speed) * maxSpeed;
+        }
+
+        // Score — ball exits left or right
+        if (b.x < 0) {
+          state.score.r++;
+          resetBall(1);
+        } else if (b.x > W) {
+          state.score.l++;
+          resetBall(-1);
+        }
+
+        if (scoreFlash > 0) scoreFlash--;
+
+        // AI paddles track the ball
+        moveAI(state.padL, b.y);
+        moveAI(state.padR, b.y);
+
+        drawFrame();
+        pongRAF = requestAnimationFrame(tick);
+      }
+
+      pongRAF = requestAnimationFrame(tick);
+    }
+
+    // ── Stop Pong ─────────────────────────────────────────────────────
+    function stopPong() {
+      if (!isPonging) return;
+      isPonging = false;
+
+      cancelAnimationFrame(pongRAF);
+      pongRAF = null;
+
+      pongCanvas?.remove();
+      pongCanvas = null;
+
+      pongWakeLabel?.remove();
+      pongWakeLabel = null;
+
+      // Restore face elements
+      face.querySelectorAll('.hf-eye, .hf-mouth, .hf-text').forEach(el => {
+        el.style.opacity = '';
+      });
+
+      // Reset eye position so they don't snap from a stale transform
+      eyeCurX = 0; eyeCurY = 0;
+      eyeTargetX = 0; eyeTargetY = 0;
+      eyeL.style.transform = '';
+      eyeR.style.transform = '';
+    }
+
+    // ── Hex color → "r, g, b" string for rgba() ───────────────────────
+    // Used to draw with the CSS --text token inside canvas (which only
+    // accepts rgb values, not CSS custom properties).
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '').trim();
+      if (clean.length === 3) {
+        const [r, g, b] = clean.split('').map(c => parseInt(c + c, 16));
+        return `${r}, ${g}, ${b}`;
+      }
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      return `${r}, ${g}, ${b}`;
+    }
 
   } // end bootFace()
 }
