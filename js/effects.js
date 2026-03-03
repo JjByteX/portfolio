@@ -797,9 +797,9 @@ document.getElementById('themeToggle')?.addEventListener('click', () => {
           // Tier 2: launch Pong after 25s more (32s total idle)
           pongTimer = setTimeout(() => {
             if (isIdle && !isReacting) startPong();
-          }, 5000);
+          }, 3000);
         }
-      }, 7000);
+      }, 1500);
     }
 
     document.addEventListener('mousemove', resetIdle, { passive: true });
