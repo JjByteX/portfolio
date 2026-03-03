@@ -104,6 +104,23 @@
       tagsEl.appendChild(span);
     });
 
+    // Play button — shown only when card has data-link
+    const playWrap = document.getElementById('mPlayWrap');
+    const playLink = card.dataset.link;
+    if (playWrap) {
+      if (playLink) {
+        playWrap.innerHTML = `
+          <a href="${playLink}" target="_blank" rel="noopener noreferrer"
+             class="btn btn-primary modal-play-btn">
+            <span>▶ PLAY ON SCRATCH</span>
+          </a>`;
+        playWrap.style.display = '';
+      } else {
+        playWrap.innerHTML = '';
+        playWrap.style.display = 'none';
+      }
+    }
+
     buildCarousel(imgs.length ? imgs : []);
     overlay.classList.add('open');
 

@@ -317,3 +317,12 @@
   height: 32px;
   stroke-width: 1.5;
 }
+
+.modal-play-btn {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  padding: 0.75rem 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}

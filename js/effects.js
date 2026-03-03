@@ -1379,6 +1379,119 @@ function initTaglineTypewriter() {
   startWhenReady();
 }
 
+// ── ABOUT TYPEWRITER ──────────────────────────────────────────────────
+function initAboutTypewriter() {
+  const paras = document.querySelectorAll('.about-text p');
+  if (!paras.length) return;
+
+  // Store original HTML, clear all paragraphs
+  const originals = Array.from(paras).map(p => {
+    const html = p.innerHTML;
+    p.innerHTML = '';
+    return html;
+  });
+
+  // Same cursor style as hero — already injected by initTaglineTypewriter,
+  // but guard in case about loads without hero running first
+  if (!document.getElementById('s-tagline-cursor')) {
+    const s = document.createElement('style');
+    s.id = 's-tagline-cursor';
+    s.textContent = `
+      .tagline-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background: var(--red);
+        box-shadow: var(--glow-r);
+        margin-left: 2px;
+        vertical-align: middle;
+        animation: taglineBlink 0.55s step-end infinite;
+        transition: opacity 0.6s ease;
+      }
+      .tagline-cursor.done { animation: none; opacity: 0; }
+      @keyframes taglineBlink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+function charDelay(char, prevChar) {
+  if (char === '.')  return 80  + Math.random() * 30;
+  if (char === ',')  return 50  + Math.random() * 20;
+  if (char === '!')  return 70  + Math.random() * 25;
+  if (char === '?')  return 70  + Math.random() * 25;
+  if (char === ' ')  return 10  + Math.random() * 8;
+  if (Math.random() < 0.03) return 30 + Math.random() * 35;
+  const isLetter = c => /[a-zA-Z]/.test(c);
+  if (prevChar && isLetter(prevChar) && isLetter(char)) return 8 + Math.random() * 10;
+  return 12 + Math.random() * 10;
+}
+
+  // Type a single paragraph's plain text, then call onDone
+  function typePara(el, plainText, onDone) {
+    const cursor = document.createElement('span');
+    cursor.className = 'tagline-cursor';
+    el.appendChild(cursor);
+
+    let i = 0;
+    function typeNext() {
+      if (i >= plainText.length) {
+        // Pause at end of paragraph, then remove cursor and continue
+        setTimeout(() => {
+          cursor.classList.add('done');
+          setTimeout(() => { cursor.remove(); onDone(); }, 600);
+        }, 320);
+        return;
+      }
+      const char     = plainText[i];
+      const prevChar = i > 0 ? plainText[i - 1] : null;
+      el.insertBefore(document.createTextNode(char), cursor);
+      i++;
+      setTimeout(typeNext, charDelay(char, prevChar));
+    }
+    typeNext();
+  }
+
+  // Chain paragraphs — each starts after the previous finishes
+  function typeAll(index) {
+    if (index >= paras.length) return;
+
+    const el = paras[index];
+
+    // Re-inject <strong> tags after typing plain text
+    // We type plain text for realism, then restore markup on the typed chars
+    const tmp = document.createElement('div');
+    tmp.innerHTML = originals[index];
+    const plainText = tmp.textContent;
+
+    typePara(el, plainText, () => {
+      // Restore original HTML (with <strong> highlights) after typing finishes
+      el.innerHTML = originals[index];
+      // Brief pause between paragraphs — feels like the writer taking a breath
+      setTimeout(() => typeAll(index + 1), 280);
+    });
+  }
+
+  // ── Start when paragraph scrolls into view ────────────────────────
+  // Don't start on page load — wait until the user reaches About
+  const firstPara = paras[0];
+  let started = false;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !started) {
+        started = true;
+        observer.disconnect();
+        setTimeout(() => typeAll(0), 200);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  observer.observe(firstPara);
+}
+
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initScrollProgress();
@@ -1387,4 +1500,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initObservers();
   initHeroFace();
   initTaglineTypewriter()
+  initAboutTypewriter()
 });

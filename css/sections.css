@@ -1705,3 +1705,186 @@ display: flex;
   }
   #heroFace { display: none; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   KDE PLASMA-STYLE PROJECT SWITCHER
+   Paste this entire block at the bottom of sections.css.
+   It overrides .projects-grid layout only when .sw-track is also present
+   (added by switcher.js), so nothing breaks if the script fails to load.
+════════════════════════════════════════════════════════════════════════ */
+
+/* ── Shell — outermost container, holds track + arrows + dots ── */
+.sw-shell {
+  position: relative;
+  margin-bottom: 1rem;
+  /* Lateral overflow allowed so side cards can peek out */
+  overflow: visible;
+}
+
+/* ── Track — replaces the grid, gives us the 3-D stage ── */
+.sw-track {
+  display: block !important;   /* override the grid declaration */
+  position: relative;
+  height: 500px;               /* fixed stage height — cards are absolute */
+  perspective: 1100px;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+/* ── Cards inside the switcher ── */
+.sw-track .proj-card {
+  position: absolute !important;
+  width: 360px;
+  left: 50%;
+  margin-left: -180px;
+  bottom: 0;
+  will-change: transform, opacity, filter;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Remove the hover lift — focus/click handles it now */
+.sw-track .proj-card:hover {
+  transform: unset; /* JS owns all transforms */
+}
+
+/* Side cards show a pointer to signal they're clickable */
+.sw-track .proj-card:not(.sw-active) {
+  cursor: pointer;
+}
+
+/* Active card: restore default cursor (clicking opens modal) */
+.sw-track .proj-card.sw-active {
+  cursor: default;
+}
+
+/* Hide hover overlay on non-active cards — side cards don't use it */
+.sw-track .proj-card:not(.sw-active) .proj-img-overlay {
+  display: none !important;
+}
+
+/* Clamp description text — modal shows full text anyway */
+.sw-track .proj-card .proj-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── PERSONAL / WIP badge positions stay intact ── */
+/* (they use position:absolute relative to the card, still works) */
+
+/* ── Nav arrows ── */
+.sw-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);  /* slightly above true center — feels right */
+  z-index: 20;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 10, 55, 0.3);
+  background: rgba(8, 8, 16, 0.72);
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.25s;
+}
+
+.sw-nav:hover {
+  border-color: var(--red);
+  color: #fff;
+  box-shadow: var(--glow-r);
+  transform: translateY(-60%) scale(1.08);
+}
+
+.sw-nav-l { left:  0; }
+.sw-nav-r { right: 0; }
+.sw-nav svg { width: 20px; height: 20px; stroke-width: 2; }
+
+/* ── Dots ── */
+.sw-dots {
+  position: absolute;
+  bottom: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sw-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;   /* square HUD dots to match site aesthetic */
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.sw-dot:hover {
+  transform: scale(1.3);
+}
+
+.sw-dot.active {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: var(--glow-r);
+}
+
+/* ── Counter (01 / 06 top-right of shell) ── */
+.sw-counter {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  font-family: var(--font-m);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* ── Light theme adjustments ── */
+[data-theme="light"] .sw-nav {
+  background: rgba(240, 238, 248, 0.82);
+  border-color: rgba(212, 0, 43, 0.3);
+}
+
+/* ── Mobile — collapse to normal stacked cards ── */
+@media (max-width: 768px) {
+  .sw-shell  { overflow: hidden; }
+
+  .sw-track {
+    height: auto !important;
+    perspective: none !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sw-track .proj-card {
+    position: relative !important;
+    width: 100% !important;
+    left: auto !important;
+    margin-left: 0 !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    pointer-events: all !important;
+    visibility: visible !important;
+    cursor: default !important;
+  }
+
+  .sw-track .proj-card .proj-desc {
+    -webkit-line-clamp: unset;
+  }
+
+  .sw-nav,
+  .sw-dots,
+  .sw-counter { display: none !important; }
+}
