@@ -234,7 +234,7 @@ let current    = 's-happy';
     let isReacting = false;
     let isIdle     = false;
     let isPonging  = false;
-    let isBlinded  = false; // true the entire time light mode is active
+    let isBlinded  = false;
     let idleTimer  = null;
     let pongTimer  = null;
     let autoTimer  = null;
@@ -242,6 +242,11 @@ let current    = 's-happy';
     let lastMX     = -9999;
     let lastMY     = -9999;
     let lerpActive = true;
+let peekTimer  = null;
+    let fromNav    = false;
+    let navHovered = false;
+    let navTargetX = null;
+    let navTargetY = null;
 
     // ── State helpers ─────────────────────────────────────────────────
     function clearState() {
@@ -326,7 +331,7 @@ if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin' 
       }
 
 // Shy zone — drift away from cursor, stronger as it gets closer
-      if (dist < SHY_ZONE && !isIdle && !isPonging) {
+      if (dist < SHY_ZONE && !isIdle && !isPonging && !fromNav) {
         const depth        = 1 - ((dist - 88) / (SHY_ZONE - 88));
         const clampedDepth = Math.max(0, Math.min(1, depth));
         shyTargetX = -(dx / dist) * clampedDepth * SHY_MAX;
@@ -365,6 +370,44 @@ if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin' 
           eyeCurY += (eyeTargetY - eyeCurY) * 0.12;
           eyeL.style.transform = `translate(${inward}px, ${eyeCurY}px)`;
           eyeR.style.transform = `translate(${-inward}px, ${eyeCurY}px)`;
+} else if (navHovered) {
+          // Aim each eye independently at the hovered nav link position
+          const fr      = face.getBoundingClientRect();
+          const fcx     = fr.left + fr.width  / 2;
+          const fcy     = fr.top  + fr.height / 2;
+          const eyeLCx  = fr.left + 67;  // approx left eye center X
+          const eyeRCx  = fr.left + 193; // approx right eye center X
+
+          // Target is the nav link's center
+          const tx = navTargetX ?? fcx;
+          const ty = navTargetY ?? (fr.top - 40);
+
+          // Each eye looks from its own position toward the target
+          const dxL = tx - eyeLCx;
+          const dyL = ty - fcy;
+          const dxR = tx - eyeRCx;
+          const dyR = ty - fcy;
+          const distL = Math.hypot(dxL, dyL) || 1;
+          const distR = Math.hypot(dxR, dyR) || 1;
+          const pullL = Math.min(distL / 280, 1);
+          const pullR = Math.min(distR / 280, 1);
+
+const tEyeLX = (dxL / distL) * pullL * 22;
+          const tEyeLY = (dyL / distL) * pullL * 52;
+          const tEyeRX = (dxR / distR) * pullR * 22;
+          const tEyeRY = (dyR / distR) * pullR * 52;
+
+          eyeCurX += (tEyeLX - eyeCurX) * 0.08;
+          eyeCurY += (tEyeLY - eyeCurY) * 0.08;
+          let eyeCurRX = parseFloat(eyeR.dataset.cx || 0);
+          let eyeCurRY = parseFloat(eyeR.dataset.cy || 0);
+          eyeCurRX += (tEyeRX - eyeCurRX) * 0.08;
+          eyeCurRY += (tEyeRY - eyeCurRY) * 0.08;
+          eyeR.dataset.cx = eyeCurRX;
+          eyeR.dataset.cy = eyeCurRY;
+
+          eyeL.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
+          eyeR.style.transform = `translate(${eyeCurRX}px, ${eyeCurRY}px)`;
         } else {
           eyeCurX += (eyeTargetX - eyeCurX) * 0.12;
           eyeCurY += (eyeTargetY - eyeCurY) * 0.12;
@@ -558,34 +601,32 @@ hero.addEventListener('mouseenter', (e) => {
     });
 
 hero.addEventListener('mouseleave', (e) => {
-  // Ignore edge-clips — only react if cursor genuinely left downward
-  // or exited the viewport. Side exits (left/right padding gaps) are
-  // almost always accidental and cause the shake.
-  const leftSide   = e.clientX <= 8;
-  const rightSide  = e.clientX >= window.innerWidth - 8;
-  const topExit    = e.clientY <= 8;
-  const bottomExit = e.clientY >= window.innerHeight - 8;
+  const leftSide      = e.clientX <= 8;
+  const rightSide     = e.clientX >= window.innerWidth - 8;
+  const topExit       = e.clientY <= 8;
+  const bottomExit    = e.clientY >= window.innerHeight - 8;
   const exitedViewport = leftSide || rightSide || topExit || bottomExit;
-
-  // If cursor is still in the upper 60% of the page it clipped a side edge
   const likelySideClip = !exitedViewport && e.clientY < window.innerHeight * 0.6;
   if (likelySideClip) return;
 
-eyeTargetX  = 0;
+  eyeTargetX  = 0;
   eyeTargetY  = 0;
   isCrossZone = false;
   shyTargetX  = 0;
   shyTargetY  = 0;
-  triggerFaceAnim(ANIM_WILT, 650);
-  if (!isReacting && !isIdle) setState('s-sad');
+
+  // Delay — if cursor went to nav, fromNav is already true, skip wilt
+setTimeout(() => {
+    if (fromNav) return;
+    triggerFaceAnim(ANIM_WILT, 650);
+    if (!isReacting && !isIdle) setState('s-sad');
+  }, 80);
 });
 
 // ── Nav peek — reacts from s-sad, returns to s-sad ────────────────
     // A lightweight reactFor that doesn't require isReacting to be false
     // and always returns to s-sad instead of s-eager, because the cursor
     // is outside the hero when nav is hovered.
-let peekTimer   = null;
-    let fromNav     = false; // true while cursor is over nav or just left it
 
 function peekAt(state, duration = 1200) {
       if (isReacting || isPonging || isBlinded) return;
@@ -609,22 +650,37 @@ function peekAt(state, duration = 1200) {
       }
     }
 
-    const navLinks = document.querySelectorAll('nav .nav-links a');
-navLinks.forEach(link => {
-      link.addEventListener('mouseenter', () => {
-        fromNav = true;
+
+const navLinks     = document.querySelectorAll('nav .nav-links a');
+    const navLinksWrap = document.querySelector('nav .nav-links');
+    const navEl        = document.querySelector('nav');
+    navEl?.addEventListener('mouseenter', () => { fromNav = true; });
+
+    navLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+        fromNav    = true;
+        navHovered = true;
+        const r    = link.getBoundingClientRect();
+        navTargetX = r.left + r.width  / 2;
+        navTargetY = r.top  + r.height / 2;
         const href = link.getAttribute('href');
-        if      (href === '#about')    peekAt('s-pleased',     1100);
-        else if (href === '#skills')   peekAt('s-squint',      1200);
-        else if (href === '#projects') peekAt('s-eager',       1000);
-        else if (href === '#contact')  peekAt('s-starstruck',  1600);
+        if      (href === '#about')    peekAt('s-pleased',    1100);
+        else if (href === '#skills')   peekAt('s-squint',     1200);
+        else if (href === '#projects') peekAt('s-eager',      1000);
+        else if (href === '#contact')  peekAt('s-starstruck', 1600);
       });
-      link.addEventListener('mouseleave', () => {
-        cancelPeek();
-        // Keep fromNav true briefly — long enough to cover the
-        // cursor travel from nav back into hero without triggering lunge
-        setTimeout(() => { fromNav = false; }, 600);
-      });
+    });
+
+    // Only truly exit when cursor leaves the entire nav links container
+    // — not on each individual link, which fires between adjacent items
+    navLinksWrap?.addEventListener('mouseleave', () => {
+      cancelPeek();
+      navHovered = false;
+      navTargetX = null;
+      navTargetY = null;
+      eyeR.dataset.cx = 0;
+      eyeR.dataset.cy = 0;
+      setTimeout(() => { fromNav = false; }, 600);
     });
 
     // ── CTA button hovers ─────────────────────────────────────────────
