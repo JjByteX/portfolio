@@ -1276,6 +1276,109 @@ function stopPong() {
   } // end bootFace()
 }
 
+// ── HERO TAGLINE TYPEWRITER ──────────────────────────────────────────────
+// Paste this function into effects.js, then call initTaglineTypewriter()
+// inside the DOMContentLoaded block at the bottom alongside the other inits.
+// ─────────────────────────────────────────────────────────────────────────
+
+function initTaglineTypewriter() {
+  const el = document.getElementById('heroTagline');
+  if (!el) return;
+
+  const fullText = el.dataset.type || '';
+  if (!fullText) return;
+
+  // ── Cursor element ───────────────────────────────────────────────────
+  const cursor = document.createElement('span');
+  cursor.className = 'tagline-cursor';
+  cursor.setAttribute('aria-hidden', 'true');
+
+  if (!document.getElementById('s-tagline-cursor')) {
+    const s = document.createElement('style');
+    s.id = 's-tagline-cursor';
+    s.textContent = `
+      .tagline-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background: var(--red);
+        box-shadow: var(--glow-r);
+        margin-left: 2px;
+        vertical-align: middle;
+        animation: taglineBlink 0.55s step-end infinite;
+        transition: opacity 0.6s ease;
+      }
+      .tagline-cursor.done {
+        animation: none;
+        opacity: 0;
+      }
+      @keyframes taglineBlink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  el.textContent = '';
+  el.appendChild(cursor);
+
+  // ── Per-character delay model (faster) ──────────────────────────────
+  function charDelay(char, prevChar) {
+    if (char === '.')  return 180 + Math.random() * 50;  // was 310+80
+    if (char === ',')  return 100 + Math.random() * 40;  // was 170+60
+    if (char === '!')  return 160 + Math.random() * 50;  // was 280+80
+    if (char === '?')  return 150 + Math.random() * 40;  // was 260+70
+    if (char === ' ')  return 35  + Math.random() * 30;  // was 55+50
+
+    // Rare mid-word hesitation (~4%)
+    if (Math.random() < 0.04) return 55 + Math.random() * 80; // was 90+130
+
+    // Burst mode — flowing within a word
+    const isLetter = (c) => /[a-zA-Z]/.test(c);
+    if (prevChar && isLetter(prevChar) && isLetter(char)) {
+      return 25 + Math.random() * 28; // was 42+48
+    }
+
+    // Default
+    return 35 + Math.random() * 35;  // was 60+55
+  }
+
+  // ── Typing loop ──────────────────────────────────────────────────────
+  let index = 0;
+
+  function typeNext() {
+    if (index >= fullText.length) {
+      setTimeout(() => cursor.classList.add('done'), 1800);
+      return;
+    }
+
+    const char     = fullText[index];
+    const prevChar = index > 0 ? fullText[index - 1] : null;
+
+    el.insertBefore(document.createTextNode(char), cursor);
+    index++;
+
+    setTimeout(typeNext, charDelay(char, prevChar));
+  }
+
+  // ── Start timing ────────────────────────────────────────────────────
+  function startWhenReady() {
+    if (!sessionStorage.getItem('introDone')) {
+      const poll = setInterval(() => {
+        if (sessionStorage.getItem('introDone')) {
+          clearInterval(poll);
+          setTimeout(typeNext, 520);
+        }
+      }, 100);
+    } else {
+      setTimeout(typeNext, 400);
+    }
+  }
+
+  startWhenReady();
+}
+
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initScrollProgress();
@@ -1283,4 +1386,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initObservers();
   initHeroFace();
+  initTaglineTypewriter()
 });
