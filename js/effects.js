@@ -213,18 +213,18 @@ function initHeroFace() {
 const ALL_STATES = [
       's-happy', 's-eager', 's-pleased', 's-smile',
       's-grin', 's-squint', 's-surprised', 's-sleepy',
-'s-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf', 's-sad', 's-starstruck', 's-nervous', 's-blinded'
+'s-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf', 's-sad', 's-starstruck', 's-nervous', 's-blinded', 's-reading'
     ];
 
 const NO_BLINK = new Set([
       's-sleepy', 's-wtf', 's-dead', 's-squint',
-      's-annoyed', 's-pleased', 's-grin', 's-thinking', 's-blinded'
+      's-annoyed', 's-pleased', 's-grin', 's-thinking', 's-blinded', 's-reading'
     ]);
 
-    const NO_TRACK = new Set([
+const NO_TRACK = new Set([
       's-wtf', 's-sleepy', 's-dead', 's-squint',
       's-annoyed', 's-pleased', 's-grin', 's-thinking',
-      's-pong'  // pong hides the face elements entirely
+      's-pong', 's-reading'
     ]);
 
     const WTF_WORDS = ['WTF', '???', 'HUH', '!!!', 'OOF', 'NOPE', 'BAKA'];
@@ -749,6 +749,68 @@ document.getElementById('themeToggle')?.addEventListener('click', () => {
     document.addEventListener('mousemove', resetIdle, { passive: true });
     document.addEventListener('keydown',   resetIdle);
     document.addEventListener('click',     resetIdle);
+
+    // ── Text selection display ─────────────────────────────────────────
+    // When user highlights text inside #hero, show it on the face screen.
+ document.addEventListener('selectionchange', () => {
+      if (isPonging || isBlinded) return;
+
+      const sel      = window.getSelection();
+      const selected = sel?.toString().trim();
+
+      if (selected && selected.length > 0) {
+        // Check if ANY part of the selection touches the hero section
+        // Using getRangeAt is more reliable than anchorNode during live drag
+        let insideHero = false;
+        try {
+          const range    = sel.getRangeAt(0);
+          const rect     = range.getBoundingClientRect();
+          const heroRect = hero.getBoundingClientRect();
+          insideHero = (
+            rect.top    < heroRect.bottom &&
+            rect.bottom > heroRect.top    &&
+            rect.left   < heroRect.right  &&
+            rect.right  > heroRect.left
+          );
+        } catch (e) {
+          insideHero = false;
+        }
+
+        if (!insideHero) return;
+
+        // Show full text — no truncation
+        const display = selected.toUpperCase();
+
+        if (current !== 's-reading') {
+          clearState();
+          current = 's-reading';
+          face.classList.add('s-reading');
+        }
+
+text.textContent = display;
+
+        // Dynamically scale font to fill available space
+const len = display.length;
+        let fontSize;
+        if      (len <= 4)   fontSize = '4.8rem';
+        else if (len <= 8)   fontSize = '3.6rem';
+        else if (len <= 16)  fontSize = '2.6rem';
+        else if (len <= 30)  fontSize = '1.8rem';
+        else if (len <= 60)  fontSize = '1.3rem';
+        else if (len <= 120) fontSize = '0.9rem';
+        else                 fontSize = '0.62rem';
+
+        text.style.fontSize = fontSize;
+
+      } else {
+if (current === 's-reading') {
+          text.textContent = '';
+          text.style.fontSize = '';
+          setState('s-eager');
+          scheduleAuto();
+        }
+      }
+    });
 
     if (sessionStorage.getItem('introDone')) {
       face.classList.add('intro-arrived');

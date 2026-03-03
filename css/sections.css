@@ -1567,6 +1567,36 @@ width: 23px;
 #heroFace.s-starstruck .hf-antenna-l { transform: rotate(-22deg); }
 #heroFace.s-starstruck .hf-antenna-r { transform: rotate(22deg); }
 
+/* s-reading — displays selected text like a terminal readout */
+/* s-reading — displays selected text like a terminal readout */
+#heroFace.s-reading .hf-pupil,
+#heroFace.s-reading .hf-mouth { opacity: 0; }
+#heroFace.s-reading .hf-text  {
+  opacity: 1;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan), 0 0 20px rgba(0, 240, 255, 0.4);
+  text-align: left;
+  width: 88%;
+  height: 88%;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+display: flex;
+  align-items: flex-start;
+}
+#heroFace.s-reading .hf-text::before {
+  content: '> ';
+  color: var(--red);
+  text-shadow: var(--glow-r);
+  display: inline;
+}
+
 /* s-wtf */
 #heroFace.s-wtf .hf-pupil,
 #heroFace.s-wtf .hf-mouth { opacity: 0; }
