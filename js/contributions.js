@@ -45,16 +45,40 @@
         svg.style.background = 'transparent';
 
         // Mark the large background rect transparent,
-        // mark empty contribution squares for theme re-tinting
+        // mark empty contribution squares for theme re-tinting,
+        // mark filled squares with their contribution level
         const svgWidth = parseFloat(w);
+
+        // Known ghchart fill colors for each level
+        const LEVEL_MAP = {
+          '#d6e685': '1', '#9be9a8': '1',
+          '#8cc665': '2', '#40c463': '2',
+          '#44a340': '3', '#30a14e': '3',
+          '#1e6823': '4', '#216e39': '4',
+        };
+
         svg.querySelectorAll('rect').forEach(rect => {
           const rw = parseFloat(rect.getAttribute('width') || 0);
           if (rw > svgWidth * 0.5) {
             rect.style.fill = 'transparent';
             return;
           }
-          const style = rect.getAttribute('style') || '';
-          if (style.includes('#eeeeee')) rect.dataset.empty = 'true';
+          // Get fill from style attribute or fill attribute
+          const styleStr = rect.getAttribute('style') || '';
+          const fillAttr = (rect.getAttribute('fill') || '').toLowerCase().trim();
+          const styleMatch = styleStr.match(/fill\s*:\s*([^;]+)/i);
+          const fill = (styleMatch ? styleMatch[1].trim() : fillAttr).toLowerCase();
+
+          if (fill.includes('#eeeeee') || fill.includes('#ebedf0')) {
+            rect.dataset.ghLevel = '0';
+            return;
+          }
+          for (const [color, level] of Object.entries(LEVEL_MAP)) {
+            if (fill.includes(color)) {
+              rect.dataset.ghLevel = level;
+              return;
+            }
+          }
         });
 
         const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
@@ -79,9 +103,14 @@
 
   /* ── Theme re-tint ── */
   function tintEmptySquares(isDark) {
-    const color = isDark ? '#0e0e20' : '#e8e4f5';
-    document.querySelectorAll('#ghChart rect[data-empty]').forEach(rect => {
-      rect.style.fill = color;
+    // Full palette for dark and light modes
+    const palette = isDark
+      ? { '0': '#0e0e20', '1': '#0e4429', '2': '#006d32', '3': '#26a641', '4': '#39d353' }
+      : { '0': '#e8e4f5', '1': '#9be9a8', '2': '#40c463', '3': '#30a14e', '4': '#216e39' };
+
+    document.querySelectorAll('#ghChart rect[data-gh-level]').forEach(rect => {
+      const color = palette[rect.dataset.ghLevel];
+      if (color) rect.style.fill = color;
     });
   }
 
@@ -98,21 +127,40 @@
 
   /* ── Expand modal ── */
   function openGhModal() {
-    const src = wrap?.querySelector('svg');
-    if (!src || !largeDest || !modal) return;
+    if (!largeDest || !modal) return;
 
     largeDest.innerHTML = '';
-    const clone = src.cloneNode(true);
-    clone.style.width  = '100%';
-    clone.style.height = 'auto';
-    largeDest.appendChild(clone);
+
+    const src = wrap?.querySelector('svg');
+    if (src) {
+      const clone = src.cloneNode(true);
+      clone.style.width  = '100%';
+      clone.style.height = 'auto';
+      largeDest.appendChild(clone);
+
+      // Re-tint cloned SVG to match current theme
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const palette = isDark
+        ? { '0': '#0e0e20', '1': '#0e4429', '2': '#006d32', '3': '#26a641', '4': '#39d353' }
+        : { '0': '#e8e4f5', '1': '#9be9a8', '2': '#40c463', '3': '#30a14e', '4': '#216e39' };
+      clone.querySelectorAll('rect[data-gh-level]').forEach(rect => {
+        const color = palette[rect.dataset.ghLevel];
+        if (color) rect.style.fill = color;
+      });
+    } else {
+      // Proxy failed — fallback img path
+      const img = wrap?.querySelector('img');
+      if (!img) return;
+      const imgClone = img.cloneNode(true);
+      imgClone.style.width  = '100%';
+      imgClone.style.height = 'auto';
+      largeDest.appendChild(imgClone);
+    }
 
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
     if (typeof lucide !== 'undefined') lucide.createIcons({ nodes: [modal] });
 
-    // Use { once: true } so the listener self-removes — no stacking
-    // if the user opens the modal multiple times in one session.
     document.addEventListener('keydown', onGhModalKey);
   }
 

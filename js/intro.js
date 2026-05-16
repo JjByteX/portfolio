@@ -14,6 +14,12 @@
    timing against effects.js.
 ──────────────────────────────────────────────────────────────────── */
 (function () {
+  // Suppress the terminal's blinking ::after cursor before the first paint.
+  // The style attribute on the element itself is the fastest path — no CSSOM
+  // round-trip needed, resolved before any layout/paint.
+  const _t = document.getElementById('introTerminal');
+  if (_t) _t.style.display = 'none';
+
   const overlay = document.getElementById('introOverlay');
   if (!overlay) return;
 
@@ -288,12 +294,10 @@
     const terminal = document.getElementById('introTerminal');
     const heroFace = document.getElementById('heroFace');
 
-    terminal.style.transition = 'opacity 0.28s ease';
-    terminal.style.opacity    = '0';
+    // Hide terminal immediately (text + bar are skipped entirely)
+    if (terminal) terminal.style.display = 'none';
 
-    setTimeout(() => {
-      terminal.style.display = 'none';
-      injectRobotCSS();
+    injectRobotCSS();
 
       const robot = document.createElement('div');
       robot.id = 'introRobot';
@@ -344,8 +348,6 @@
           }, 400);
         }, 600);
       }, 700);
-
-    }, 300);
   }
 
   /* ═══════════════════════════════════
@@ -431,5 +433,6 @@
   }
 
   /* ── Boot ── */
-  setTimeout(typeLine, 300);
+  // Skip terminal typing + progress bar — jump straight to robot
+  showRobot();
 })();

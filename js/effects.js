@@ -655,6 +655,7 @@ const navLinks     = document.querySelectorAll('nav .nav-links a');
     const navLinksWrap = document.querySelector('nav .nav-links');
     const navEl        = document.querySelector('nav');
     navEl?.addEventListener('mouseenter', () => { fromNav = true; });
+    navEl?.addEventListener('mouseleave', () => { setTimeout(() => { fromNav = false; }, 600); });
 
     navLinks.forEach(link => {
             link.addEventListener('mouseenter', () => {
@@ -1418,15 +1419,15 @@ function initAboutTypewriter() {
   }
 
 function charDelay(char, prevChar) {
-  if (char === '.')  return 80  + Math.random() * 30;
-  if (char === ',')  return 50  + Math.random() * 20;
-  if (char === '!')  return 70  + Math.random() * 25;
-  if (char === '?')  return 70  + Math.random() * 25;
-  if (char === ' ')  return 10  + Math.random() * 8;
-  if (Math.random() < 0.03) return 30 + Math.random() * 35;
+  if (char === '.')  return 48  + Math.random() * 18;
+  if (char === ',')  return 30  + Math.random() * 12;
+  if (char === '!')  return 42  + Math.random() * 15;
+  if (char === '?')  return 42  + Math.random() * 15;
+  if (char === ' ')  return 6   + Math.random() * 5;
+  if (Math.random() < 0.03) return 18 + Math.random() * 21;
   const isLetter = c => /[a-zA-Z]/.test(c);
-  if (prevChar && isLetter(prevChar) && isLetter(char)) return 8 + Math.random() * 10;
-  return 12 + Math.random() * 10;
+  if (prevChar && isLetter(prevChar) && isLetter(char)) return 5 + Math.random() * 6;
+  return 7 + Math.random() * 6;
 }
 
   // Type a single paragraph's plain text, then call onDone

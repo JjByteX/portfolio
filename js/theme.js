@@ -48,7 +48,7 @@ function toggleTheme() {
  */
 function initTheme() {
   const saved = localStorage.getItem(STORAGE_KEY);
-  applyTheme(saved === LIGHT ? LIGHT : DARK);
+  applyTheme(saved === DARK ? DARK : LIGHT);
 }
 
 // ── Wire up the button ──
