@@ -25,7 +25,7 @@
 
 .theme-toggle:hover {
   color: var(--text);
-  background: rgba(255,255,255,0.05);
+  background: var(--surface);
 }
 
 .theme-toggle .toggle-icon {
@@ -62,34 +62,26 @@
   z-index: 1;
 }
 
-.btn-primary:hover {
-  background: #ff2248;
-  box-shadow: 0 0 20px #ff0a37, 0 0 50px #ff0a3744;
-  letter-spacing: 0.18em;
-  transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-}
-
 .btn-outline {
   background: transparent;
-  color: var(--cyan);
-  border: 1px solid var(--cyan);
-  box-shadow: var(--glow-c);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .btn-outline:hover {
-  background: rgba(0, 240, 255, 0.06);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25), 0 0 50px rgba(0, 240, 255, 0.1);
-  letter-spacing: 0.18em;
-  transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+  background: var(--surface);
+  border-color: var(--muted);
 }
 
 /* ── Buttons ── */
 .btn {
-  font-family: var(--font-h);
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  padding: 0.85rem 2rem;
-  text-transform: uppercase;
+  font-family: var(--font-b);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius-sm);
+  text-transform: none;
   transition: all var(--transition);
   position: relative;
   overflow: hidden;
@@ -97,25 +89,14 @@
 }
 
 .btn-primary {
-  background: var(--red);
-  color: #fff;
-  box-shadow: var(--glow-r);
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-  background: #ff2248;
-  box-shadow: 0 0 16px #ff0a37, 0 0 40px #ff0a3766;
-}
-
-.btn-outline {
-  background: transparent;
-  color: var(--cyan);
-  border: 1px solid var(--cyan);
-  box-shadow: var(--glow-c);
-}
-
-.btn-outline:hover {
-  background: rgba(0, 240, 255, 0.08);
+  background: var(--text);
+  opacity: 0.88;
 }
 
 /* ── Skill chips ── */
@@ -125,6 +106,7 @@
   letter-spacing: 0.08em;
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--border);
+  border-radius: 999px;
   background: var(--surface);
   color: var(--text);
   transition: all var(--transition);
@@ -132,46 +114,43 @@
 }
 
 .chip:hover {
-  border-color: var(--yellow);
-  color: var(--yellow);
-  text-shadow: var(--glow-y);
-  box-shadow: inset 0 0 12px rgba(255, 230, 25, 0.06);
+  border-color: var(--muted);
+  color: var(--text);
+  background: color-mix(in oklab, var(--text) 6%, var(--surface));
 }
 
 .chip.learning {
-  border-color: rgba(0, 240, 255, 0.3);
-  color: var(--cyan);
+  border-color: var(--border);
+  color: var(--muted);
 }
 
 .chip.learning:hover {
-  box-shadow: inset 0 0 12px rgba(0, 240, 255, 0.08);
-  text-shadow: var(--glow-c);
+  border-color: var(--muted);
+  color: var(--text);
 }
 
 /* ── Stat cards ── */
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 1.2rem;
   position: relative;
   overflow: hidden;
-  transition: var(--theme-transition);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, var(--theme-transition);
 }
 
-.stat-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--red), var(--yellow));
+.stat-card:hover {
+  border-color: var(--muted);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-val {
   font-family: var(--font-h);
   font-size: 1.6rem;
   font-weight: 900;
-  color: var(--yellow);
-  text-shadow: var(--glow-y);
+  color: var(--text);
   display: block;
 }
 
@@ -183,26 +162,24 @@
   margin-top: 0.2rem;
 }
 
-/* ── HUD corner borders ── */
+/* ── Photo frame — clean rounded square, monochrome border ── */
 .hud-box {
   position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: border-color 0.2s ease;
 }
 
-.hud-box::before,
-.hud-box::after,
-.hud-box > .hud-inner::before,
-.hud-box > .hud-inner::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  z-index: 2;
+.hud-box:hover {
+  border-color: var(--muted);
 }
 
-.hud-box::before       { top: 0;    left: 0;  border-top: 2px solid var(--red); border-left: 2px solid var(--red); }
-.hud-box::after        { top: 0;    right: 0; border-top: 2px solid var(--red); border-right: 2px solid var(--red); }
-.hud-box > .hud-inner::before { bottom: 0; left: 0;  border-bottom: 2px solid var(--red); border-left: 2px solid var(--red); }
-.hud-box > .hud-inner::after  { bottom: 0; right: 0; border-bottom: 2px solid var(--red); border-right: 2px solid var(--red); }
+.hud-box .hud-inner {
+  border-radius: inherit;
+  overflow: hidden;
+  display: block;
+}
 
 /* ── Photo / image placeholders ── */
 .photo-placeholder {
@@ -235,7 +212,7 @@
 .proj-img-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #0b0b18;
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,6 +237,7 @@
   color: var(--muted);
   padding: 0.85rem 1rem;
   border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   transition: all var(--transition);
   display: flex;
@@ -268,13 +246,13 @@
 }
 
 .social-item:hover {
-  color: var(--cyan);
-  border-color: rgba(0, 240, 255, 0.3);
-  text-shadow: var(--glow-c);
+  color: var(--text);
+  border-color: var(--muted);
+  background: color-mix(in oklab, var(--text) 4%, var(--surface));
 }
 
 .social-platform {
-  color: var(--red);
+  color: var(--text);
   margin-right: 0.25rem;
 }
 
@@ -306,9 +284,9 @@
 }
 
 .back-to-top:hover {
-  border-color: var(--red);
-  color: var(--red);
-  box-shadow: var(--glow-r);
+  border-color: var(--muted);
+  color: var(--text);
+  box-shadow: var(--shadow-md);
   transform: translateY(-3px);
 }
 

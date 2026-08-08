@@ -9,19 +9,47 @@
  * when they enter the viewport.
  */
 function initScrollReveal() {
+  const targets = document.querySelectorAll('.fade-up, .blur-in, .skew-in, .wipe-in');
+
+  // Safety net: some browsers/timing combos never fire the observer
+  // for elements that are already in (or very near) the viewport on
+  // load. Force those visible immediately instead of leaving them
+  // permanently hidden.
+  const revealIfInView = (el) => {
+    const rect = el.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (inView) el.classList.add('visible');
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('visible'));
+    return;
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
       });
     },
     { threshold: 0.12 }
   );
 
-  document.querySelectorAll('.fade-up, .blur-in, .skew-in, .wipe-in').forEach((el) => {
+  targets.forEach((el) => {
     observer.observe(el);
+    revealIfInView(el);
+  });
+
+  // Final safety net: if anything is still hidden after load
+  // (observer never fired, layout shifted, etc.), reveal it anyway
+  // rather than leaving cards permanently invisible.
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      targets.forEach((el) => el.classList.add('visible'));
+    }, 1500);
   });
 }
 

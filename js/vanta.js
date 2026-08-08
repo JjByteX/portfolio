@@ -3,8 +3,8 @@
    On theme change: destroy + recreate with correct bg color.
 ──────────────────────────────────────────────────────── */
 const VANTA_COLORS = {
-  dark:  { bg: 0x080810, net: 0x7744dd },
-  light: { bg: 0xf0eef8, net: 0x7744dd },
+  dark:  { bg: 0x050508, net: 0x7744dd },
+  light: { bg: 0xffffff, net: 0x7744dd },
 };
 
 let vantaEffect = null;

@@ -3,13 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Jj Bassig — Aspiring Full Stack Software Engineer. BSIT 2nd Year, Pamantasan ng Lungsod ng Pasig." />
+    <meta name="description" content="Jj Bassig — Aspiring Full Stack Software Engineer. BSIT 3rd Year, Pamantasan ng Lungsod ng Pasig." />
     <meta name="author" content="Jj Sanchez Bassig" />
 
     <title>JJ BASSIG · Full Stack Developer</title>
 
     <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/main.css" />
+    <script>
+      /* Set the theme attribute before first paint so the page (and the
+         intro/splash overlay) never flashes dark before switching to light.
+         Mirrors the fallback logic in js/theme.js: default to light unless
+         the visitor previously chose dark. */
+      (function () {
+        var saved = localStorage.getItem('jj-portfolio-theme');
+        document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+      })();
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
@@ -47,7 +57,7 @@
 
     <!-- ─── HERO ─────────────────────────────────────── -->
     <section id="hero">
-      <p class="hero-tag">FULL STACK DEVELOPER · BSIT 2ND YEAR</p>
+      <p class="hero-tag">FULL STACK DEVELOPER · BSIT 3RD YEAR</p>
       <div class="hero-name">
         <div class="first">JJ</div>
         <div class="last glitch" data-text="BASSIG">BASSIG</div>
@@ -93,30 +103,25 @@
         </div>
 <div class="blur-in" style="transition-delay: .15s">
   <div class="about-text">
-            <p>I'm <strong>Jj</strong>, a BSIT 2nd-year student and a RealLife BGC and Pasig City scholar. I started with video game commands, then hosting servers, and now writing actual software. Same curiosity, just with new tools.</p>
-<p>I learn by building, breaking, and asking what's still missing. I study how enterprise systems solve problems, then refine my approach especially with databases and backend systems, I’d rather question the structure early than fix fragile logic later. If there’s a simpler solution, I will find it.</p>
-            <p>Languages are just tools. I translate clients’ unstructured needs into a working solution through interviews and frameworks, adapting as requirements evolve without being repetitive or forcing the client to design it all.</p>
+            <p>I'm <strong>Jj</strong>, a BSIT 3rd-year student and a RealLife BGC and Pasig City scholar. I started with video game commands, then hosting servers, and now developing software.</p>
+<p>I learn by building, breaking, and asking what's still missing. I study how enterprise systems solve problems, then refine my approach especially with databases and backend systems, I’d rather question the structure early than fix fragile logic later.</p>
+            <p>I translate clients’ unstructured needs into a working solution through interviews and frameworks, adjusting the approach as requirements evolve along the way.</p>
           </div>
-
-        </div>
-      </div>
 
   <div class="stat-grid wipe-in" style="transition-delay: .25s">
           <div class="stat-card">
-          <span class="stat-val">2×</span>
+          <span class="stat-val">3×</span>
           <span class="stat-lbl">DEAN'S LISTER</span>
         </div>
         <div class="stat-card">
-          <span class="stat-val">#1</span>
-          <span class="stat-lbl">CONSISTENT TOP · SENIOR HIGH</span>
-        </div>
-        <div class="stat-card">
           <span class="stat-val">HIGH</span>
-          <span class="stat-lbl">HONORS · SENIOR HIGH SCHOOL</span>
+          <span class="stat-lbl">HONORS · SHS</span>
         </div>
         <div class="stat-card">
-          <span class="stat-val">6</span>
-          <span class="stat-lbl">PROJECTS BUILT / IN PROGRESS</span>
+          <span class="stat-val">8</span>
+          <span class="stat-lbl">PROJECTS</span>
+        </div>
+      </div>
         </div>
       </div>
     </section>
@@ -191,6 +196,56 @@
 
       <div class="projects-grid">
 
+        <!-- ── One Shared Services
+            data-images: add more screenshot filenames here if available ── -->
+        <div class="proj-card personal skew-in"
+            data-category="personal"
+            data-modal
+            data-images='[
+              "assets/images/projects/one-shared-services.png"
+            ]'
+            style="grid-column: span 2;">
+          <div class="proj-img-overlay" aria-hidden="true">
+            <span class="proj-img-overlay-text">[ VIEW PROJECT ]</span>
+          </div>
+          <img src="assets/images/projects/one-shared-services.png" alt="One Shared Services" />
+          <div class="proj-body">
+            <h3 class="proj-name">One Shared Services</h3>
+            <p class="proj-desc">Built for Victory BGC to bring Finance, HR, Facilities, Communications, WeServe, and Purchasing into a single directory. What used to be a manual back-and-forth in chat, shuttle requests, room bookings across multiple buildings, now runs through one system, with detailed statistics and export reports for every department.</p>
+            <div class="proj-tags">
+              <span class="proj-tag highlight">Laravel</span>
+              <span class="proj-tag highlight">Blade</span>
+              <span class="proj-tag highlight">Livewire</span>
+              <span class="proj-tag highlight">SQLite</span>
+              <span class="proj-tag">One system, six departments</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Pillar ── -->
+        <div class="proj-card personal skew-in"
+            data-category="personal"
+            data-modal
+            data-images='[
+              "assets/images/projects/pillar.png"
+            ]'
+            style="transition-delay: .05s">
+          <div class="proj-img-overlay" aria-hidden="true">
+            <span class="proj-img-overlay-text">[ VIEW PROJECT ]</span>
+          </div>
+          <img src="assets/images/projects/pillar.png" alt="Pillar" />
+          <div class="proj-body">
+            <h3 class="proj-name">Pillar</h3>
+            <p class="proj-desc">RealLIFE BGC's admin team couldn't be everywhere at once for scholars asking questions daily. Pillar gives them a chatbot and ticketing system organized by category, with visibility into whether similar concerns have already been resolved. When the chatbot can't help, it escalates straight to an admin, so no one is left waiting in silence.</p>
+            <div class="proj-tags">
+              <span class="proj-tag highlight">Laravel</span>
+              <span class="proj-tag highlight">Blade</span>
+              <span class="proj-tag highlight">Livewire</span>
+              <span class="proj-tag">Supports 70+ active scholars</span>
+            </div>
+          </div>
+        </div>
+
         <!-- ── Animal Bite Treatment Center MS
             data-images: add your 4 screenshot filenames here ── -->
         <div class="proj-card personal wip skew-in"
@@ -202,7 +257,7 @@
               "assets/images/projects/abtcms-3.png",
               "assets/images/projects/abtcms-4.png"
             ]'
-            style="grid-column: span 2;">
+            style="transition-delay: .1s">
           <div class="proj-img-overlay" aria-hidden="true">
             <span class="proj-img-overlay-text">[ VIEW PROJECT ]</span>
           </div>

@@ -8,50 +8,56 @@
 /* ── DARK THEME (default) ── */
 :root,
 [data-theme="dark"] {
-  --bg:       #080810;
+  --bg:       #050508;
   --surface:  #0e0e1c;
   --border:   #1e1e38;
   --red:      #ff0a37;
   --yellow:   #ffe619;
   --cyan:     #00f0ff;
   --purple:   #8c1eff;
-  --text:     #e2e2f0;
+  --text:     #f5f5fc;
   --muted:    #5a5a7a;
 
   --glow-r:   0 0 8px #ff0a37, 0 0 20px #ff0a3744;
   --glow-y:   0 0 8px #ffe619, 0 0 20px #ffe61944;
   --glow-c:   0 0 8px #00f0ff, 0 0 20px #00f0ff44;
 
-  --text-soft:   rgba(226, 226, 240, 0.8);
-  --text-softer: rgba(226, 226, 240, 0.7);
+  --text-soft:   rgba(245, 245, 252, 0.85);
+  --text-softer: rgba(245, 245, 252, 0.72);
 
   --grid-color: rgba(0, 240, 255, 0.04);
-  --nav-bg:     rgba(8, 8, 16, 0.85);
+  --nav-bg:     rgba(5, 5, 8, 0.85);
   --scanline:   rgba(0, 0, 0, 0.12);
+
+  --grain-opacity: 0.012;
+  --grain-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.2 -0.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── LIGHT THEME ── */
 [data-theme="light"] {
-  --bg:       #f0eef8;
-  --surface:  #e4e0f5;
-  --border:   #c8c2e8;
-  --red:      #d4002b;
-  --yellow:   #b07a00;
-  --cyan:     #006fa8;
-  --purple:   #6200cc;
-  --text:     #0e0c1e;
-  --muted:    #7a769a;
+  --bg:       #ffffff;
+  --surface:  #f7f6f4;
+  --border:   #c7c3bd;
+  --red:      #c40026;
+  --yellow:   #8a5c00;
+  --cyan:     #00648f;
+  --purple:   #5900bd;
+  --text:     #000000;
+  --muted:    #58544c;
 
-  --glow-r:   0 0 6px #d4002b44, 0 0 16px #d4002b22;
-  --glow-y:   0 0 6px #b07a0044, 0 0 16px #b07a0022;
-  --glow-c:   0 0 6px #006fa844, 0 0 16px #006fa822;
+  --glow-r:   0 0 6px #c4002644, 0 0 16px #c4002622;
+  --glow-y:   0 0 6px #8a5c0044, 0 0 16px #8a5c0022;
+  --glow-c:   0 0 6px #00648f44, 0 0 16px #00648f22;
 
-  --text-soft:   rgba(14, 12, 30, 0.75);
-  --text-softer: rgba(14, 12, 30, 0.65);
+  --text-soft:   rgba(0, 0, 0, 0.82);
+  --text-softer: rgba(0, 0, 0, 0.7);
 
-  --grid-color: rgba(0, 111, 168, 0.06);
-  --nav-bg:     rgba(240, 238, 248, 0.88);
-  --scanline:   rgba(0, 0, 0, 0.04);
+  --grid-color: rgba(0, 100, 143, 0.06);
+  --nav-bg:     rgba(255, 255, 255, 0.9);
+  --scanline:   rgba(0, 0, 0, 0.045);
+
+  --grain-opacity: 0.05;
+  --grain-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.2 -0.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── SHARED TOKENS (never change with theme) ── */
