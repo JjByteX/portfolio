@@ -145,7 +145,7 @@ function initCursor() {
     requestAnimationFrame(lerp);
   })();
 
-  const hoverSelector = 'a, button, [data-modal], .chip, .proj-filter-btn, .social-item, .contact-link, #ghChartWrap';
+  const hoverSelector = 'a, button, [data-pp], .chip, .pp-link, .pp-close, .social-item, .contact-link, #ghChartWrap';
 
   document.querySelectorAll(hoverSelector).forEach(el => {
     el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
@@ -836,7 +836,7 @@ document.getElementById('themeToggle')?.addEventListener('click', () => {
         if (!insideHero) return;
 
         // Show full text — no truncation
-        const display = selected.toUpperCase();
+        const display = selected;
 
         if (current !== 's-reading') {
           clearState();
@@ -962,7 +962,7 @@ function startPong() {
 
       // ── "CLICK TO WAKE" label ─────────────────────────────────────────
       pongWakeLabel = document.createElement('span');
-      pongWakeLabel.textContent = '[ ACTIVITY TO WAKE ]';
+      pongWakeLabel.textContent = '[ Activity to wake ]';
       Object.assign(pongWakeLabel.style, {
         position:     'absolute',
         bottom:       '10px',
@@ -970,7 +970,7 @@ function startPong() {
         transform:    'translateX(-50%)',
         fontFamily:   'var(--font-m)',
         fontSize:     '0.42rem',
-        letterSpacing:'0.18em',
+        letterSpacing:'0',
         color:        'rgba(255,10,55,0.5)',
         whiteSpace:   'nowrap',
         zIndex:       '4',

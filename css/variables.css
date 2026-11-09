@@ -3,7 +3,7 @@
    Change a value once — it updates everywhere.
 ──────────────────────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url('./fonts.css');
 
 /* ── DARK THEME (default) ── */
 :root,
@@ -17,6 +17,8 @@
   --purple:   #8c1eff;
   --text:     #f5f5fc;
   --muted:    #5a5a7a;
+  --red-rgb:  255, 10, 55;
+  --cyan-rgb: 0, 240, 255;
 
   --glow-r:   0 0 8px #ff0a37, 0 0 20px #ff0a3744;
   --glow-y:   0 0 8px #ffe619, 0 0 20px #ffe61944;
@@ -44,6 +46,8 @@
   --purple:   #5900bd;
   --text:     #000000;
   --muted:    #58544c;
+  --red-rgb:  196, 0, 38;
+  --cyan-rgb: 0, 100, 143;
 
   --glow-r:   0 0 6px #c4002644, 0 0 16px #c4002622;
   --glow-y:   0 0 6px #8a5c0044, 0 0 16px #8a5c0022;
@@ -62,9 +66,38 @@
 
 /* ── SHARED TOKENS (never change with theme) ── */
 :root {
-  --font-h:   'Fira Code', monospace;
-  --font-b:   'Rajdhani', sans-serif;
-  --font-m:   'Share Tech Mono', monospace;
+  --font-h:    'Usual', 'Usual Fallback', Arial, sans-serif;
+  --font-b:    'Usual', 'Usual Fallback', Arial, sans-serif;
+  --font-m:    'Usual', 'Usual Fallback', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', 'Courier New', monospace;
+
+  /* Type scale (Pixelpoint) */
+  --fs-xs:   12px;
+  --fs-sm:   14px;
+  --fs-base: 16px;
+  --fs-lg:   18px;
+  --fs-xl:   20px;
+  --fs-2xl:  24px;
+  --fs-3xl:  30px;
+  --fs-4xl:  36px;
+  --fs-5xl:  48px;
+  --fs-6xl:  56px;
+  --fs-8xl:  96px;
+
+  /* Radius scale */
+  --radius-sm:   2px;
+  --radius-md:   6px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 999px;
+
+  /* Letter-spacing scale */
+  --ls-tight:  -0.02em;
+  --ls-normal: 0;
+  --ls-wide:   0.05em;
+
+  /* Text/borders over images and scrims (always white) */
+  --on-image: #ffffff;
 
   --space-xs:  0.4rem;
   --space-sm:  0.75rem;

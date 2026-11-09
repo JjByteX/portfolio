@@ -159,7 +159,6 @@
 
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
-    if (typeof lucide !== 'undefined') lucide.createIcons({ nodes: [modal] });
 
     document.addEventListener('keydown', onGhModalKey);
   }

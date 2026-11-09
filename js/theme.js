@@ -15,6 +15,13 @@ const btn    = document.getElementById('themeToggle');
 const icon   = btn?.querySelector('.toggle-icon');
 const label  = btn?.querySelector('.toggle-label');
 
+/** Swap the Phosphor icon class (shows the theme you'll switch TO). */
+function setIcon(name) {
+  if (!icon) return;
+  icon.classList.remove('ph-moon', 'ph-sun');
+  icon.classList.add(name);
+}
+
 /**
  * Apply a theme by setting the data-theme attribute
  * and updating the toggle button state.
@@ -25,12 +32,12 @@ function applyTheme(theme) {
   html.setAttribute('data-theme', theme);
   localStorage.setItem(STORAGE_KEY, theme);
   if (theme === LIGHT) {
-    if (icon)  icon.textContent  = '●';
-    if (label) label.textContent = 'DARK';
+    setIcon('ph-moon');
+    if (label) label.textContent = 'Dark';
     btn?.setAttribute('aria-label', 'Switch to dark theme');
   } else {
-    if (icon)  icon.textContent  = '◑';
-    if (label) label.textContent = 'LIGHT';
+    setIcon('ph-sun');
+    if (label) label.textContent = 'Light';
     btn?.setAttribute('aria-label', 'Switch to light theme');
   }
 }

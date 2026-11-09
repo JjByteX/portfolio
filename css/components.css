@@ -6,12 +6,12 @@
 /* ── Theme Toggle — icon only, lives inside nav pill ── */
 .theme-toggle {
   font-family: var(--font-m);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--muted);
   background: none;
   border: none;
   padding: 0.4rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@
 }
 
 .theme-toggle .toggle-icon {
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   transition: transform 0.4s ease;
   display: block;
 }
@@ -76,9 +76,9 @@
 /* ── Buttons ── */
 .btn {
   font-family: var(--font-b);
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0;
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  letter-spacing: var(--ls-normal);
   padding: 0.7rem 1.5rem;
   border-radius: var(--radius-sm);
   text-transform: none;
@@ -102,11 +102,11 @@
 /* ── Skill chips ── */
 .chip {
   font-family: var(--font-m);
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-wide);
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--surface);
   color: var(--text);
   transition: all var(--transition);
@@ -148,16 +148,16 @@
 
 .stat-val {
   font-family: var(--font-h);
-  font-size: 1.6rem;
-  font-weight: 900;
+  font-size: var(--fs-3xl);
+  font-weight: 700;
   color: var(--text);
   display: block;
 }
 
 .stat-lbl {
   font-family: var(--font-m);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-wide);
   color: var(--muted);
   margin-top: 0.2rem;
 }
@@ -193,7 +193,7 @@
   gap: 0.5rem;
   color: var(--muted);
   font-family: var(--font-m);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   border: 1px solid var(--border);
 }
 
@@ -205,7 +205,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: var(--fs-2xl);
   opacity: 0.5;
 }
 
@@ -220,20 +220,20 @@
   gap: 0.5rem;
   color: var(--muted);
   font-family: var(--font-m);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-wide);
   border-bottom: 1px solid var(--border);
   filter: grayscale(30%) brightness(0.9);
   transition: filter 0.3s;
 }
 
-.proj-img-icon { font-size: 2rem; opacity: 0.3; }
+.proj-img-icon { font-size: var(--fs-4xl); opacity: 0.3; }
 
 /* ── Social items ── */
 .social-item {
   font-family: var(--font-m);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-wide);
   color: var(--muted);
   padding: 0.85rem 1rem;
   border: 1px solid var(--border);
@@ -254,6 +254,8 @@
 .social-platform {
   color: var(--text);
   margin-right: 0.25rem;
+  font-size: var(--fs-xl);
+  line-height: 1;
 }
 
 /* ── Back to Top ── */
@@ -291,14 +293,13 @@
 }
 
 .btt-icon {
-  width: 32px;
-  height: 32px;
-  stroke-width: 1.5;
+  font-size: 32px;
+  line-height: 1;
 }
 
 .modal-play-btn {
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-wide);
   padding: 0.75rem 2rem;
   display: inline-flex;
   align-items: center;

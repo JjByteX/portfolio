@@ -255,10 +255,10 @@ body.cursor-hidden #cursor-ring {
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-h);
-  font-size: clamp(4rem, 12vw, 9rem);
+  font-size: clamp(var(--fs-6xl), 12vw, var(--fs-8xl));
   font-weight: 700;
-  letter-spacing: 0.05em;
-  -webkit-text-stroke: 1px rgba(255, 10, 55, 0.06);
+  letter-spacing: var(--ls-wide);
+  -webkit-text-stroke: 1px rgba(var(--red-rgb), 0.06);
   color: transparent;
   pointer-events: none;
   user-select: none;
@@ -283,15 +283,15 @@ body.cursor-hidden #cursor-ring {
 
 .footer-copy {
   font-family: var(--font-m);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-wide);
   color: var(--muted);
 }
 
 .footer-quote {
   font-family: var(--font-m);
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-wide);
   color: var(--muted);
   opacity: 0.5;
   font-style: italic;
@@ -323,8 +323,8 @@ body.cursor-hidden #cursor-ring {
 
 #introTerminal {
   font-family: var(--font-m);
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-wide);
   color: var(--text-softer);
   max-width: 420px;
   width: 100%;

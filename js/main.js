@@ -12,6 +12,3 @@
 // logic or state here.
 
 console.log('%c JJ_BASSIG · Portfolio loaded ', 'background:#ff0a37;color:#fff;font-family:monospace;padding:4px 8px;');
-
-// Render all Lucide icons
-if (typeof lucide !== 'undefined') lucide.createIcons();
