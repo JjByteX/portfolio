@@ -16,7 +16,8 @@ window.PROJECTS = [
       'The new system adds audit reconciliation, variance reports, subscription access, and a tamper-evident activity log. It ships as a web app and an Electron desktop app that work online or offline and sync two ways.'
     ],
     results: ['7 venues and 16 locations supported', 'Audit reconciliation and variance reports', 'Tamper-evident activity log', 'Web and Electron apps that sync both ways, online or offline'],
-    images: []
+    link: { label: 'Visit live site', url: 'https://barandkitchencontrol.com' },
+    images: ['assets/images/projects/liquor-inventory.png','assets/images/projects/liquor-inventory-2.png','assets/images/projects/liquor-inventory-3.png','assets/images/projects/liquor-inventory-4.png','assets/images/projects/liquor-inventory-5.png']
   },
   {
     id: 'one-shared-services', kind: 'featured', title: 'One Shared Services',
@@ -61,9 +62,27 @@ window.PROJECTS = [
     images: ['assets/images/projects/abtcms.png','assets/images/projects/abtcms-2.png','assets/images/projects/abtcms-3.png','assets/images/projects/abtcms-4.png']
   },
   {
-    id: 'pillar', kind: 'featured', title: 'Pillar',
+    id: 'lakbay-pasig', kind: 'featured', title: 'Lakbay Pasig',
+    summary: 'A Progressive Web App for Pasig heritage sites, businesses, and guided routes verified by the Tourism Office (CATO).',
+    overview: 'Content verified by the Tourism Office, with GPS/QR-unlocked trail stops and offline downloads.',
+    role: 'Developer, team of three', services: ['Progressive Web App', 'Row level security', 'Map discovery'],
+    stack: ['React', 'TypeScript', 'Supabase'],
+    about: ['RBAC for Guests, Users, Vendors, and CATO Staff/Admins using row level security, with review queues and an activity log. Map discovery with directions, GPS/QR-unlocked trail stops, offline downloads, and voice search.'],
+    results: ['Content verified by the Tourism Office', 'GPS/QR-unlocked trail stops', 'Offline downloads and voice search'],
+    link: { label: 'Visit live site', url: 'https://lakbay-pasig.vercel.app' },
+    images: ['assets/images/projects/lakbay-pasig.png','assets/images/projects/lakbay-pasig-2.png','assets/images/projects/lakbay-pasig-3.png','assets/images/projects/lakbay-pasig-4.png','assets/images/projects/lakbay-pasig-5.png','assets/images/projects/lakbay-pasig-6.png','assets/images/projects/lakbay-pasig-7.png']
+  },
+  {
+    id: 'amkor-ims', kind: 'grid', title: 'Amkor IMS Prototype', metric: 'Laravel · React',
+    summary: 'An internal management system prototype for Amkor Travel & Tours covering 20 modules across two branches.',
+    role: 'Designer and developer', services: ['System design', 'RBAC', 'PDF generation'],
+    stack: ['Laravel', 'React', 'Inertia', 'PostgreSQL', 'Laravel Reverb'],
+    about: ['RBAC for 17 roles, audit trails, and real-time notifications. Modules include reservations, visa processing, accounts payable and receivable, disbursements, attendance, leave, and overtime, with PDF generation from official templates.'],
+    results: ['20 modules across two branches', 'RBAC for 17 roles', 'PDFs generated from official templates'], images: []
+  },
+  {
+    id: 'pillar', kind: 'grid', title: 'Pillar', metric: 'Laravel · Livewire',
     summary: 'A scholar support and ticketing system for RealLIFE BGC, with a chatbot that escalates to an admin when it cannot help.',
-    overview: 'Supports 70+ active scholars.',
     role: 'Developer',
     services: ['Ticketing system', 'Knowledge base auto-responses', 'Escalation logic', 'Role-based access control'],
     stack: ['Laravel', 'Blade', 'Livewire'],
@@ -75,28 +94,13 @@ window.PROJECTS = [
     images: ['assets/images/projects/pillar.png']
   },
   {
-    id: 'amkor-ims', kind: 'grid', title: 'Amkor IMS Prototype', metric: 'Laravel · React',
-    summary: 'An internal management system prototype for Amkor Travel & Tours covering 20 modules across two branches.',
-    role: 'Designer and developer', services: ['System design', 'RBAC', 'PDF generation'],
-    stack: ['Laravel', 'React', 'Inertia', 'PostgreSQL', 'Laravel Reverb'],
-    about: ['RBAC for 17 roles, audit trails, and real-time notifications. Modules include reservations, visa processing, accounts payable and receivable, disbursements, attendance, leave, and overtime, with PDF generation from official templates.'],
-    results: ['20 modules across two branches', 'RBAC for 17 roles', 'PDFs generated from official templates'], images: []
-  },
-  {
-    id: 'lakbay-pasig', kind: 'grid', title: 'Lakbay Pasig', metric: 'Team of three',
-    summary: 'A Progressive Web App for Pasig heritage sites, businesses, and guided routes verified by the Tourism Office (CATO).',
-    role: 'Developer, team of three', services: ['Progressive Web App', 'Row level security', 'Map discovery'],
-    stack: ['React', 'TypeScript', 'Supabase'],
-    about: ['RBAC for Guests, Users, Vendors, and CATO Staff/Admins using row level security, with review queues and an activity log. Map discovery with directions, GPS/QR-unlocked trail stops, offline downloads, and voice search.'],
-    results: ['Content verified by the Tourism Office', 'GPS/QR-unlocked trail stops', 'Offline downloads and voice search'], images: []
-  },
-  {
     id: 'c-links', kind: 'grid', title: 'C-Links', metric: 'Next.js · Supabase',
     summary: 'A web app for managing the links behind NFC business cards.',
     role: 'Developer', services: ['Web app', 'NFC chip writing', 'Reporting'],
     stack: ['Next.js', 'Supabase', 'Vercel'],
     about: ['Permanent short links, tap counting, partner-only access, in-app NFC chip writing, stock and purchase tracking, and exportable reports.'],
-    results: ['Permanent short links with tap counting', 'In-app NFC chip writing', 'Exportable reports'], images: []
+    results: ['Permanent short links with tap counting', 'In-app NFC chip writing', 'Exportable reports'],
+    images: ['assets/images/projects/c-links.png', 'assets/images/projects/c-links-2.png', 'assets/images/projects/c-links-3.png']
   },
   {
     id: 'qualia', kind: 'grid', title: 'Qualia', metric: 'Android',
