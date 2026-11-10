@@ -20,6 +20,17 @@ window.PROJECTS = [
     images: ['assets/images/projects/liquor-inventory.png','assets/images/projects/liquor-inventory-2.png','assets/images/projects/liquor-inventory-3.png','assets/images/projects/liquor-inventory-4.png','assets/images/projects/liquor-inventory-5.png']
   },
   {
+    id: 'lakbay-pasig', kind: 'featured', title: 'Lakbay Pasig',
+    summary: 'A Progressive Web App for Pasig heritage sites, businesses, and guided routes verified by the Tourism Office (CATO).',
+    overview: 'Content verified by the Tourism Office, with GPS/QR-unlocked trail stops and offline downloads.',
+    role: 'Developer, team of three', services: ['Progressive Web App', 'Row level security', 'Map discovery'],
+    stack: ['React', 'TypeScript', 'Supabase'],
+    about: ['RBAC for Guests, Users, Vendors, and CATO Staff/Admins using row level security, with review queues and an activity log. Map discovery with directions, GPS/QR-unlocked trail stops, offline downloads, and voice search.'],
+    results: ['Content verified by the Tourism Office', 'GPS/QR-unlocked trail stops', 'Offline downloads and voice search'],
+    link: { label: 'Visit live site', url: 'https://lakbay-pasig.vercel.app' },
+    images: ['assets/images/projects/lakbay-pasig.png','assets/images/projects/lakbay-pasig-2.png','assets/images/projects/lakbay-pasig-3.png','assets/images/projects/lakbay-pasig-4.png','assets/images/projects/lakbay-pasig-5.png','assets/images/projects/lakbay-pasig-6.png','assets/images/projects/lakbay-pasig-7.png']
+  },
+  {
     id: 'one-shared-services', kind: 'featured', title: 'One Shared Services',
     summary: 'An internal operations platform for facility booking and shared services across the Every Nation buildings in BGC.',
     overview: 'One directory for Finance, HR, Facilities, Communications, WeServe, and Purchasing, with statistics and export reports for every department.',
@@ -60,17 +71,6 @@ window.PROJECTS = [
     ],
     results: ['Automated dose scheduling', 'Statistics dashboards', 'Works offline, syncs to PostgreSQL'],
     images: ['assets/images/projects/abtcms.png','assets/images/projects/abtcms-2.png','assets/images/projects/abtcms-3.png','assets/images/projects/abtcms-4.png']
-  },
-  {
-    id: 'lakbay-pasig', kind: 'featured', title: 'Lakbay Pasig',
-    summary: 'A Progressive Web App for Pasig heritage sites, businesses, and guided routes verified by the Tourism Office (CATO).',
-    overview: 'Content verified by the Tourism Office, with GPS/QR-unlocked trail stops and offline downloads.',
-    role: 'Developer, team of three', services: ['Progressive Web App', 'Row level security', 'Map discovery'],
-    stack: ['React', 'TypeScript', 'Supabase'],
-    about: ['RBAC for Guests, Users, Vendors, and CATO Staff/Admins using row level security, with review queues and an activity log. Map discovery with directions, GPS/QR-unlocked trail stops, offline downloads, and voice search.'],
-    results: ['Content verified by the Tourism Office', 'GPS/QR-unlocked trail stops', 'Offline downloads and voice search'],
-    link: { label: 'Visit live site', url: 'https://lakbay-pasig.vercel.app' },
-    images: ['assets/images/projects/lakbay-pasig.png','assets/images/projects/lakbay-pasig-2.png','assets/images/projects/lakbay-pasig-3.png','assets/images/projects/lakbay-pasig-4.png','assets/images/projects/lakbay-pasig-5.png','assets/images/projects/lakbay-pasig-6.png','assets/images/projects/lakbay-pasig-7.png']
   },
   {
     id: 'amkor-ims', kind: 'grid', title: 'Amkor IMS Prototype', metric: 'Laravel · React',

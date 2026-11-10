@@ -180,6 +180,7 @@ section > * {
 .skill-chips .chip:nth-child(8)  { transition-delay: 0.35s; }
 .skill-chips .chip:nth-child(9)  { transition-delay: 0.40s; }
 .skill-chips .chip:nth-child(10) { transition-delay: 0.45s; }
+.skill-chips .chip:nth-child(11) { transition-delay: 0.50s; }
 
 
 /* ════════════════════════════════════

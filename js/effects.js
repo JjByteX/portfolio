@@ -1437,19 +1437,21 @@ function charDelay(char, prevChar) {
     el.appendChild(cursor);
 
     let i = 0;
+    const CHUNK = 2; // characters typed per tick (browser timers can't go much faster per char)
     function typeNext() {
       if (i >= plainText.length) {
-        // Pause at end of paragraph, then remove cursor and continue
+        // Short pause at end of paragraph, then remove cursor and continue
         setTimeout(() => {
           cursor.classList.add('done');
-          setTimeout(() => { cursor.remove(); onDone(); }, 600);
-        }, 320);
+          setTimeout(() => { cursor.remove(); onDone(); }, 250);
+        }, 150);
         return;
       }
-      const char     = plainText[i];
-      const prevChar = i > 0 ? plainText[i - 1] : null;
-      el.insertBefore(document.createTextNode(char), cursor);
-      i++;
+      const end      = Math.min(i + CHUNK, plainText.length);
+      const char     = plainText[end - 1];
+      const prevChar = end > 1 ? plainText[end - 2] : null;
+      el.insertBefore(document.createTextNode(plainText.slice(i, end)), cursor);
+      i = end;
       setTimeout(typeNext, charDelay(char, prevChar));
     }
     typeNext();
@@ -1471,7 +1473,7 @@ function charDelay(char, prevChar) {
       // Restore original HTML (with <strong> highlights) after typing finishes
       el.innerHTML = originals[index];
       // Brief pause between paragraphs — feels like the writer taking a breath
-      setTimeout(() => typeAll(index + 1), 280);
+      setTimeout(() => typeAll(index + 1), 120);
     });
   }
 

@@ -79,7 +79,7 @@
   grid-template-columns: 380px 1fr;
   gap: 3rem;
   align-items: start;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .about-photo-wrap {
@@ -100,10 +100,7 @@
    its content so the stat cards sit flush with the photo's
    bottom edge, keeping both sides symmetrical. */
 .about-grid > .blur-in {
-  height: 380px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  align-self: center;
 }
 
 .about-text {
@@ -126,20 +123,34 @@
   font-weight: 600;
 }
 
-/* 3 cards in one row, below the about text only */
+/* Full-width row of 5 stats below the photo and text */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
   margin-top: 1.5rem;
   flex-shrink: 0;
 }
+/* Flat stats separated by vertical dividers (no card chrome) */
+.stat-grid { gap: 1.75rem 0; margin-top: 0; grid-template-columns: repeat(5, auto); justify-content: space-between; }
+.stat-grid .stat-card { background: none; border: 0; border-radius: 0; box-shadow: none; transform: none; padding: 0 1.25rem; border-left: 1px solid var(--border); }
+.stat-grid .stat-card:nth-child(1) { border-left: 0; padding-left: 0; }
+.stat-grid .stat-card:hover { transform: none; box-shadow: none; }
 
 /* ════════════════════════════════════
    SKILLS
 ════════════════════════════════════ */
 .skill-group {
-  margin-bottom: 2.5rem;
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 1rem 2rem;
+  align-items: start;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.skill-group:last-child {
+  border-bottom: 1px solid var(--border);
 }
 
 .skill-group-label {
@@ -148,17 +159,8 @@
   font-weight: 400;
   letter-spacing: var(--ls-normal);
   color: var(--muted);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.skill-group-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  margin: 0;
+  padding-top: 0.35rem;
 }
 
 .skill-chips {
@@ -354,7 +356,13 @@
   .about-grid > .blur-in { height: auto; }
   .contact-wrap   { grid-template-columns: 1fr; }
   .stat-grid      { grid-template-columns: 1fr 1fr; }
+  .stat-grid .stat-card,
+  .stat-grid .stat-card:nth-child(n+4) { grid-column: auto; border-left: 1px solid var(--border); padding-left: 1.25rem; }
+  .stat-grid .stat-card:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .stat-grid .stat-card:last-child { grid-column: 1 / -1; }
   .social-grid    { grid-template-columns: 1fr; }
+  .skill-group    { grid-template-columns: 1fr; gap: 0.75rem; }
+  .skill-group-label { padding-top: 0; }
   .hero-name      { font-size: clamp(var(--fs-4xl), 12vw, var(--fs-6xl)); }
   .about-photo-wrap { max-width: 300px; margin: 0 auto; }
 }
@@ -933,7 +941,7 @@
 ════════════════════════════════════ */
 
 #hero {
-  min-height: 100vh;
+  min-height: 88vh;
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: auto;
@@ -942,6 +950,7 @@
   column-gap: 2rem;
   gap: 0;
   padding-top: 5rem;
+  padding-bottom: 0;
   padding-right: 2rem;
 }
 
@@ -1586,10 +1595,10 @@ display: flex;
 #projects h2, #projects h3, #projects a, #projects button,
 #ppOverlay h2, #ppOverlay h3, #ppOverlay a, #ppOverlay button, #ppOverlay strong { font-weight: 400; }
 
-.pp-head { font-size: clamp(var(--fs-3xl), 4vw, var(--fs-5xl)); line-height: 1.15; letter-spacing: var(--ls-tight); margin: 0 0 clamp(3rem, 6vw, 6rem); max-width: 800px; font-weight: 300; color: var(--pp-text); }
+.pp-head { font-size: clamp(var(--fs-3xl), 4vw, var(--fs-5xl)); line-height: 1.15; letter-spacing: var(--ls-tight); margin: 0 0 clamp(2rem, 4vw, 3.5rem); max-width: 800px; font-weight: 300; color: var(--pp-text); }
 .pp-head span { color: var(--pp-red); font-weight: 400; }
 
-.pp-rows { display: flex; flex-direction: column; gap: clamp(5rem, 10vw, 10rem); }
+.pp-rows { display: flex; flex-direction: column; gap: clamp(3rem, 6vw, 5rem); }
 .pp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
 .pp-row-text { padding-right: 1rem; }
 .pp-row-title { font-size: var(--fs-2xl); line-height: 1.25; margin: 0 0 1rem; color: var(--pp-text); }
@@ -1605,15 +1614,15 @@ display: flex;
 .pp-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .pp-wordmark { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; background: var(--surface); color: var(--text); font-size: clamp(var(--fs-2xl), 3vw, var(--fs-4xl)); line-height: 1.15; letter-spacing: var(--ls-tight); font-weight: 300; }
 
-.pp-sub { margin-top: clamp(6rem, 12vw, 12rem); }
-.pp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-.pp-card { display: flex; flex-direction: column; text-align: left; background: var(--pp-card); color: var(--text); border: 1px solid var(--pp-line); border-radius: var(--radius-xl); padding: 1.25rem 1.25rem 1.75rem; cursor: pointer; transition: transform 0.2s ease; }
+.pp-sub { margin-top: clamp(4rem, 7vw, 6rem); }
+.pp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.pp-card { display: flex; flex-direction: column; text-align: left; background: var(--pp-card); color: var(--text); border: 1px solid var(--pp-line); border-radius: var(--radius-xl); padding: 0; overflow: hidden; cursor: pointer; transition: transform 0.2s ease; }
 .pp-card:hover { transform: translateY(-4px); }
+.pp-card-img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.pp-card-title { display: flex; align-items: center; justify-content: center; text-align: center; padding: 1rem; font-size: var(--fs-2xl); line-height: 1.2; letter-spacing: var(--ls-tight); border-bottom: 1px solid var(--pp-line); }
+.pp-card-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem 1.25rem 1.5rem; }
 .pp-card-metric { font-size: var(--fs-sm); color: var(--muted); }
-.pp-card-mark { aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius-md); background: var(--bg); display: flex; align-items: center; justify-content: center; text-align: center; font-size: var(--fs-2xl); line-height: 1.2; letter-spacing: var(--ls-tight); color: var(--text); padding: 1rem; margin: 1rem 0; }
-.pp-card-mark.has-img { padding: 0; }
-.pp-card-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.pp-card-desc { font-size: var(--fs-base); line-height: 1.5; font-weight: 400; color: var(--text-soft); margin: 0; }
+.pp-card-desc { font-size: var(--fs-base); line-height: 1.5; font-weight: 400; color: var(--text-soft); }
 
 /* ── Detail overlay (follows the portfolio theme) ── */
 #ppOverlay { position: fixed; inset: 0; z-index: 9000; background: var(--bg); color: var(--text); overflow-y: auto; display: none; }
@@ -1650,7 +1659,7 @@ display: flex;
 .pp-lb-x { top: 0.5rem; right: 1rem; } .pp-lb-p { left: 0.5rem; } .pp-lb-n { right: 0.5rem; }
 
 @media (max-width: 1024px) {
-  .pp-grid { grid-template-columns: repeat(2, 1fr); gap: 1.75rem; }
+  .pp-grid { grid-template-columns: repeat(2, 1fr); }
   .pp-d-main { grid-column: 1 / -1; } .pp-d-side { grid-column: 1 / -1; }
 }
 @media (max-width: 768px) {

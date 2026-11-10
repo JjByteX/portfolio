@@ -32,11 +32,13 @@
 
   grid.innerHTML = data.filter(p => p.kind === 'grid').map((p, i) => `
     <button class="pp-card fade-up" data-pp="${esc(p.id)}" style="transition-delay:${(i % 3) * 0.08}s">
-      <span class="pp-card-metric">${esc(p.metric || '')}</span>
-      <span class="pp-card-mark${p.images && p.images.length ? ' has-img' : ''}">${p.images && p.images.length
-        ? `<img src="${esc(p.images[0])}" alt="${esc(p.title)}" loading="lazy" />`
-        : esc(p.title)}</span>
-      <p class="pp-card-desc">${esc(p.summary)}</p>
+      ${p.images && p.images.length
+        ? `<img class="pp-card-img" src="${esc(p.images[0])}" alt="${esc(p.title)}" loading="lazy" />`
+        : `<span class="pp-card-img pp-card-title">${esc(p.title)}</span>`}
+      <span class="pp-card-body">
+        <span class="pp-card-metric">${esc(p.metric || '')}</span>
+        <span class="pp-card-desc">${esc(p.summary)}</span>
+      </span>
     </button>`).join('');
 
   /* ── Detail overlay ── */
