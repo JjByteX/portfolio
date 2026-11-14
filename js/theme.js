@@ -2,7 +2,7 @@
    Manages dark/light theme switching.
    - Reads saved preference from localStorage on load
    - Toggles data-theme attribute on <html>
-   - Updates the button label + icon
+   - Updates the button icon and aria-label
    - Persists the choice so it survives page refreshes
 ──────────────────────────────────────────────────────── */
 
@@ -13,7 +13,6 @@ const LIGHT = 'light';
 const html   = document.documentElement;
 const btn    = document.getElementById('themeToggle');
 const icon   = btn?.querySelector('.toggle-icon');
-const label  = btn?.querySelector('.toggle-label');
 
 /** Swap the Phosphor icon class (shows the theme you'll switch TO). */
 function setIcon(name) {
@@ -33,11 +32,9 @@ function applyTheme(theme) {
   localStorage.setItem(STORAGE_KEY, theme);
   if (theme === LIGHT) {
     setIcon('ph-moon');
-    if (label) label.textContent = 'Dark';
     btn?.setAttribute('aria-label', 'Switch to dark theme');
   } else {
     setIcon('ph-sun');
-    if (label) label.textContent = 'Light';
     btn?.setAttribute('aria-label', 'Switch to light theme');
   }
 }
@@ -51,7 +48,7 @@ function toggleTheme() {
 }
 
 /**
- * Read saved preference, fall back to dark.
+ * Read saved preference, fall back to light.
  */
 function initTheme() {
   const saved = localStorage.getItem(STORAGE_KEY);

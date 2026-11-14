@@ -9,7 +9,7 @@
  * when they enter the viewport.
  */
 function initScrollReveal() {
-  const targets = document.querySelectorAll('.fade-up, .blur-in, .skew-in, .wipe-in');
+  const targets = document.querySelectorAll('.fade-up, .blur-in, .wipe-in');
 
   // Safety net: some browsers/timing combos never fire the observer
   // for elements that are already in (or very near) the viewport on
@@ -79,6 +79,14 @@ function updateActiveLink() {
       const isActive = link.getAttribute('href') === `#${currentId}`;
       link.classList.toggle('active', isActive);
     });
+
+    // Tab title: "Page | App", page name matches the nav label
+    const active = document.querySelector('.nav-links a.active span');
+    const page = active ? active.textContent : 'Home';
+    const title = page + ' | JJ Bassig';
+    if (!document.getElementById('ppOverlay')?.classList.contains('open') && document.title !== title) {
+      document.title = title;
+    }
   }
 
   window.addEventListener('scroll', updateActiveLink, { passive: true });

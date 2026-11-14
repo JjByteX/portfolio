@@ -1,35 +1,33 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Jj Bassig — Aspiring Full Stack Software Engineer. BSIT 3rd Year, Pamantasan ng Lungsod ng Pasig." />
-    <meta name="author" content="Jj Sanchez Bassig" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Jj Bassig, aspiring full stack software engineer. BSIT 3rd year, Pamantasan ng Lungsod ng Pasig." />
+  <meta name="author" content="Jj Sanchez Bassig" />
 
-    <title>JJ BASSIG · Full Stack Developer</title>
+  <title>Home | JJ Bassig</title>
 
-    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css" />
-    <link rel="stylesheet" href="css/main.css" />
-    <script>
-      /* Set the theme attribute before first paint so the page (and the
-         intro/splash overlay) never flashes dark before switching to light.
-         Mirrors the fallback logic in js/theme.js: default to light unless
-         the visitor previously chose dark. */
-      (function () {
-        var saved = localStorage.getItem('jj-portfolio-theme');
-        document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
-      })();
-    </script>
+  <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <script>
+    /* Set the theme before first paint so nothing flashes.
+       Defaults to light unless the visitor previously chose dark. */
+    (function () {
+      var saved = localStorage.getItem('jj-portfolio-theme');
+      document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+    })();
+  </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
-  </head>
-  <body>
-   <div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
+</head>
+<body>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
 
-<div id="introOverlay">
+  <div id="introOverlay">
   <div id="introTerminal">
     <div class="intro-line" id="iLine1"></div>
     <div class="intro-line" id="iLine2"></div>
@@ -39,24 +37,23 @@
   </div>
 </div>
 
-    <div id="vanta-bg" aria-hidden="true"></div>
+  <div id="vanta-bg" aria-hidden="true"></div>
 
-    <!-- ─── NAVIGATION ───────────────────────────────── -->
-    <nav>
-      <div class="nav-logo">jj_bassig</div>
-      <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
-      </div>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <i class="ph ph-moon toggle-icon" aria-hidden="true"></i>
-        <span class="toggle-label">Light</span>
-      </button>
-    </nav>
+  <!-- Header (layout shell) -->
+  <nav aria-label="Main">
+    <div class="nav-links">
+      <a href="#about"><i class="ph ph-user nav-icon" aria-hidden="true"></i><span>About</span></a>
+      <a href="#skills"><i class="ph ph-code nav-icon" aria-hidden="true"></i><span>Skills</span></a>
+      <a href="#projects"><i class="ph ph-folder nav-icon" aria-hidden="true"></i><span>Projects</span></a>
+      <a href="#contact"><i class="ph ph-envelope-simple nav-icon" aria-hidden="true"></i><span>Contact</span></a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <i class="ph ph-moon toggle-icon" aria-hidden="true"></i>
+    </button>
+  </nav>
 
-    <!-- ─── HERO ─────────────────────────────────────── -->
+  <main>
+    <!-- Hero -->
     <section id="hero">
       <p class="hero-tag">Full stack developer · BSIT 3rd year</p>
       <div class="hero-name">
@@ -66,12 +63,11 @@
       <p class="hero-role">
         <span class="accent">@JjByteX</span> · Pamantasan ng Lungsod ng Pasig · Pasig, PH
       </p>
-<p class="hero-tagline" id="heroTagline" data-type="I build systems that respond to people."></p>
+      <p class="hero-tagline" id="heroTagline" data-type="I build systems that respond to people."></p>
       <div class="hero-cta">
         <a href="#projects" class="btn btn-primary">View projects</a>
         <a href="#contact" class="btn btn-outline">Contact me</a>
       </div>
-
 
 <div id="heroFace" aria-hidden="true">
 <div class="hf-scanline"></div>
@@ -87,10 +83,9 @@
 </div>
     </section>
 
-
-    <!-- ─── ABOUT ─────────────────────────────────────── -->
+    <!-- About -->
     <section id="about">
-      <p class="section-label">About</p>
+      <h2 class="section-title">About</h2>
 
       <div class="about-grid">
         <div class="fade-up">
@@ -100,144 +95,133 @@
             </div>
           </div>
         </div>
-<div class="blur-in" style="transition-delay: .15s">
-  <div class="about-text">
-<p>I'm <strong>Jj</strong>. I learn by building, breaking, and asking what's still missing. I study how enterprise systems solve problems, then refine my approach especially with databases and backend systems, I’d rather question the structure early than fix fragile logic later.</p>
+        <div class="blur-in delay-2">
+          <div class="about-text">
+            <p>I'm <strong>Jj</strong>. I learn by building, breaking, and asking what's still missing. I study how enterprise systems solve problems, then refine my approach, especially with databases and backend systems. I'd rather question the structure early than fix fragile logic later.</p>
             <p>I translate clients’ unstructured needs into a working solution through interviews and frameworks, adjusting the approach as requirements evolve along the way.</p>
           </div>
-
         </div>
       </div>
 
-  <div class="stat-grid wipe-in" style="transition-delay: .25s">
+      <div class="stat-grid wipe-in delay-3">
         <div class="stat-card">
           <span class="stat-val">14</span>
-          <span class="stat-lbl">Projects</span>
+          <span class="stat-lbl">Projects built</span>
         </div>
         <div class="stat-card">
           <span class="stat-val">3×</span>
           <span class="stat-lbl">Dean's lister</span>
         </div>
         <div class="stat-card">
-          <span class="stat-val">High</span>
-          <span class="stat-lbl">Honors · SHS</span>
+          <span class="stat-val">High honors</span>
+          <span class="stat-lbl">Senior high school</span>
         </div>
         <div class="stat-card">
-          <span class="stat-val">RealLife · BGC</span>
-          <span class="stat-lbl">Scholar</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-val">Pasig City</span>
-          <span class="stat-lbl">Scholar</span>
+          <span class="stat-val">Scholar</span>
+          <span class="stat-lbl">RealLife (BGC) and Pasig City</span>
         </div>
       </div>
     </section>
 
-
-    <!-- ─── SKILLS ────────────────────────────────────── -->
+    <!-- Skills -->
     <section id="skills">
-      <p class="section-label">Skills</p>
+      <h2 class="section-title">Skills</h2>
 
       <div class="skill-cols">
-      <div class="skill-group skill-langs fade-up">
-        <p class="skill-group-label">Languages</p>
-        <div class="skill-chips">
-          <span class="chip">C#</span>
-          <span class="chip">PHP</span>
-          <span class="chip">TypeScript</span>
-          <span class="chip">Java</span>
-          <span class="chip">Python</span>
-          <span class="chip">C++</span>
-          <span class="chip">HTML / CSS</span>
+        <div class="skill-group skill-langs fade-up">
+          <p class="skill-group-label">Languages</p>
+          <div class="skill-chips">
+            <span class="chip">C#</span>
+            <span class="chip">PHP</span>
+            <span class="chip">TypeScript</span>
+            <span class="chip">Java</span>
+            <span class="chip">Python</span>
+            <span class="chip">C++</span>
+            <span class="chip">HTML / CSS</span>
+          </div>
         </div>
-      </div>
-      <div class="skill-group skill-db fade-up" style="transition-delay: .1s">
-        <p class="skill-group-label">Databases</p>
-        <div class="skill-chips">
-          <span class="chip">PostgreSQL</span>
-          <span class="chip">MySQL</span>
-          <span class="chip">SQLite</span>
+        <div class="skill-group skill-db fade-up delay-1">
+          <p class="skill-group-label">Databases</p>
+          <div class="skill-chips">
+            <span class="chip">PostgreSQL</span>
+            <span class="chip">MySQL</span>
+            <span class="chip">SQLite</span>
+          </div>
         </div>
-      </div>
-      <div class="skill-group skill-tools fade-up" style="transition-delay: .2s">
-        <p class="skill-group-label">Tools & frameworks</p>
-        <div class="skill-chips">
-          <span class="chip">.NET / WPF</span>
-          <span class="chip">Laravel</span>
-          <span class="chip">Livewire</span>
-          <span class="chip">React</span>
-          <span class="chip">Next.js</span>
-          <span class="chip">Hono</span>
-          <span class="chip">Prisma</span>
-          <span class="chip">Supabase</span>
-          <span class="chip">Electron</span>
-          <span class="chip">Git</span>
-          <span class="chip">Linux</span>
+        <div class="skill-group skill-tools fade-up delay-2">
+          <p class="skill-group-label">Tools and frameworks</p>
+          <div class="skill-chips">
+            <span class="chip">.NET / WPF</span>
+            <span class="chip">Laravel</span>
+            <span class="chip">Livewire</span>
+            <span class="chip">React</span>
+            <span class="chip">Next.js</span>
+            <span class="chip">Hono</span>
+            <span class="chip">Prisma</span>
+            <span class="chip">Supabase</span>
+            <span class="chip">Electron</span>
+            <span class="chip">Git</span>
+            <span class="chip">Linux</span>
+          </div>
         </div>
-      </div>
-      <div class="skill-group skill-learn fade-up" style="transition-delay: .3s">
-        <p class="skill-group-label">Currently learning</p>
-        <div class="skill-chips">
-          <span class="chip learning">Cloud Infrastructure</span>
-          <span class="chip learning">Secure DB Connectivity</span>
-          <span class="chip learning">Machine Learning</span>
+        <div class="skill-group skill-learn fade-up delay-3">
+          <p class="skill-group-label">Currently learning</p>
+          <div class="skill-chips">
+            <span class="chip learning">Cloud infrastructure</span>
+            <span class="chip learning">Secure database connectivity</span>
+            <span class="chip learning">Machine learning</span>
+          </div>
         </div>
-      </div>
       </div>
     </section>
 
-
-    <!-- ─── PROJECTS ──────────────────────────────────── -->
+    <!-- Projects -->
     <section id="projects">
-      <h2 class="pp-head fade-up"><span>Projects.</span></h2>
+      <h2 class="section-title fade-up">Projects</h2>
       <div class="pp-rows" id="ppRows"></div>
       <div class="pp-sub">
-        <h2 class="pp-head fade-up"><span>More projects.</span></h2>
+        <h2 class="section-title fade-up">More projects</h2>
         <div class="pp-grid" id="ppGrid"></div>
       </div>
     </section>
 
-
-    <!-- ─── CONTACT ───────────────────────────────────── -->
+    <!-- Contact -->
     <section id="contact">
-      <p class="section-label">Contact</p>
-<h2 class="section-title fade-up" data-ghost="Contact">Get in <span>touch</span></h2>
+      <h2 class="section-title fade-up">Contact</h2>
 
       <div class="contact-wrap">
-<div class="blur-in">
-  <p class="contact-text">
-            Open to partnerships or internships. Reach out anytime.
-          </p>
-<div class="contact-links">
-  <a href="mailto:jjbassig30@gmail.com" class="contact-link">
-    <div>
-      <span class="contact-link-label">Email</span>
-      <span class="contact-link-val">jjbassig30@gmail.com</span>
-    </div>
-  </a>
-  <a href="assets/resume.pdf" target="_blank" rel="noopener" class="contact-link">
-    <div>
-      <span class="contact-link-label">Resume</span>
-      <span class="contact-link-val">View / Download PDF</span>
-    </div>
-  </a>
-  <a href="tel:+639947668735" class="contact-link">
-    <div>
-      <span class="contact-link-label">Phone</span>
-      <span class="contact-link-val">+63 994 766 8735</span>
-    </div>
-  </a>
-  <div class="contact-link">
-    <div>
-      <span class="contact-link-label">Location</span>
-      <span class="contact-link-val">Pasig, Philippines</span>
-    </div>
-  </div>
-</div>
+        <div class="blur-in">
+          <p class="contact-text">Open to partnerships or internships. Reach out anytime.</p>
+          <div class="contact-links">
+            <a href="mailto:jjbassig30@gmail.com" class="contact-link">
+              <div>
+                <span class="contact-link-label">Email</span>
+                <span class="contact-link-val">jjbassig30@gmail.com</span>
+              </div>
+            </a>
+            <a href="assets/resume.pdf" target="_blank" rel="noopener" class="contact-link">
+              <div>
+                <span class="contact-link-label">Resume</span>
+                <span class="contact-link-val">View / Download PDF</span>
+              </div>
+            </a>
+            <a href="tel:+639947668735" class="contact-link">
+              <div>
+                <span class="contact-link-label">Phone</span>
+                <span class="contact-link-val">+63 994 766 8735</span>
+              </div>
+            </a>
+            <div class="contact-link">
+              <div>
+                <span class="contact-link-label">Location</span>
+                <span class="contact-link-val">Pasig, Philippines</span>
+              </div>
+            </div>
           </div>
+        </div>
 
-        <div class="fade-up" style="transition-delay: .12s">
-          <p class="section-label" style="margin-bottom: 1rem;">Find me online</p>
+        <div class="fade-up delay-1">
+          <h3 class="subheading">Find me online</h3>
           <div class="social-grid">
             <a href="https://github.com/JjByteX" target="_blank" rel="noopener noreferrer" class="social-item">
               <i class="ph ph-github-logo social-platform" aria-hidden="true"></i> github.com/JjByteX
@@ -253,11 +237,11 @@
             </a>
           </div>
 
-      <div class="github-widget fade-up" style="margin-top: 1.5rem;">
-              <div class="github-widget-header">
+          <div class="github-widget fade-up">
+            <div class="github-widget-header">
               <div>
-                <p class="section-label" style="margin-bottom: 0.25rem;">GitHub activity</p>
-                <p class="github-widget-sub">@JjByteX · last 4 months</p>
+                <h3 class="subheading">GitHub activity</h3>
+                <p class="github-widget-sub">@JjByteX · last 12 months</p>
               </div>
               <div class="github-clock">
                 <span class="clock-label">Local time</span>
@@ -265,76 +249,49 @@
                 <span class="clock-tz">UTC+8</span>
               </div>
             </div>
-<div class="github-graph-wrap" id="ghChartWrap" style="cursor:pointer; position:relative;" title="Click to expand">
-  <div class="proj-img-overlay" aria-hidden="true">
-    <span class="proj-img-overlay-text">[ View ]</span>
-  </div>
-  <div id="ghChart" style="width:100%; line-height:0;"></div>
-</div>
-
+            <div class="github-graph-wrap" id="ghChartWrap" role="button" tabindex="0" aria-label="Expand GitHub activity">
+              <div id="ghChart"></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
+  </main>
 
-<!-- ─── GITHUB CHART MODAL ───────────────────────── -->
-    <div id="ghModal" class="proj-modal-overlay" role="dialog" aria-modal="true" aria-label="GitHub activity fullscreen">
-      <div class="proj-modal-wrapper" style="max-width: 980px;">
-        <span class="modal-corner modal-corner-tl" aria-hidden="true"></span>
-        <span class="modal-corner modal-corner-tr" aria-hidden="true"></span>
-        <span class="modal-corner modal-corner-bl" aria-hidden="true"></span>
-        <span class="modal-corner modal-corner-br" aria-hidden="true"></span>
-        <div class="proj-modal-panel">
-          <div class="proj-modal-scan" aria-hidden="true"></div>
-          <div class="proj-modal-title-band">
-            <div class="proj-modal-title-left">
-              <h3 class="proj-modal-title">GitHub activity</h3>
-              <div class="proj-modal-badges">
-                <span class="proj-tag highlight">@JjByteX</span>
-                <span class="proj-tag">last 12 months</span>
-              </div>
-            </div>
-            <button class="proj-modal-close" id="ghModalClose" aria-label="Close modal">
-              <i class="ph ph-x" aria-hidden="true"></i>
-            </button>
-          </div>
-          <div style="padding: 1.5rem; background: var(--bg);">
-            <div id="ghChartLarge"></div>
-          </div>
-          <div class="proj-modal-footer"></div>
-        </div>
+  <!-- GitHub activity modal -->
+  <div id="ghModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ghModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="subheading" id="ghModalTitle">GitHub activity</h3>
+        <button class="modal-close" id="ghModalClose" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button>
       </div>
-    </div>
-
-    <!-- ─── FOOTER ────────────────────────────────────── -->
-<footer class="site-footer">
-  <div class="footer-ghost">Bassig</div>
-  <div class="footer-inner">
-    <div class="footer-divider"></div>
-    <div class="footer-bottom">
-      <p class="footer-copy">© 2026 · JJ Bassig</p>
+      <div id="ghChartLarge"></div>
     </div>
   </div>
-</footer>
 
-    <!-- ─── BACK TO TOP ──────────────────────────────────── -->
-    <a href="#hero" class="back-to-top" id="backToTop" aria-label="Back to top">
-      <i class="ph ph-arrow-up btt-icon" aria-hidden="true"></i>
-    </a>
+  <!-- Footer (layout shell) -->
+  <footer class="site-footer">
+    <div class="footer-ghost" aria-hidden="true">Bassig</div>
+    <div class="footer-inner">
+      <p class="footer-copy">© 2026 · JJ Bassig</p>
+    </div>
+  </footer>
+
+  <a href="#hero" class="back-to-top" id="backToTop" aria-label="Back to top">
+    <i class="ph ph-arrow-up btt-icon" aria-hidden="true"></i>
+  </a>
 
   <div id="ppOverlay" role="dialog" aria-modal="true" aria-label="Project details"></div>
-  <div id="ppLightbox" role="dialog" aria-modal="true"></div>
+  <div id="ppLightbox" role="dialog" aria-modal="true" aria-label="Screenshot viewer"></div>
 
-    <!-- ─── SCRIPTS ───────────────────────────────────── -->
-    <script src="js/projects-data.js" defer></script>
-    <script src="js/projects.js" defer></script>
-    <script src="js/vanta.js" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="js/scroll.js" defer></script>
-    <script src="js/glitch.js" defer></script>
-    <script src="js/contributions.js" defer></script>
-    <script src="js/main.js" defer></script>
+  <script src="js/projects-data.js" defer></script>
+  <script src="js/projects.js" defer></script>
+  <script src="js/vanta.js" defer></script>
+  <script src="js/theme.js" defer></script>
+  <script src="js/scroll.js" defer></script>
+  <script src="js/glitch.js" defer></script>
+  <script src="js/contributions.js" defer></script>
   <script src="js/effects.js" defer></script>
   <script src="js/intro.js"></script>
-  </body>
-  </html>
+</body>
+</html>

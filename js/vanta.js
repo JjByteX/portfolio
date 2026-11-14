@@ -3,8 +3,8 @@
    On theme change: destroy + recreate with correct bg color.
 ──────────────────────────────────────────────────────── */
 const VANTA_COLORS = {
-  dark:  { bg: 0x050508, net: 0x7744dd },
-  light: { bg: 0xffffff, net: 0x7744dd },
+  dark:  { bg: 0x09090b, net: 0x3b82f6 },   // zinc-950, blue-500
+  light: { bg: 0xfafafa, net: 0x3b82f6 },   // zinc-50, blue-500
 };
 
 let vantaEffect = null;
@@ -13,7 +13,6 @@ function isDark() {
   return document.documentElement.getAttribute('data-theme') !== 'light';
 }
 
-// AFTER
 function startVanta() {
   const el = document.getElementById('vanta-bg');
   if (!el) return;

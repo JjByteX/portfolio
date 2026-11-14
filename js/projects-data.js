@@ -70,7 +70,6 @@ window.PROJECTS = [
       'Admissions covers document verification, an exam builder and scheduler, interview room and queue management, and automated access and password generation, with RBAC for Admin, SSO, Deans, Professors, and Proctors.'
     ],
     results: ['Applicant to COR in two connected systems', 'Automatic student numbering', 'Mass reschedules and optional payment clearance'],
-    video: '1_DgrRKbr7j23cMvx_WhXi8mPIq9Zo9K7',
     images: ['assets/images/projects/plp-enrollment-1.png','assets/images/projects/plp-enrollment-2.png','assets/images/projects/plp-enrollment-3.png','assets/images/projects/plp-enrollment-4.png','assets/images/projects/plp-admissions-1.png','assets/images/projects/plp-admissions-2.png','assets/images/projects/plp-admissions-3.png','assets/images/projects/plp-admissions-4.png','assets/images/projects/plp-admissions-5.png']
   },
   {
@@ -109,7 +108,9 @@ window.PROJECTS = [
     role: 'Developer', services: ['Android app', 'Offline-first storage'],
     stack: ['Java', 'Android SDK', 'Room', 'SQLite'],
     about: ['A 70-session guided experience, custom drawing tools, and text, voice, and camera-based journaling.'],
-    results: ['70-session guided experience', 'Text, voice, and camera journaling', 'Works fully offline'], images: []
+    results: ['70-session guided experience', 'Text, voice, and camera journaling', 'Works fully offline'],
+    video: '1_DgrRKbr7j23cMvx_WhXi8mPIq9Zo9K7',
+    images: []
   },
   {
     id: 'training-center', kind: 'grid', title: 'Training & Certification Center MS', metric: 'VB.NET · MySQL',

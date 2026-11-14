@@ -81,8 +81,7 @@
           }
         });
 
-        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-        tintEmptySquares(isDark);
+        tintEmptySquares();
 
         svg.style.width   = '100%';
         svg.style.height  = 'auto';
@@ -101,12 +100,16 @@
       });
   }
 
+  /* Chart colors come from the design tokens (--chart-0 to --chart-4) */
+  function chartPalette() {
+    const css = getComputedStyle(document.documentElement);
+    const get = n => css.getPropertyValue('--chart-' + n).trim();
+    return { '0': get(0), '1': get(1), '2': get(2), '3': get(3), '4': get(4) };
+  }
+
   /* ── Theme re-tint ── */
-  function tintEmptySquares(isDark) {
-    // Full palette for dark and light modes
-    const palette = isDark
-      ? { '0': '#0e0e20', '1': '#0e4429', '2': '#006d32', '3': '#26a641', '4': '#39d353' }
-      : { '0': '#e8e4f5', '1': '#9be9a8', '2': '#40c463', '3': '#30a14e', '4': '#216e39' };
+  function tintEmptySquares() {
+    const palette = chartPalette();
 
     document.querySelectorAll('#ghChart rect[data-gh-level]').forEach(rect => {
       const color = palette[rect.dataset.ghLevel];
@@ -116,10 +119,7 @@
 
   // Re-tint only on theme change — never re-fetch the SVG
   new MutationObserver(() => {
-    requestAnimationFrame(() => {
-      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      tintEmptySquares(isDark);
-    });
+    requestAnimationFrame(tintEmptySquares);
   }).observe(document.documentElement, {
     attributes:      true,
     attributeFilter: ['data-theme'],
@@ -139,10 +139,7 @@
       largeDest.appendChild(clone);
 
       // Re-tint cloned SVG to match current theme
-      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      const palette = isDark
-        ? { '0': '#0e0e20', '1': '#0e4429', '2': '#006d32', '3': '#26a641', '4': '#39d353' }
-        : { '0': '#e8e4f5', '1': '#9be9a8', '2': '#40c463', '3': '#30a14e', '4': '#216e39' };
+      const palette = chartPalette();
       clone.querySelectorAll('rect[data-gh-level]').forEach(rect => {
         const color = palette[rect.dataset.ghLevel];
         if (color) rect.style.fill = color;
@@ -178,6 +175,9 @@
   }
 
   chartWrap?.addEventListener('click', openGhModal);
+  chartWrap?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGhModal(); }
+  });
   modalClose?.addEventListener('click', closeGhModal);
   modal?.addEventListener('click', (e) => { if (e.target === modal) closeGhModal(); });
 

@@ -31,7 +31,7 @@
   }).join('');
 
   grid.innerHTML = data.filter(p => p.kind === 'grid').map((p, i) => `
-    <button class="pp-card fade-up" data-pp="${esc(p.id)}" style="transition-delay:${(i % 3) * 0.08}s">
+    <button class="pp-card fade-up delay-${i % 3}" data-pp="${esc(p.id)}">
       ${p.images && p.images.length
         ? `<img class="pp-card-img" src="${esc(p.images[0])}" alt="${esc(p.title)}" loading="lazy" />`
         : `<span class="pp-card-img pp-card-title">${esc(p.title)}</span>`}
@@ -42,6 +42,7 @@
     </button>`).join('');
 
   /* ── Detail overlay ── */
+  let prevTitle = document.title;
   function openDetail(id) {
     const p = data.find(x => x.id === id);
     if (!p) return;
@@ -52,7 +53,7 @@
         <div class="pp-d-main">
           <h2 class="pp-d-title">${esc(p.title)}</h2>
           <p class="pp-d-desc">${esc(p.summary)}</p>
-          ${p.link ? `<a class="pp-pill" href="${esc(p.link.url)}" target="_blank" rel="noopener noreferrer">${esc(p.link.label)} ${ARROW}</a>` : '<div style="height:1.5rem"></div>'}
+          ${p.link ? `<a class="pp-pill" href="${esc(p.link.url)}" target="_blank" rel="noopener noreferrer">${esc(p.link.label)} ${ARROW}</a>` : '<div class="pp-spacer"></div>'}
           <h3 class="pp-d-h">About the project</h3>
           ${(p.about || []).map(t => `<p>${esc(t)}</p>`).join('')}
         </div>
@@ -66,6 +67,8 @@
       ${p.video ? `<div class="pp-d-video"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(p.video)}/preview" title="${esc(p.title)} video" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>` : ''}
       ${p.images && p.images.length ? `<div class="pp-d-shots">${p.images.map((src, i) => `<img src="${esc(src)}" alt="${esc(p.title)} screenshot ${i + 1}" data-shot="${i}" />`).join('')}</div>` : ''}
     </div>`;
+    prevTitle = document.title;
+    document.title = p.title + ' | JJ Bassig';
     ov.classList.add('open');
     ov.scrollTop = 0;
     document.body.style.overflow = 'hidden';
@@ -93,7 +96,7 @@
       else { i.addEventListener('load', done, { once: true }); i.addEventListener('error', done, { once: true }); }
     });
   }
-  function closeDetail() { ov.classList.remove('open'); document.body.style.overflow = ''; }
+  function closeDetail() { ov.classList.remove('open'); document.body.style.overflow = ''; document.title = prevTitle; }
 
   /* ── Lightbox ── */
   let imgs = [], cur = 0;

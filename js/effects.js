@@ -1,17 +1,7 @@
 /* ─── EFFECTS.JS ─────────────────────────────────────
-   Scroll progress, text scramble, count-up,
-   clip-wipe, chip stagger, magnetic buttons.
+   Text scramble, count-up, chip stagger, magnetic
+   buttons, custom cursor, hero robot, typewriters.
 ──────────────────────────────────────────────────────── */
-
-// ── SCROLL PROGRESS ───────────────────────────────────
-function initScrollProgress() {
-  const bar = document.getElementById('scrollProgress');
-  if (!bar) return;
-  window.addEventListener('scroll', () => {
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (window.scrollY / total * 100) + '%';
-  }, { passive: true });
-}
 
 // ── TEXT SCRAMBLE ─────────────────────────────────────
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·—';
@@ -88,14 +78,6 @@ function initMagnetic() {
 
 // ── INTERSECTION OBSERVERS ────────────────────────────
 function initObservers() {
-  const labelObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('wiped');
-    });
-  }, { threshold: 0.8 });
-
-  document.querySelectorAll('.section-label').forEach(el => labelObserver.observe(el));
-
   document.querySelectorAll('.section-title').forEach(el => {
     new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -305,6 +287,10 @@ let eyeTargetX  = 0, eyeTargetY  = 0;
     // with 'transform' used by hover bob and Web Animations one-shots.
     let shyTargetX = 0, shyTargetY = 0;
     let shyCurX    = 0, shyCurY    = 0;
+
+    // Proximity heat — 0 far away (site colors), 1 right next to the face (red).
+    // Written to the --heat CSS variable, which robot.css mixes into the face colors.
+    let heatRaw = 0, heatCur = 0;
     const SHY_ZONE = 285; // px — shy starts here
     const SHY_MAX  = 170;  // px — max drift distance
 
@@ -318,6 +304,8 @@ let eyeTargetX  = 0, eyeTargetY  = 0;
       const dx   = e.clientX - fcx;
       const dy   = e.clientY - fcy;
       const dist = Math.hypot(dx, dy) || 1;
+
+      heatRaw = Math.max(0, Math.min(1, (SHY_ZONE - dist) / (SHY_ZONE - 88)));
 
 isCrossZone = (Math.abs(dx) < 42 && dy > -70 && dy < 20 && dist < 88);
 
@@ -357,6 +345,7 @@ if (dist < 88 && !isCrossZone && !isReacting && !isIdle && current !== 's-grin' 
     }
 
     document.addEventListener('mousemove', onMouseMove, { passive: true });
+    document.addEventListener('mouseout', (e) => { if (!e.relatedTarget) heatRaw = 0; });
 
     (function lerpEyes() {
       if (!lerpActive) return;
@@ -414,6 +403,16 @@ const tEyeLX = (dxL / distL) * pullL * 22;
           eyeL.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
           eyeR.style.transform = `translate(${eyeCurX}px, ${eyeCurY}px)`;
         }
+      }
+
+// Heat — ease toward the target, and cool down when idle, ponging or over the nav
+      const heatTarget = (isIdle || isPonging || fromNav) ? 0 : heatRaw;
+      if (Math.abs(heatTarget - heatCur) > 0.002) {
+        heatCur += (heatTarget - heatCur) * 0.08;
+        face.style.setProperty('--heat', heatCur.toFixed(3));
+      } else if (heatCur !== heatTarget) {
+        heatCur = heatTarget;
+        face.style.setProperty('--heat', heatCur);
       }
 
 // Shy drift — smooth lerp on standalone translate property
@@ -971,7 +970,7 @@ function startPong() {
         fontFamily:   'var(--font-m)',
         fontSize:     '0.42rem',
         letterSpacing:'0',
-        color:        'rgba(255,10,55,0.5)',
+        color:        'rgba(96,165,250,0.5)',
         whiteSpace:   'nowrap',
         zIndex:       '4',
         pointerEvents:'none',
@@ -1094,7 +1093,7 @@ state.ball.vy = (Math.random() * 2 - 1) * 1.6;
 
         // Score
         const scoreCol = scoreFlash > 0
-          ? `rgba(255,10,55,${0.4 + (scoreFlash / 28) * 0.6})`
+          ? `rgba(96,165,250,${0.4 + (scoreFlash / 28) * 0.6})`
           : `rgba(${hexToRgb(col)}, 0.55)`;
         ctx.fillStyle  = scoreCol;
         ctx.font       = `700 13px 'Share Tech Mono', monospace`;
@@ -1302,8 +1301,7 @@ function initTaglineTypewriter() {
         display: inline-block;
         width: 2px;
         height: 1em;
-        background: var(--red);
-        box-shadow: var(--glow-r);
+        background: var(--accent);
         margin-left: 2px;
         vertical-align: middle;
         animation: taglineBlink 0.55s step-end infinite;
@@ -1402,8 +1400,7 @@ function initAboutTypewriter() {
         display: inline-block;
         width: 2px;
         height: 1em;
-        background: var(--red);
-        box-shadow: var(--glow-r);
+        background: var(--accent);
         margin-left: 2px;
         vertical-align: middle;
         animation: taglineBlink 0.55s step-end infinite;
@@ -1497,7 +1494,6 @@ function charDelay(char, prevChar) {
 
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  initScrollProgress();
   initMagnetic();
   initCursor();
   initObservers();

@@ -1,132 +1,212 @@
-/* ─── LAYOUT ─────────────────────────────────────────────
-   Navigation, section wrappers, page grid, footer.
+/* ─── LAYOUT SHELL ───────────────────────────────────────
+   Header, page sections, footer. These render on every view
+   and never change size.
 ──────────────────────────────────────────────────────── */
 
-/* ── Base body styles ── */
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-b);
-  font-size: 17px;
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-body);
   transition: var(--theme-transition);
 }
 
-/* ── Nav — floating pill ── */
+/* ── Header: top bar, fixed height ── */
 nav {
   position: fixed;
-  top: 1.25rem;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+  height: var(--header-height);
+  padding: var(--padding-header);
+  /* Wide header: edges line up to --nav-max-width, centered on huge screens */
+  padding-inline: max(var(--sp-4), calc((100% - var(--nav-max-width)) / 2));
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--nav-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-  transition: var(--theme-transition);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-}
-
-.nav-logo {
-  display: none;
+  justify-content: space-between;
+  background: transparent;
 }
 
 .nav-links {
   display: flex;
-  gap: 0;
+  gap: var(--sp-1);
 }
 
 .nav-links a {
-  font-family: var(--font-m);
-  font-size: var(--fs-xs);
-  letter-spacing: var(--ls-wide);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--padding-control);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
   color: var(--muted);
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-full);
-  transition: color var(--transition), background var(--transition), text-shadow var(--transition);
+  transition: color var(--transition), background var(--transition);
 }
 
-.nav-links a:hover {
-  color: var(--text);
-  background: rgba(255,255,255,0.05);
-}
+.nav-links a:hover { color: var(--text); background: var(--surface); }
+.nav-links a.active { color: var(--accent); }
 
-.nav-links a.active {
-  color: var(--red);
-  text-shadow: var(--glow-r);
-  background: rgba(var(--red-rgb), 0.08);
-}
+/* Icons appear only in the mobile tab bar, always next to a label */
+.nav-icon { display: none; font-size: var(--icon-size); line-height: 1; }
 
-/* ── Section wrapper ── */
+.theme-toggle {
+  width: var(--control-size);
+  height: var(--control-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  transition: color var(--transition), background var(--transition);
+}
+.theme-toggle:hover { color: var(--text); background: var(--surface); }
+.theme-toggle .toggle-icon { font-size: var(--icon-size); line-height: 1; }
+
+/* ── Sections ── */
 section {
+  position: relative;
+  z-index: 1;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: var(--sp-9) var(--padding-page);
+  background: transparent;
+}
+
+section > * { position: relative; z-index: 1; }
+
+/* Same heading style on every section */
+.section-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-normal);
+  color: var(--text);
+  margin-bottom: var(--sp-5);
+}
+
+.subheading {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+}
+
+/* Projects sits on a solid, full-width surface */
+#projects::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: var(--bg);
+  z-index: -1;
+}
+
+/* ── Footer ── */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  padding: var(--sp-7) var(--padding-page) var(--sp-5);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+/* Outlined "Bassig" watermark behind the copyright line */
+.footer-ghost {
+  position: absolute;
+  bottom: calc(-1 * var(--sp-3));
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--fs-ghost);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  letter-spacing: var(--ls-tight);
+  color: transparent;
+  -webkit-text-stroke: 1px var(--border);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.footer-inner {
   position: relative;
   z-index: 1;
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: var(--section-padding);
-}
-
-.section-label {
-  font-family: var(--font-m);
-  font-size: var(--fs-xs);
-  letter-spacing: var(--ls-normal);
-  color: var(--red);
-  text-shadow: var(--glow-r);
-  margin-bottom: 0.75rem;
-}
-
-/* About and Skills have no big title, so give the label room before content */
-#about > .section-label,
-#skills > .section-label { margin-bottom: 1.5rem; }
-
-/* Projects is a heavier section, so it keeps a clearer break above it */
-#projects { padding-top: 4.5rem; }
-
-.section-title {
-  font-family: var(--font-h);
-  font-size: clamp(var(--fs-2xl), 3vw, var(--fs-4xl));
-  font-weight: 700;
-  letter-spacing: var(--ls-normal);
-  margin-bottom: 2rem;
-  color: var(--text);
-}
-
-.section-title span {
-  color: var(--yellow);
-  text-shadow: var(--glow-y);
-}
-
-/* ── Footer ── */
-footer {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: 2rem;
+  padding-top: var(--sp-5);
   border-top: 1px solid var(--border);
-  font-family: var(--font-m);
-  font-size: var(--fs-xs);
-  letter-spacing: var(--ls-wide);
+}
+
+.footer-copy {
+  font-size: var(--fs-sm);
   color: var(--muted);
 }
 
-footer span {
-  color: var(--red);
+/* ── Back to top ── */
+.back-to-top {
+  position: fixed;
+  bottom: var(--sp-5);
+  right: var(--sp-5);
+  z-index: 50;
+  width: var(--control-size);
+  height: var(--control-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, color var(--transition), border-color var(--transition);
 }
 
-/* ── Responsive ── */
+.back-to-top.visible { opacity: 1; pointer-events: all; }
+.back-to-top:hover { color: var(--text); border-color: var(--muted); }
+.btt-icon { font-size: var(--icon-size); line-height: 1; }
+
+/* ── Mobile: bottom tab bar, theme toggle top right ── */
 @media (max-width: 768px) {
-  nav { padding: 0.4rem 0.6rem; gap: 0; }
-  .nav-links a { padding: 0.35rem 0.65rem; font-size: var(--fs-xs); }
-  section { padding: 2.5rem 1.5rem; }
-  #projects { padding-top: 3.5rem; }
-}
+  body { padding-bottom: var(--tab-bar-height); }
 
-@media (max-width: 480px) {
-  .theme-toggle .toggle-label { display: none; }
+  nav {
+    top: auto;
+    bottom: 0;
+    height: var(--tab-bar-height);
+    padding: 0;
+    /* The bottom tab bar sits over content, so on mobile it keeps a solid surface */
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    transition: var(--theme-transition);
+  }
+
+  .nav-links { width: 100%; gap: 0; justify-content: space-around; }
+
+  .nav-links a {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    height: var(--tab-bar-height);
+    padding: var(--sp-1) var(--sp-2);
+    border-radius: 0;
+  }
+  .nav-links a:hover { background: none; }
+  .nav-icon { display: block; }
+
+  .theme-toggle {
+    position: fixed;
+    top: var(--sp-2);
+    right: var(--sp-3);
+    z-index: 100;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .back-to-top { bottom: calc(var(--tab-bar-height) + var(--sp-3)); right: var(--sp-3); }
 }

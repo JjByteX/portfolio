@@ -1,14 +1,12 @@
 /* ─── MAIN CSS ───────────────────────────────────────────
-   Entry point. Imports all stylesheets in the correct
-   order. Do not put styles directly in this file.
-
-   Load order matters:
-   1. variables  — tokens must be defined first
-   2. reset      — wipe browser defaults
-   3. animations — keyframes & utility classes
-   4. layout     — nav, sections, footer structure
-   5. components — reusable UI pieces
-   6. sections   — page-specific section styles
+   Entry point. Imports all stylesheets in order.
+   1. variables  — tokens first
+   2. reset
+   3. animations — keyframes, background, cursor, intro
+   4. layout     — header, sections, footer
+   5. components — buttons, text, lists
+   6. sections   — about, skills, projects, contact
+   7. robot      — hero robot, unchanged, own scoped tokens
 ──────────────────────────────────────────────────────── */
 
 @import url('./variables.css');
@@ -17,3 +15,4 @@
 @import url('./layout.css');
 @import url('./components.css');
 @import url('./sections.css');
+@import url('./robot.css');
