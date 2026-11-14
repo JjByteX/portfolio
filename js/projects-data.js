@@ -42,21 +42,7 @@ window.PROJECTS = [
       'I delivered 10+ admin console screens in Blade and CSS, replacing Teams and spreadsheet request tracking, and developed the shared layout and sidebar used by every console page in a multi-developer team. I also contributed workflow improvements to a codebase with RBAC, immutable audit logs, and real-time notifications.'
     ],
     results: ['10+ admin console screens delivered', 'Replaced Teams and spreadsheet request tracking', 'Shared layout used by every console page', 'Six departments in one system'],
-    images: ['assets/images/projects/one-shared-services.png']
-  },
-  {
-    id: 'plp-admissions-enrollment', kind: 'featured', title: 'PLP Admissions & Enrollment',
-    summary: 'Two connected systems that take applicants from document submission to Certificate of Registration (COR) issuance.',
-    overview: 'Admissions feeds admitted applicants to Enrollment over secure HTTPS intake.',
-    role: 'Designer and developer',
-    services: ['System design', 'Admissions module', 'Enrollment module', 'Role-based access control'],
-    stack: ['PHP', 'Next.js', 'Mantine', 'Supabase'],
-    about: [
-      'Admissions covers document verification, an exam builder and scheduler, interview room and queue management, and automated access and password generation, with RBAC for Admin, SSO, Deans, Professors, and Proctors.',
-      'Enrollment (Next.js, Mantine, Supabase) takes in admitted applicants over HTTPS, numbers students automatically, schedules sections and professors, handles mass reschedules and optional payment clearance, and issues the COR, with RBAC for Registrar, Finance, Dean, College Secretary, Professors, and Admin.'
-    ],
-    results: ['Applicant to COR in two connected systems', 'Automatic student numbering', 'Mass reschedules and optional payment clearance'],
-    images: []
+    images: ['assets/images/projects/one-shared-services.png','assets/images/projects/one-shared-services-2.png','assets/images/projects/one-shared-services-3.png','assets/images/projects/one-shared-services-4.png','assets/images/projects/one-shared-services-5.png','assets/images/projects/one-shared-services-6.png','assets/images/projects/one-shared-services-7.png','assets/images/projects/one-shared-services-8.png']
   },
   {
     id: 'abtcms', kind: 'featured', title: 'Animal Bite Treatment Center MS',
@@ -73,12 +59,27 @@ window.PROJECTS = [
     images: ['assets/images/projects/abtcms.png','assets/images/projects/abtcms-2.png','assets/images/projects/abtcms-3.png','assets/images/projects/abtcms-4.png']
   },
   {
+    id: 'plp-admissions-enrollment', kind: 'featured', title: 'PLP Enrollment & Admissions',
+    summary: 'Two connected systems that take applicants from document submission to Certificate of Registration (COR) issuance.',
+    overview: 'Enrollment takes in admitted applicants from Admissions over secure HTTPS intake.',
+    role: 'Designer and developer',
+    services: ['System design', 'Enrollment module', 'Admissions module', 'Role-based access control'],
+    stack: ['Next.js', 'Mantine', 'Supabase', 'PHP'],
+    about: [
+      'Enrollment (Next.js, Mantine, Supabase) takes in admitted applicants over HTTPS, numbers students automatically, schedules sections and professors, handles mass reschedules and optional payment clearance, and issues the COR, with RBAC for Registrar, Finance, Dean, College Secretary, Professors, and Admin.',
+      'Admissions covers document verification, an exam builder and scheduler, interview room and queue management, and automated access and password generation, with RBAC for Admin, SSO, Deans, Professors, and Proctors.'
+    ],
+    results: ['Applicant to COR in two connected systems', 'Automatic student numbering', 'Mass reschedules and optional payment clearance'],
+    video: '1_DgrRKbr7j23cMvx_WhXi8mPIq9Zo9K7',
+    images: ['assets/images/projects/plp-enrollment-1.png','assets/images/projects/plp-enrollment-2.png','assets/images/projects/plp-enrollment-3.png','assets/images/projects/plp-enrollment-4.png','assets/images/projects/plp-admissions-1.png','assets/images/projects/plp-admissions-2.png','assets/images/projects/plp-admissions-3.png','assets/images/projects/plp-admissions-4.png','assets/images/projects/plp-admissions-5.png']
+  },
+  {
     id: 'amkor-ims', kind: 'grid', title: 'Amkor IMS Prototype', metric: 'Laravel · React',
     summary: 'An internal management system prototype for Amkor Travel & Tours covering 20 modules across two branches.',
     role: 'Designer and developer', services: ['System design', 'RBAC', 'PDF generation'],
     stack: ['Laravel', 'React', 'Inertia', 'PostgreSQL', 'Laravel Reverb'],
     about: ['RBAC for 17 roles, audit trails, and real-time notifications. Modules include reservations, visa processing, accounts payable and receivable, disbursements, attendance, leave, and overtime, with PDF generation from official templates.'],
-    results: ['20 modules across two branches', 'RBAC for 17 roles', 'PDFs generated from official templates'], images: []
+    results: ['20 modules across two branches', 'RBAC for 17 roles', 'PDFs generated from official templates'], images: ['assets/images/projects/amkor-ims-1.png','assets/images/projects/amkor-ims-2.png','assets/images/projects/amkor-ims-3.png','assets/images/projects/amkor-ims-4.png','assets/images/projects/amkor-ims-5.png','assets/images/projects/amkor-ims-6.png','assets/images/projects/amkor-ims-7.png','assets/images/projects/amkor-ims-8.png','assets/images/projects/amkor-ims-9.png']
   },
   {
     id: 'pillar', kind: 'grid', title: 'Pillar', metric: 'Laravel · Livewire',

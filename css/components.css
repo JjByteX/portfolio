@@ -165,14 +165,10 @@
 /* ── Photo frame — clean rounded square, monochrome border ── */
 .hud-box {
   position: relative;
-  border: 1px solid var(--border);
+  border: 0;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.1);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: border-color 0.2s ease;
-}
-
-.hud-box:hover {
-  border-color: var(--muted);
 }
 
 .hud-box .hud-inner {

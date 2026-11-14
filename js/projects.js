@@ -63,13 +63,35 @@
         </aside>
       </div>
       ${p.results && p.results.length ? `<div class="pp-d-results"><h3>Key results and outcomes</h3><div class="pp-d-rgrid">${p.results.map(r => `<div>${esc(r)}</div>`).join('')}</div></div>` : ''}
-      ${p.images && p.images.length ? `<div class="pp-d-shots">${p.images.map((src, i) => `<img src="${esc(src)}" alt="${esc(p.title)} screenshot ${i + 1}" data-shot="${i}" loading="lazy" />`).join('')}</div>` : ''}
+      ${p.video ? `<div class="pp-d-video"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(p.video)}/preview" title="${esc(p.title)} video" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>` : ''}
+      ${p.images && p.images.length ? `<div class="pp-d-shots">${p.images.map((src, i) => `<img src="${esc(src)}" alt="${esc(p.title)} screenshot ${i + 1}" data-shot="${i}" />`).join('')}</div>` : ''}
     </div>`;
     ov.classList.add('open');
     ov.scrollTop = 0;
     document.body.style.overflow = 'hidden';
     ov.querySelector('#ppClose').addEventListener('click', closeDetail);
     ov.querySelectorAll('[data-shot]').forEach(img => img.addEventListener('click', () => openLb(p.images, +img.dataset.shot)));
+    groupShots(ov.querySelector('.pp-d-shots'));
+  }
+  /* Phone (portrait) screenshots go in their own row of four, so they stay about as tall as the desktop ones. */
+  function groupShots(wrap) {
+    if (!wrap) return;
+    const shots = [...wrap.querySelectorAll('img')];
+    let left = shots.length;
+    const done = () => {
+      if (--left) return;
+      const tall = shots.filter(i => i.naturalHeight > i.naturalWidth);
+      if (!tall.length) return;
+      if (tall.length === shots.length) { wrap.classList.add('pp-d-shots-m'); return; }
+      const m = document.createElement('div');
+      m.className = 'pp-d-shots pp-d-shots-m';
+      tall.forEach(i => m.appendChild(i));
+      wrap.after(m);
+    };
+    shots.forEach(i => {
+      if (i.complete && i.naturalWidth) done();
+      else { i.addEventListener('load', done, { once: true }); i.addEventListener('error', done, { once: true }); }
+    });
   }
   function closeDetail() { ov.classList.remove('open'); document.body.style.overflow = ''; }
 
