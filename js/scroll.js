@@ -1,7 +1,9 @@
 /* ─── SCROLL.JS ──────────────────────────────────────────
-   Handles two things:
-   1. Fade-up reveal animation via IntersectionObserver
-   2. Nav link active state based on scroll position
+   Handles scroll-driven behavior:
+   1. Reveal animations via IntersectionObserver
+   2. Header background fade-in
+   3. Nav link active state based on scroll position
+   4. Back-to-top button and live clock
 ──────────────────────────────────────────────────────── */
 
 /**
@@ -54,6 +56,18 @@ function initScrollReveal() {
 }
 
 /**
+ * Fades in the header background once the page has scrolled.
+ */
+function initNavBackground() {
+  const nav = document.querySelector('nav');
+  if (!nav) return;
+
+  const update = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
+
+/**
  * Highlights the nav link matching the current section
  * as the user scrolls through the page.
  */
@@ -61,19 +75,19 @@ function initNavActiveState() {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
 
-function updateActiveLink() {
-  let currentId = '';
-  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
+  function updateActiveLink() {
+    let currentId = '';
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
 
-  if (nearBottom) {
-    currentId = sections[sections.length - 1].id;
-  } else {
-    sections.forEach((section) => {
-      if (window.scrollY >= section.offsetTop - 120) {
-        currentId = section.id;
-      }
-    });
-  }
+    if (nearBottom) {
+      currentId = sections[sections.length - 1].id;
+    } else {
+      sections.forEach((section) => {
+        if (window.scrollY >= section.offsetTop - 120) {
+          currentId = section.id;
+        }
+      });
+    }
 
     navLinks.forEach((link) => {
       const isActive = link.getAttribute('href') === `#${currentId}`;
@@ -95,6 +109,7 @@ function updateActiveLink() {
 
 // ── Init ──
 initScrollReveal();
+initNavBackground();
 initNavActiveState();
 initLiveClock();
 initBackToTop();

@@ -310,6 +310,78 @@
 .github-graph-wrap { width: 100%; overflow: hidden; border-radius: var(--radius-md); cursor: pointer; transition: opacity var(--transition); }
 .github-graph-wrap:hover { opacity: 0.8; }
 
+/* ════════ CLIENT STRIP ════════
+   Looping photo row. Tile size comes from the strip width (container
+   units); js/client-strip.js only sets each tile's --cs-pos (its slot). */
+.cs { container-type: inline-size; }
+
+.cs-viewport {
+  --cs-tiles: 4.9;                 /* tiles visible at once; the 5th peeks in */
+  --cs-gap: var(--sp-3);
+  --cs-pad: var(--sp-4);           /* room above and below the tiles so their shadow is not clipped */
+  --cs-tw: calc((100cqw - (var(--cs-tiles) - 1) * var(--cs-gap)) / var(--cs-tiles));
+  position: relative;
+  height: calc(var(--cs-tw) + 2 * var(--cs-pad));
+  margin-block: calc(-1 * var(--cs-pad));   /* cancels the room, so spacing stays the same */
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.cs-tile {
+  position: absolute;
+  top: var(--cs-pad);
+  left: 0;
+  width: var(--cs-tw);
+  height: var(--cs-tw);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition);
+  transform: translateX(calc((var(--cs-tw) + var(--cs-gap)) * (var(--cs-pos, 0) + (var(--cs-tiles) - 1) / 2)));
+  will-change: transform;
+}
+.cs-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+/* Hover one photo and the others blur (mouse only) */
+@media (hover: hover) {
+  .cs-tile:hover { box-shadow: var(--shadow-card-hover); }
+  .cs-tile:hover img { transform: scale(1.03); }
+  .cs-viewport:has(.cs-tile:hover) .cs-tile:not(:hover) img { filter: blur(2px); }
+}
+
+/* Progress dots: the active one stretches and fills while the next photo is coming */
+.cs-dots { display: flex; justify-content: center; margin-top: var(--sp-4); }
+.cs-dot { display: flex; align-items: center; height: var(--sp-3); padding: 0 var(--sp-1); }
+.cs-pill {
+  position: relative;
+  display: block;
+  width: var(--sp-2);
+  height: var(--sp-2);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--border);
+  transition: width 0.3s ease, background var(--transition);
+}
+.cs-dot:hover .cs-pill { background: var(--border-strong); }
+.cs-dot.active .cs-pill { width: var(--sp-5); }
+.cs-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: inherit;
+  background: var(--text);
+}
+.cs-dot.active .cs-fill { animation: csFill var(--cs-slide, 6s) linear forwards; }
+.cs.is-paused .cs-fill { animation: none; width: 0; }
+@keyframes csFill { from { width: 0; } to { width: 100%; } }
+
 /* ════════ RESPONSIVE ════════ */
 @media (max-width: 1024px) {
   .pp-grid { grid-template-columns: repeat(2, 1fr); }
@@ -332,6 +404,7 @@
   .pp-row-text { order: 2; padding-right: 0; }
   .pp-grid, .pp-d-rgrid, .pp-d-shots { grid-template-columns: 1fr; }
   .pp-d-shots-m { grid-template-columns: repeat(2, 1fr); }
+  .cs-viewport { --cs-tiles: 3; }
 }
 
 #ghChart { width: 100%; line-height: 0; }

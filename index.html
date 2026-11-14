@@ -27,15 +27,7 @@
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
-  <div id="introOverlay">
-  <div id="introTerminal">
-    <div class="intro-line" id="iLine1"></div>
-    <div class="intro-line" id="iLine2"></div>
-    <div class="intro-line" id="iLine3"></div>
-    <div class="intro-line" id="iLine4"></div>
-    <div class="intro-progress"><div id="introBar"></div></div>
-  </div>
-</div>
+  <div id="introOverlay"></div>
 
   <div id="vanta-bg" aria-hidden="true"></div>
 
@@ -71,12 +63,9 @@
 
 <div id="heroFace" aria-hidden="true">
 <div class="hf-scanline"></div>
-  <div class="hf-brow-l"></div>
-  <div class="hf-brow-r"></div>
-  
   <div class="hf-eye hf-eye-l"><div class="hf-pupil"></div></div>
   <div class="hf-eye hf-eye-r"><div class="hf-pupil"></div></div>
-  
+
   <div class="hf-mouth"></div>
   <div class="hf-text"></div>
   <span class="hf-frame-label">sys://unit_01</span>
@@ -97,26 +86,26 @@
         </div>
         <div class="blur-in delay-2">
           <div class="about-text">
-            <p>I'm <strong>Jj</strong>. I learn by building, breaking, and asking what's still missing. I study how enterprise systems solve problems, then refine my approach, especially with databases and backend systems. I'd rather question the structure early than fix fragile logic later.</p>
-            <p>I translate clients’ unstructured needs into a working solution through interviews and frameworks, adjusting the approach as requirements evolve along the way.</p>
+            <p>I'm <strong>Jj</strong>. I translate people’s unstructured needs into a working solution through interviews and frameworks, adjusting the approach as requirements evolve along the way.</p>
+            <p>I learn by building, breaking, and asking what's still missing. I study how enterprise systems solve problems, then refine my approach, especially with databases and backend systems. I'd rather question the structure early than fix fragile logic later.</p>
           </div>
         </div>
       </div>
 
       <div class="stat-grid wipe-in delay-3">
-        <div class="stat-card">
+        <div>
           <span class="stat-val">14</span>
           <span class="stat-lbl">Projects built</span>
         </div>
-        <div class="stat-card">
+        <div>
           <span class="stat-val">3×</span>
           <span class="stat-lbl">Dean's lister</span>
         </div>
-        <div class="stat-card">
+        <div>
           <span class="stat-val">High honors</span>
           <span class="stat-lbl">Senior high school</span>
         </div>
-        <div class="stat-card">
+        <div>
           <span class="stat-val">Scholar</span>
           <span class="stat-lbl">RealLife (BGC) and Pasig City</span>
         </div>
@@ -128,7 +117,7 @@
       <h2 class="section-title">Skills</h2>
 
       <div class="skill-cols">
-        <div class="skill-group skill-langs fade-up">
+        <div class="skill-group fade-up">
           <p class="skill-group-label">Languages</p>
           <div class="skill-chips">
             <span class="chip">C#</span>
@@ -140,7 +129,7 @@
             <span class="chip">HTML / CSS</span>
           </div>
         </div>
-        <div class="skill-group skill-db fade-up delay-1">
+        <div class="skill-group fade-up delay-1">
           <p class="skill-group-label">Databases</p>
           <div class="skill-chips">
             <span class="chip">PostgreSQL</span>
@@ -182,6 +171,19 @@
       <div class="pp-sub">
         <h2 class="section-title fade-up">More projects</h2>
         <div class="pp-grid" id="ppGrid"></div>
+      </div>
+      <div class="pp-sub">
+        <h2 class="section-title fade-up">Snapshots</h2>
+        <div class="cs fade-up" id="clientStrip" role="region" aria-roledescription="carousel" aria-label="Photos from client meetings">
+          <div class="cs-viewport">
+            <div class="cs-tile"><img src="assets/images/clients/client-meeting-1.jpg" alt="On-site working session" width="1200" height="900" loading="lazy" decoding="async" draggable="false" /></div>
+            <div class="cs-tile"><img src="assets/images/clients/client-meeting-2.jpg" alt="Reviewing the build together" width="1200" height="900" loading="lazy" decoding="async" draggable="false" /></div>
+            <div class="cs-tile"><img src="assets/images/clients/client-meeting-3.jpg" alt="Walking through the dashboard" width="1200" height="900" loading="lazy" decoding="async" draggable="false" /></div>
+            <div class="cs-tile"><img src="assets/images/clients/client-meeting-4.jpg" alt="With the team" width="900" height="1200" loading="lazy" decoding="async" draggable="false" /></div>
+            <div class="cs-tile"><img src="assets/images/clients/client-meeting-5.jpg" alt="Talking through the roadmap" width="1200" height="882" loading="lazy" decoding="async" draggable="false" /></div>
+          </div>
+          <div class="cs-dots" id="csDots"></div>
+        </div>
       </div>
     </section>
 
@@ -286,6 +288,7 @@
 
   <script src="js/projects-data.js" defer></script>
   <script src="js/projects.js" defer></script>
+  <script src="js/client-strip.js" defer></script>
   <script src="js/vanta.js" defer></script>
   <script src="js/theme.js" defer></script>
   <script src="js/scroll.js" defer></script>

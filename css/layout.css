@@ -27,8 +27,22 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: transparent;
 }
+
+/* Header background: fades in once the page scrolls (js/scroll.js adds .scrolled). No outline. */
+nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+nav.scrolled::before { opacity: 1; }
 
 .nav-links {
   display: flex;
@@ -64,6 +78,28 @@ nav {
 }
 .theme-toggle:hover { color: var(--text); background: var(--surface); }
 .theme-toggle .toggle-icon { font-size: var(--icon-size); line-height: 1; }
+
+/* ── Scrollbar: thin floating pill, no track (Apple style) ── */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  background: var(--scroll-thumb);
+  background-clip: padding-box;
+  border: 3px solid transparent;   /* leaves a 6px thumb inside the 12px gutter */
+  border-radius: var(--radius-lg);
+  transition: background var(--transition);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+  background-clip: padding-box;
+}
+
+/* Firefox has no pseudo-elements; Chromium with scrollbar-color would ignore the pill above, so only use it there */
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
+}
 
 /* ── Sections ── */
 section {
@@ -182,9 +218,9 @@ section > * { position: relative; z-index: 1; }
     padding: 0;
     /* The bottom tab bar sits over content, so on mobile it keeps a solid surface */
     background: var(--bg);
-    border-top: 1px solid var(--border);
     transition: var(--theme-transition);
   }
+  nav::before { display: none; }
 
   .nav-links { width: 100%; gap: 0; justify-content: space-around; }
 

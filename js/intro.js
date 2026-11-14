@@ -1,12 +1,10 @@
-/* ─── INTRO.JS — Terminal boot + Robot with gravity ──────────────────
+/* ─── INTRO.JS — Robot with gravity ──────────────────────────────────
    Sequence:
-   1. Terminal types fast → bar fills
-   2. Terminal fades
-   3. Robot GLITCHES into existence (flickers, chromatic jitter)
-   4. Robot: surprised → grins → winks
-   5. Robot launches UP (ease-out, stretch) → falls DOWN (ease-in,
+   1. Robot GLITCHES into existence (flickers, chromatic jitter)
+   2. Robot: grins → winks
+   3. Robot launches UP (ease-out, stretch) → falls DOWN (ease-in,
       gravity) → squashes on land at heroFace → settles
-   6. Overlay fades mid-flight, heroFace waits underneath
+   4. Overlay fades mid-flight, heroFace waits underneath
 
    NOTE: This script is intentionally loaded WITHOUT defer in index.html.
    It must run before the DOM renders to block the flash of unstyled
@@ -14,67 +12,12 @@
    timing against effects.js.
 ──────────────────────────────────────────────────────────────────── */
 (function () {
-  // Suppress the terminal's blinking ::after cursor before the first paint.
-  // The style attribute on the element itself is the fastest path — no CSSOM
-  // round-trip needed, resolved before any layout/paint.
-  const _t = document.getElementById('introTerminal');
-  if (_t) _t.style.display = 'none';
-
   const overlay = document.getElementById('introOverlay');
   if (!overlay) return;
 
   if (sessionStorage.getItem('introDone')) {
     overlay.remove();
     return;
-  }
-
-  const lines = [
-    '> Initializing portfolio_v2026...',
-    '> Loading modules: [auth · ui · db · net]',
-    '> Security check passed',
-    '> Launching jj_bassig.exe'
-  ];
-  const lineEls = [
-    document.getElementById('iLine1'),
-    document.getElementById('iLine2'),
-    document.getElementById('iLine3'),
-    document.getElementById('iLine4')
-  ];
-  const bar = document.getElementById('introBar');
-  let lineIndex = 0, charIndex = 0, progress = 0;
-
-  /* ═══════════════════════════════════
-     PHASE 1 — Terminal typing
-  ═══════════════════════════════════ */
-  function typeLine() {
-    if (lineIndex >= lines.length) { animateBar(); return; }
-    const line = lines[lineIndex];
-    const el   = lineEls[lineIndex];
-    if (!el) return;
-    if (charIndex < line.length) {
-      el.textContent = line.slice(0, charIndex + 1);
-      charIndex++;
-      setTimeout(typeLine, 20);
-    } else {
-      el.classList.add('done');
-      lineIndex++;
-      charIndex = 0;
-      setTimeout(typeLine, 120);
-    }
-  }
-
-  /* ═══════════════════════════════════
-     PHASE 2 — Progress bar
-  ═══════════════════════════════════ */
-  function animateBar() {
-    const id = setInterval(() => {
-      progress += 4;
-      bar.style.width = Math.min(progress, 100) + '%';
-      if (progress >= 100) {
-        clearInterval(id);
-        setTimeout(showRobot, 200);
-      }
-    }, 16);
   }
 
   /* ═══════════════════════════════════
@@ -284,14 +227,10 @@
   }
 
   /* ═══════════════════════════════════
-     PHASE 3 — Robot glitch-appears
+     PHASE 1 — Robot glitch-appears
   ═══════════════════════════════════ */
   function showRobot() {
-    const terminal = document.getElementById('introTerminal');
     const heroFace = document.getElementById('heroFace');
-
-    // Hide terminal immediately (text + bar are skipped entirely)
-    if (terminal) terminal.style.display = 'none';
 
     injectRobotCSS();
 
@@ -347,7 +286,7 @@
   }
 
   /* ═══════════════════════════════════
-     PHASE 4 — Gravity arc jump
+     PHASE 2 — Gravity arc jump
   ═══════════════════════════════════ */
   function jumpToHero(robot, heroFace) {
     robot.classList.add('jumping');
@@ -413,7 +352,7 @@
   }
 
   /* ═══════════════════════════════════
-     PHASE 5 — Dismiss
+     PHASE 3 — Dismiss
   ═══════════════════════════════════ */
   function dismiss(robot) {
     sessionStorage.setItem('introDone', '1');
@@ -429,6 +368,5 @@
   }
 
   /* ── Boot ── */
-  // Skip terminal typing + progress bar — jump straight to robot
   showRobot();
 })();

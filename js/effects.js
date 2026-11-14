@@ -193,9 +193,9 @@ function initHeroFace() {
 
     // ── Constants ───────────────────────────────────────────────────────
 const ALL_STATES = [
-      's-happy', 's-eager', 's-pleased', 's-smile',
+      's-happy', 's-eager', 's-pleased',
       's-grin', 's-squint', 's-surprised', 's-sleepy',
-'s-annoyed', 's-thinking', 's-wink', 's-dead', 's-wtf', 's-sad', 's-starstruck', 's-nervous', 's-blinded', 's-reading'
+'s-annoyed', 's-thinking', 's-dead', 's-wtf', 's-sad', 's-starstruck', 's-nervous', 's-blinded', 's-reading'
     ];
 
 const NO_BLINK = new Set([
@@ -206,7 +206,7 @@ const NO_BLINK = new Set([
 const NO_TRACK = new Set([
       's-wtf', 's-sleepy', 's-dead', 's-squint',
       's-annoyed', 's-pleased', 's-grin', 's-thinking',
-      's-pong', 's-reading'
+      's-reading'
     ]);
 
     const WTF_WORDS = ['WTF', '???', 'HUH', '!!!', 'OOF', 'NOPE', 'BAKA'];
@@ -288,7 +288,8 @@ let eyeTargetX  = 0, eyeTargetY  = 0;
     let shyTargetX = 0, shyTargetY = 0;
     let shyCurX    = 0, shyCurY    = 0;
 
-    // Proximity heat — 0 far away (site colors), 1 right next to the face (red).
+    // Proximity heat — 0 far away (site colors), rising to 1 (red) as the cursor closes in.
+    // Once the cursor is close enough to tickle him (under 88px) it drops back to 0, blue again.
     // Written to the --heat CSS variable, which robot.css mixes into the face colors.
     let heatRaw = 0, heatCur = 0;
     const SHY_ZONE = 285; // px — shy starts here
@@ -305,7 +306,7 @@ let eyeTargetX  = 0, eyeTargetY  = 0;
       const dy   = e.clientY - fcy;
       const dist = Math.hypot(dx, dy) || 1;
 
-      heatRaw = Math.max(0, Math.min(1, (SHY_ZONE - dist) / (SHY_ZONE - 88)));
+      heatRaw = dist < 88 ? 0 : Math.max(0, Math.min(1, (SHY_ZONE - dist) / (SHY_ZONE - 88)));
 
 isCrossZone = (Math.abs(dx) < 42 && dy > -70 && dy < 20 && dist < 88);
 
@@ -1277,9 +1278,6 @@ function stopPong() {
 }
 
 // ── HERO TAGLINE TYPEWRITER ──────────────────────────────────────────────
-// Paste this function into effects.js, then call initTaglineTypewriter()
-// inside the DOMContentLoaded block at the bottom alongside the other inits.
-// ─────────────────────────────────────────────────────────────────────────
 
 function initTaglineTypewriter() {
   const el = document.getElementById('heroTagline');
@@ -1292,32 +1290,6 @@ function initTaglineTypewriter() {
   const cursor = document.createElement('span');
   cursor.className = 'tagline-cursor';
   cursor.setAttribute('aria-hidden', 'true');
-
-  if (!document.getElementById('s-tagline-cursor')) {
-    const s = document.createElement('style');
-    s.id = 's-tagline-cursor';
-    s.textContent = `
-      .tagline-cursor {
-        display: inline-block;
-        width: 2px;
-        height: 1em;
-        background: var(--accent);
-        margin-left: 2px;
-        vertical-align: middle;
-        animation: taglineBlink 0.55s step-end infinite;
-        transition: opacity 0.6s ease;
-      }
-      .tagline-cursor.done {
-        animation: none;
-        opacity: 0;
-      }
-      @keyframes taglineBlink {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0; }
-      }
-    `;
-    document.head.appendChild(s);
-  }
 
   el.textContent = '';
   el.appendChild(cursor);
@@ -1389,31 +1361,6 @@ function initAboutTypewriter() {
     p.innerHTML = '';
     return html;
   });
-
-  // Same cursor style as hero — already injected by initTaglineTypewriter,
-  // but guard in case about loads without hero running first
-  if (!document.getElementById('s-tagline-cursor')) {
-    const s = document.createElement('style');
-    s.id = 's-tagline-cursor';
-    s.textContent = `
-      .tagline-cursor {
-        display: inline-block;
-        width: 2px;
-        height: 1em;
-        background: var(--accent);
-        margin-left: 2px;
-        vertical-align: middle;
-        animation: taglineBlink 0.55s step-end infinite;
-        transition: opacity 0.6s ease;
-      }
-      .tagline-cursor.done { animation: none; opacity: 0; }
-      @keyframes taglineBlink {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0; }
-      }
-    `;
-    document.head.appendChild(s);
-  }
 
 function charDelay(char, prevChar) {
   if (char === '.')  return 48  + Math.random() * 18;
@@ -1498,6 +1445,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initObservers();
   initHeroFace();
-  initTaglineTypewriter()
-  initAboutTypewriter()
+  initTaglineTypewriter();
+  initAboutTypewriter();
 });

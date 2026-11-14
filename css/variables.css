@@ -17,6 +17,7 @@
   --bg:           #fafafa;  /* zinc-50  */
   --surface:      #f4f4f5;  /* zinc-100 */
   --border:       #e4e4e7;  /* zinc-200 */
+  --border-strong:#71717a;  /* zinc-500, outlined buttons (4.6:1 on --bg) */
   --text:         #18181b;  /* zinc-900 */
   --text-soft:    #27272a;  /* zinc-800 */
   --muted:        #3f3f46;  /* zinc-700 */
@@ -35,6 +36,10 @@
 
   --scrim: #09090b99;  /* zinc-950 at 60% */
 
+  /* Scrollbar thumb: zinc-950 at 28% / 50% */
+  --scroll-thumb:       #09090b47;
+  --scroll-thumb-hover: #09090b80;
+
   /* Project cards. Values from the "aphlo-apple-design" shadow scale (skills.sh):
      sm = 0 1px 2px / 0 1px 4px at 4%, md = 0 4px 12px at 8% */
   --shadow-card:       0 1px 2px #0000000a, 0 1px 4px #0000000a;
@@ -49,6 +54,7 @@
   --bg:           #09090b;  /* zinc-950 */
   --surface:      #18181b;  /* zinc-900 */
   --border:       #27272a;  /* zinc-800 */
+  --border-strong:#71717a;  /* zinc-500, outlined buttons (4.0:1 on --bg) */
   --text:         #fafafa;  /* zinc-50  */
   --text-soft:    #e4e4e7;  /* zinc-200 */
   --muted:        #d4d4d8;  /* zinc-300 */
@@ -66,6 +72,10 @@
   --chart-4: #93c5fd;  /* blue-300 */
 
   --scrim: #09090bb3;  /* zinc-950 at 70% */
+
+  /* Scrollbar thumb: zinc-50 at 25% / 50% */
+  --scroll-thumb:       #fafafa40;
+  --scroll-thumb-hover: #fafafa80;
 
   --shadow-card:       0 1px 2px #00000052, 0 4px 16px #00000066;
   --shadow-card-hover: 0 2px 4px #00000066, 0 8px 24px #00000080;
@@ -110,7 +120,6 @@
   /* Padding tokens: padding inside a component */
   --padding-control: 8px 16px;   /* buttons, inputs, pills, tabs, nav items, menu items */
   --padding-cell:    16px;       /* list rows, table cells, toasts, alerts */
-  --padding-menu:    8px;        /* dropdowns, menus, tooltips */
   --padding-card:    24px;       /* cards, panels, containers */
   --padding-modal:   32px;       /* modals, dialogs */
   --padding-header:  0 24px;     /* header (height comes from --header-height) */

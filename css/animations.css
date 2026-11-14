@@ -1,5 +1,5 @@
 /* ─── ANIMATIONS & EFFECTS ───────────────────────────────
-   Background, grain, glitch, reveal, cursor, intro.
+   Background, grain, glitch, reveal, cursor, intro overlay.
    No glows, no gradients, no shadows.
 ──────────────────────────────────────────────────────── */
 
@@ -154,50 +154,24 @@ body.cursor-hidden #cursor-ring { opacity: 0; transition: opacity 0.18s ease; }
   justify-content: center;
   transition: opacity 0.6s ease;
 }
-#introOverlay.hidden { opacity: 0; pointer-events: none; }
-
-#introTerminal {
-  font-family: var(--font-sans);
-  font-size: var(--fs-sm);
-  color: var(--text-soft);
-  max-width: 416px;
-  width: 100%;
-  padding: 0 var(--padding-page);
-}
-
-.intro-line {
-  min-height: var(--sp-4);
-  margin-bottom: var(--sp-2);
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.intro-line::after {
-  content: '█';
-  animation: cursorBlink 0.7s step-end infinite;
-  color: var(--text);
-  font-size: var(--fs-sm);
-}
-.intro-line.done::after { display: none; }
 
 @keyframes cursorBlink {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0; }
 }
 
-.intro-progress {
-  margin-top: var(--sp-3);
-  height: 2px;
-  background: var(--border);
-  width: 100%;
-  overflow: hidden;
-}
-#introBar {
-  height: 100%;
-  width: 0%;
+/* ── Typewriter cursor (hero tagline + about text) ── */
+.tagline-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: middle;
   background: var(--accent);
-  transition: width 0.05s linear;
+  animation: cursorBlink 0.55s step-end infinite;
+  transition: opacity 0.6s ease;
 }
+.tagline-cursor.done { animation: none; opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .glitch, .glitch::before, .glitch::after { animation: none; }

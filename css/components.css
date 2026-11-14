@@ -27,11 +27,8 @@ button:focus-visible,
 .btn-primary { background: var(--accent); color: var(--on-accent); }
 .btn-primary:hover { background: var(--accent-hover); }
 
-.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border-strong); }
 .btn-outline:hover { background: var(--surface); border-color: var(--muted); }
-
-.btn:disabled,
-.btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
 
 /* ── Skill names (plain text, animated in) ── */
 .chip {

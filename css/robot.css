@@ -33,7 +33,6 @@
   grid-template-rows: auto;
   align-items: center;
   align-content: center;
-  column-gap: 2rem;
   gap: 0;
   padding-top: 5rem;
   padding-bottom: 0;
@@ -154,10 +153,9 @@
 
 /* Eye CRT — only solid filled pupils, never border-only arcs
    Excluded: s-grin, s-pleased, s-squint, s-annoyed, s-thinking,
-             s-wink, s-sad, s-surprised (border circle), s-sleepy  */
+             s-sad, s-surprised (border circle), s-sleepy  */
 #heroFace.s-happy .hf-pupil::before,
 #heroFace.s-eager .hf-pupil::before,
-#heroFace.s-smile .hf-pupil::before,
 #heroFace.s-nervous .hf-pupil::before,
 #heroFace.s-starstruck .hf-pupil::before,
 #heroFace.s-dead .hf-pupil::before {
@@ -183,7 +181,6 @@
 
 #heroFace.s-happy .hf-pupil::after,
 #heroFace.s-eager .hf-pupil::after,
-#heroFace.s-smile .hf-pupil::after,
 #heroFace.s-nervous .hf-pupil::after,
 #heroFace.s-starstruck .hf-pupil::after,
 #heroFace.s-dead .hf-pupil::after {
@@ -294,10 +291,6 @@
 #heroFace.s-annoyed .hf-pupil { width: 28px; height: 4px; border-radius: var(--radius-sm); }
 #heroFace.s-annoyed .hf-mouth { width: 36px; height: 3px; border-radius: var(--radius-sm); bottom: 78px; background: var(--hf-ink); }
 
-/* s-smile */
-#heroFace.s-smile .hf-pupil { width: 22px; height: 22px; border-radius: 50%; }
-#heroFace.s-smile .hf-mouth { width: 80px; height: 20px; border-radius: 0 0 80px 80px; background: none; border: 2px solid var(--hf-ink); border-top: none; box-shadow: none; bottom: 64px; }
-
 /* s-grin */
 #heroFace.s-grin .hf-pupil { width: 26px; height: 15px; border-radius: 26px 26px 0 0; background: none; border: 2.5px solid var(--hf-ink); border-bottom: none; box-shadow: none; }
 #heroFace.s-grin .hf-mouth { width: 96px; height: 30px; border-radius: 50px; background: var(--hf-ink); border: none; box-shadow: 0 0 12px rgba(226, 226, 240, 0.3); bottom: 58px; }
@@ -334,12 +327,6 @@
 #heroFace.s-thinking .hf-eye-l .hf-pupil { width: 24px; height: 24px; border-radius: 50%; }
 #heroFace.s-thinking .hf-eye-r .hf-pupil { width: 24px; height: 10px; border-radius: 24px 24px 0 0; background: none; border: 2px solid var(--hf-ink); border-bottom: none; }
 #heroFace.s-thinking .hf-mouth { width: 30px; height: 3px; border-radius: var(--radius-sm); bottom: 74px; transform: translateX(calc(-50% + 8px)); background: var(--hf-ink); }
-
-/* s-wink */
-#heroFace.s-wink .hf-eye-l .hf-pupil { width: 26px; height: 26px; border-radius: 50%; }
-#heroFace.s-wink .hf-eye-r .hf-pupil { width: 26px; height: 3px; border-radius: var(--radius-sm); }
-#heroFace.s-wink .hf-mouth { width: 54px; height: 12px; border-radius: 0 0 54px 54px; background: none; border: 2px solid var(--hf-ink); border-top: none; box-shadow: none; bottom: 72px; }
-
 
 /* s-blinded — > < chevron eyes anchored from tip, wide grimace */
 
