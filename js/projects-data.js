@@ -110,7 +110,8 @@ window.PROJECTS = [
     about: ['A 70-session guided experience, custom drawing tools, and text, voice, and camera-based journaling.'],
     results: ['70-session guided experience', 'Text, voice, and camera journaling', 'Works fully offline'],
     video: '1_DgrRKbr7j23cMvx_WhXi8mPIq9Zo9K7',
-    images: []
+    cover: 'assets/images/projects/qualia-cover.jpg',
+    images: ['assets/images/projects/qualia-1.jpg','assets/images/projects/qualia-2.jpg','assets/images/projects/qualia-3.jpg','assets/images/projects/qualia-4.jpg']
   },
   {
     id: 'training-center', kind: 'grid', title: 'Training & Certification Center MS', metric: 'VB.NET · MySQL',

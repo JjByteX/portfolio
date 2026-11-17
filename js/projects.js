@@ -13,10 +13,12 @@
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ARROW = '<i class="ph ph-arrow-right" aria-hidden="true"></i>';
+  /* Card picture: an optional landscape `cover`, else the first screenshot. */
+  const coverOf = p => p.cover || (p.images && p.images[0]);
 
   rows.innerHTML = data.filter(p => p.kind === 'featured').map(p => {
-    const cover = p.images && p.images.length
-      ? `<img src="${esc(p.images[0])}" alt="${esc(p.title)}" loading="lazy" />`
+    const cover = coverOf(p)
+      ? `<img src="${esc(coverOf(p))}" alt="${esc(p.title)}" loading="lazy" />`
       : `<div class="pp-wordmark">${esc(p.title)}</div>`;
     return `<article class="pp-row fade-up">
       <div class="pp-row-text">
@@ -32,8 +34,8 @@
 
   grid.innerHTML = data.filter(p => p.kind === 'grid').map((p, i) => `
     <button class="pp-card fade-up delay-${i % 3}" data-pp="${esc(p.id)}">
-      ${p.images && p.images.length
-        ? `<img class="pp-card-img" src="${esc(p.images[0])}" alt="${esc(p.title)}" loading="lazy" />`
+      ${coverOf(p)
+        ? `<img class="pp-card-img" src="${esc(coverOf(p))}" alt="${esc(p.title)}" loading="lazy" />`
         : `<span class="pp-card-img pp-card-title">${esc(p.title)}</span>`}
       <span class="pp-card-body">
         <span class="pp-card-metric">${esc(p.metric || '')}</span>
